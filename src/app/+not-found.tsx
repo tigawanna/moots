@@ -1,20 +1,23 @@
+import { LandscapeSvg } from '@/components/shared/svg/LandscapeSvg';
 import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { StyleSheet,View } from 'react-native';
+import { Surface,Text, useTheme } from 'react-native-paper';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+
 
 export default function NotFoundScreen() {
+  const { colors } = useTheme();
   return (
-    <>
+    <Surface style={{ flex: 1, backgroundColor: colors.background }}>
       <Stack.Screen options={{ title: 'Oops!' }} />
-      <ThemedView style={styles.container}>
-        <ThemedText type="title">This screen does not exist.</ThemedText>
+      <LandscapeSvg/>
+      <View style={styles.container}>
+        <Text >This screen does not exist.</Text>
         <Link href="/" style={styles.link}>
-          <ThemedText type="link">Go to home screen!</ThemedText>
+          <Text >Go to home screen!</Text>
         </Link>
-      </ThemedView>
-    </>
+      </View>
+    </Surface>
   );
 }
 

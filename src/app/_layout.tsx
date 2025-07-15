@@ -60,7 +60,7 @@ export default function RootLayout() {
                   headerShown: false,
                   contentStyle: { flex: 1, backgroundColor: "transparent" },
                 }}>
-                <Stack.Screen name="(provider)" options={{ headerShown: false }} />
+                <Stack.Screen name="(container)" options={{ headerShown: false }} />
               </Stack>
               <GlobalSnackbar />
             </ThemeProvider>
