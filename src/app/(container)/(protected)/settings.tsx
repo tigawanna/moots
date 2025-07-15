@@ -1,6 +1,7 @@
 import { useSettingsStore, useThemeStore } from "@/store/settings-store";
 import { ScrollView, StyleSheet } from "react-native";
 import { Divider, List, Switch } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Settings() {
   const { isDarkMode, toggleTheme } = useThemeStore();
