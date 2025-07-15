@@ -3,6 +3,7 @@ import { MutationCache, QueryClient } from "@tanstack/react-query";
 
 export const queryKeyPrefixes = {
   viewer: "viewer",
+  auth: "auth",
 } as const
 
 type QueryKey = [keyof typeof queryKeyPrefixes, ...readonly unknown[]];

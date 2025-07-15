@@ -4,21 +4,20 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import { useThemeSetup } from "@/hooks/theme/use-theme-setup";
-import { useSettingsStore } from "@/store/settings-store";
-import React, { useEffect } from "react";
-import { PaperProvider } from "react-native-paper";
-import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
-import { AppStateStatus, Platform } from "react-native";
+import { useThemeSetup } from "@/hooks/theme/use-theme-setup";
+import { queryClient } from "@/lib/tanstack/client";
+import { useAppState, useOnlineManager } from "@/lib/tanstack/hooks";
+import { useSettingsStore } from "@/store/settings-store";
+import { focusManager, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
-import { useOnlineManager, useAppState } from "@/lib/tanstack/hooks";
+import React, { useEffect } from "react";
+import { AppStateStatus, Platform } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { PaperProvider } from "react-native-paper";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient();
 
 function onAppStateChange(status: AppStateStatus) {
   // React Query already supports in web browser refetch on window focus by default
