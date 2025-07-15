@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native'
 import { Text,Surface } from 'react-native-paper';
  
-export default function login(){
+export default function Signup(){
 return (
 <Surface style={{ ...styles.container }}>
-    <Text variant='titleLarge'>login</Text>
+    <Text variant='titleLarge'>signup</Text>
 </Surface>
 );
 }
