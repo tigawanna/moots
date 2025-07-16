@@ -66,10 +66,15 @@ EXPO_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
 #### Configure Authentication
 1. Go to **Auth** → **Settings**
 2. Enable **Email/Password** authentication
-3. Configure **Google OAuth**:
-   - Enable Google provider
-   - Add your OAuth credentials
-   - Set redirect URLs for your app
+#### Configure Google OAuth
+1. Go to **Auth** → **OAuth2 Providers** → **Google**
+2. Enable the Google provider
+3. Add your OAuth credentials (Client ID and Client Secret)
+4. Set redirect URLs (add BOTH development and production URLs):
+   - Development Success URL: `exp://127.0.0.1:19000/--/auth/callback`
+   - Development Failure URL: `exp://127.0.0.1:19000/--/auth/error`
+   - Production Success URL: `moots://auth/callback` (replace 'moots' with your app scheme)
+   - Production Failure URL: `moots://auth/error`
 
 #### Configure Platforms
 1. Go to **Settings** → **Platforms**
@@ -92,18 +97,21 @@ In your `app.json` or `app.config.js`:
 }
 ```
 
+#### OAuth Redirect URLs
+The Google OAuth flow uses the following redirect URLs:
+- Development: `exp://127.0.0.1:19000/--/auth/callback`
+- Production: `your-app-scheme://auth/callback`
+
+Make sure these are configured in your Appwrite Console under Auth → OAuth2 Providers → Google.
+
 #### Update URLs in Auth Functions
 Update the URLs in the authentication functions to match your app's scheme:
 
 ```typescript
-// In signin.tsx
-successUrl: "your-app-scheme://auth/callback",
-failureUrl: "your-app-scheme://auth/error",
-
-// In password recovery
+// For password recovery
 url: "your-app-scheme://auth/reset-password",
 
-// In email verification
+// For email verification
 url: "your-app-scheme://auth/verify-email",
 ```
 
@@ -118,12 +126,17 @@ url: "your-app-scheme://auth/verify-email",
 - `signInMutationOptions()` - Sign in with email/password
 - `signOutMutationOptions()` - Sign out current session
 - `signOutAllMutationOptions()` - Sign out all sessions
-- `googleSignInMutationOptions()` - Google OAuth sign in
 - `createPasswordRecoveryMutationOptions()` - Send password reset email
 - `updatePasswordRecoveryMutationOptions()` - Reset password
 - `createEmailVerificationMutationOptions()` - Send verification email
 - `verifyEmailMutationOptions()` - Verify email
 - `updateProfileMutationOptions()` - Update user profile
+
+### Google OAuth
+Google OAuth is handled directly in the `GoogleOauth` component using:
+- `account.createOAuth2Token()` - Creates OAuth URL
+- `WebBrowser.openAuthSessionAsync()` - Opens OAuth flow
+- Deep linking for callback handling
 
 ## 📱 Usage Examples
 
@@ -148,6 +161,14 @@ signInMutation.mutate({
 });
 ```
 
+### Google OAuth Sign In
+```typescript
+import { GoogleOauth } from "@/components/screens/auth/GoogleOauth";
+
+// Use the component directly
+<GoogleOauth />
+```
+
 ### Get Current User
 ```typescript
 const { data: user, isLoading } = useQuery(viewerQueryOptions());
@@ -170,8 +191,9 @@ showSnackbar("Success message!", {
 
 ### Adding New OAuth Providers
 1. Enable the provider in Appwrite console
-2. Add the provider to `googleSignInMutationOptions()` or create a new mutation
-3. Update the UI to include the new provider button
+2. Create a new component similar to `GoogleOauth.tsx`
+3. Use `account.createOAuth2Token()` with the appropriate provider
+4. Update the UI to include the new provider button
 
 ### Customizing Validation
 Update the Zod schemas in each form component to match your requirements:

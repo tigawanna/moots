@@ -1,7 +1,7 @@
 import { getAccount } from "@/lib/appwrite/client";
 import { queryKeyPrefixes } from "@/lib/tanstack/client";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
-import { ID, Models, OAuthProvider } from "react-native-appwrite";
+import { ID, Models } from "react-native-appwrite";
 
 // Types
 export interface SignUpData {
@@ -159,31 +159,6 @@ export function signOutAllMutationOptions() {
     },
     onError: (error) => {
       console.error("Sign out all error:", error);
-    },
-    meta: {
-      invalidates: [
-        [queryKeyPrefixes.viewer],
-        [queryKeyPrefixes.auth, "session"],
-      ],
-    },
-  });
-}
-
-export function googleSignInMutationOptions() {
-  return mutationOptions({
-    mutationFn: async (data: { successUrl?: string; failureUrl?: string }) => {
-      const account = getAccount();
-      return await account.createOAuth2Session(
-        OAuthProvider.Google,
-        data.successUrl || "exp://127.0.0.1:19000/--/auth/callback",
-        data.failureUrl || "exp://127.0.0.1:19000/--/auth/error"
-      );
-    },
-    onSuccess: (data) => {
-      console.log("Google sign in successful:", data);
-    },
-    onError: (error) => {
-      console.error("Google sign in error:", error);
     },
     meta: {
       invalidates: [

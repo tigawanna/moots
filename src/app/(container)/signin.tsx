@@ -1,11 +1,23 @@
 import { useSnackbar } from "@/components/react-native-paper/snackbar/global-snackbar-store";
-import { createPasswordRecoveryMutationOptions, googleSignInMutationOptions, signInMutationOptions } from "@/lib/tanstack/auth/auth";
+import { GoogleOauth } from "@/components/screens/auth/GoogleOauth";
+import {
+  createPasswordRecoveryMutationOptions,
+  signInMutationOptions,
+} from "@/lib/tanstack/auth/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Button, Divider, HelperText, Surface, Text, TextInput, useTheme } from "react-native-paper";
+import {
+  Button,
+  Divider,
+  HelperText,
+  Surface,
+  Text,
+  TextInput,
+  useTheme,
+} from "react-native-paper";
 import { z } from "zod";
 
 const signInSchema = z.object({
@@ -18,7 +30,7 @@ type SignInForm = z.infer<typeof signInSchema>;
 export default function Signin() {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
-  
+
   const {
     control,
     handleSubmit,
@@ -33,7 +45,6 @@ export default function Signin() {
   });
 
   const signInMutation = useMutation(signInMutationOptions());
-  const googleSignInMutation = useMutation(googleSignInMutationOptions());
   const passwordRecoveryMutation = useMutation(createPasswordRecoveryMutationOptions());
 
   const onSubmit = (data: SignInForm) => {
@@ -47,22 +58,6 @@ export default function Signin() {
     });
   };
 
-  const handleGoogleSignIn = () => {
-    googleSignInMutation.mutate(
-      {
-        successUrl: "exp://127.0.0.1:19000/--/auth/callback",
-        failureUrl: "exp://127.0.0.1:19000/--/auth/error",
-      },
-      {
-        onSuccess: () => {
-          showSnackbar("Signed in with Google successfully!");
-        },
-        onError: (error: any) => {
-          showSnackbar(error.message || "Failed to sign in with Google.");
-        },
-      }
-    );
-  };
 
   const handleForgotPassword = () => {
     const email = getValues("email");
@@ -94,7 +89,7 @@ export default function Signin() {
           <Text variant="headlineMedium" style={[styles.title, { color: colors.onBackground }]}>
             Welcome Back
           </Text>
-          
+
           <Text variant="bodyMedium" style={[styles.subtitle, { color: colors.onSurfaceVariant }]}>
             Sign in to your account
           </Text>
@@ -155,8 +150,7 @@ export default function Signin() {
               loading={passwordRecoveryMutation.isPending}
               disabled={passwordRecoveryMutation.isPending}
               style={styles.forgotPasswordButton}
-              compact
-            >
+              compact>
               Forgot Password?
             </Button>
 
@@ -166,20 +160,21 @@ export default function Signin() {
               loading={signInMutation.isPending}
               disabled={signInMutation.isPending}
               style={styles.submitButton}
-              contentStyle={styles.submitButtonContent}
-            >
+              contentStyle={styles.submitButtonContent}>
               Sign In
             </Button>
 
             <View style={styles.dividerContainer}>
               <Divider style={styles.divider} />
-              <Text variant="bodySmall" style={[styles.dividerText, { color: colors.onSurfaceVariant }]}>
+              <Text
+                variant="bodySmall"
+                style={[styles.dividerText, { color: colors.onSurfaceVariant }]}>
                 or
               </Text>
               <Divider style={styles.divider} />
             </View>
-
-            <Button
+            <GoogleOauth />
+            {/* <Button
               mode="outlined"
               onPress={handleGoogleSignIn}
               loading={googleSignInMutation.isPending}
@@ -189,7 +184,7 @@ export default function Signin() {
               icon="google"
             >
               Continue with Google
-            </Button>
+            </Button> */}
           </View>
 
           <View style={styles.linkContainer}>
