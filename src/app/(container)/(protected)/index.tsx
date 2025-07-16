@@ -7,7 +7,7 @@ export default function HomeScreen() {
     <Surface style={styles.container}>
       <Text style={styles.title}>Home</Text>
       <Button mode="contained">
-        <Link href={"/login"}>Login</Link>
+        <Link href={"/signin"}>Login</Link>
       </Button>
       <Button mode="contained">
         <Link href={"/settings"}>Settings</Link>

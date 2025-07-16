@@ -17,7 +17,7 @@ export default function ContainerLayout() {
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(protected)" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Screen name="login" options={{ headerShown: true }} />
+      <Stack.Screen name="signin" options={{ headerShown: true }} />
     </Stack>
   );
 }

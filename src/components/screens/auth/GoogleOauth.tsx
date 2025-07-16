@@ -17,15 +17,15 @@ export function GoogleOauth() {
       const account = getAccount();
       
       // Create deep link URL - use development URL for now
-      const deepLink = __DEV__ 
+      const deepLink = false 
         ? "exp://127.0.0.1:19000/--/"
         : "moots://";
       
-      const successUrl = __DEV__ 
+      const successUrl = false 
         ? "exp://127.0.0.1:19000/--/auth/callback"
         : "moots://auth/callback";
       
-      const failureUrl = __DEV__ 
+      const failureUrl = false 
         ? "exp://127.0.0.1:19000/--/auth/error"
         : "moots://auth/error";
       
@@ -35,7 +35,7 @@ export function GoogleOauth() {
         successUrl,
         failureUrl
       );
-
+      console.log("Google OAuth URL ===>> :", response);
       if (response) {
         // Open the OAuth URL in the browser
         const result = await WebBrowser.openAuthSessionAsync(
