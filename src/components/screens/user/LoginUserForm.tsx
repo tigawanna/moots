@@ -1,106 +1,61 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, View } from 'react-native';
-import { Button, Surface, Text, TextInput, useTheme } from 'react-native-paper';
-import { z } from 'zod';
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Button, Text, useTheme } from "react-native-paper";
+import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
+import { LocalLoginForm, SyncedLoginForm } from "./forms";
 
-// Define validation schema using zod
-const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
-});
+// Define types for the form data
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
-type LoginFormData = z.infer<typeof loginSchema>;
+interface LocalLoginFormData {
+  deviceId: string;
+}
 
 interface LoginUserFormProps {
   onSubmit?: (data: LoginFormData) => void;
+  onLocalLogin?: (data: LocalLoginFormData) => void;
   onForgotPassword?: () => void;
   onCreateAccount?: () => void;
 }
 
 export function LoginUserForm({
-  onSubmit: onSubmitProp,
+  onSubmit,
+  onLocalLogin,
   onForgotPassword,
   onCreateAccount
 }: LoginUserFormProps) {
   const theme = useTheme();
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    }
-  });
-
-  const onSubmit = (data: LoginFormData) => {
-    console.log('Login submitted:', data);
-    if (onSubmitProp) {
-      onSubmitProp(data);
-    }
-  };
 
   return (
-    <Surface style={styles.container}>
-      <Text variant="headlineMedium" style={styles.title}>Login</Text>
-      
-      <View style={styles.form}>
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              label="Email"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              style={styles.input}
-              error={!!errors.email}
-              mode="outlined"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          )}
-        />
-        {errors.email && (
-          <Text style={{ color: theme.colors.error }}>{errors.email.message}</Text>
-        )}
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text variant="headlineMedium" style={styles.title}>Login</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Access your account
+          </Text>
+        </View>
 
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              label="Password"
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              style={styles.input}
-              error={!!errors.password}
-              mode="outlined"
-              secureTextEntry
-            />
-          )}
-        />
-        {errors.password && (
-          <Text style={{ color: theme.colors.error }}>{errors.password.message}</Text>
-        )}
+        <TabsProvider defaultIndex={0}>
+          <Tabs mode="fixed" showLeadingSpace={true}>
+            <TabScreen label="Synced Account" icon="cloud-sync">
+              <View style={styles.tabContent}>
+                <SyncedLoginForm 
+                  onSubmit={onSubmit}
+                  onForgotPassword={onForgotPassword}
+                />
+              </View>
+            </TabScreen>
+            <TabScreen label="Local Account" icon="cellphone">
+              <View style={styles.tabContent}>
+                <LocalLoginForm onSubmit={onLocalLogin} />
+              </View>
+            </TabScreen>
+          </Tabs>
+        </TabsProvider>
 
-        <Button 
-          mode="contained" 
-          onPress={handleSubmit(onSubmit)} 
-          style={styles.loginButton}
-        >
-          Login
-        </Button>
-        
-        <Button 
-          mode="text" 
-          onPress={onForgotPassword} 
-          style={styles.textButton}
-        >
-          Forgot Password?
-        </Button>
-        
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
           <Text style={styles.dividerText}>OR</Text>
@@ -111,51 +66,64 @@ export function LoginUserForm({
           mode="outlined" 
           onPress={onCreateAccount} 
           style={styles.createAccountButton}
+          contentStyle={styles.buttonContent}
+          labelStyle={styles.buttonLabel}
         >
-          Create Account
+          Create New Account
         </Button>
       </View>
-    </Surface>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    padding: 16,
+    width: "100%",
+    padding: 20,
+  },
+  content: {
+    padding: 2,
+    paddingTop: 40,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 32,
   },
   title: {
-    marginBottom: 24,
-    textAlign: 'center',
+    fontWeight: "bold",
+    marginBottom: 8,
   },
-  form: {
-    width: '100%',
+  subtitle: {
+    opacity: 0.7,
+    textAlign: "center",
   },
-  input: {
-    marginBottom: 16,
-  },
-  loginButton: {
-    marginTop: 8,
-  },
-  textButton: {
-    marginTop: 8,
+  tabContent: {
+    paddingTop: 16,
   },
   divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginVertical: 24,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
   dividerText: {
     marginHorizontal: 16,
-    color: '#757575',
+    color: "#757575",
   },
   createAccountButton: {
-    marginTop: 8,
+    marginHorizontal: 24,
+    borderRadius: 12,
+  },
+  buttonContent: {
+    paddingVertical: 8,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: "600",
   }
 });
