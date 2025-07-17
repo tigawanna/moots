@@ -1,15 +1,11 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { Button, Surface,Text } from 'react-native-paper';
+import { TestQueryScreen } from "@/components/screens/home/TestQueryScreen";
+import { StyleSheet } from "react-native";
+import { Surface } from "react-native-paper";
 
 export default function HomeScreen() {
   return (
     <Surface style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <Button mode="contained">
-        <Link href={"/settings"}>Settings</Link>
-      </Button>
-
+      <TestQueryScreen />
     </Surface>
   );
 }
@@ -24,6 +20,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
