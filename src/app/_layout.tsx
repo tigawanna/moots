@@ -1,22 +1,16 @@
 import "../polyfill.ts";
 
 import { useFonts } from "expo-font";
-import { Slot, Stack } from "expo-router";
+import { Slot } from "expo-router";
 
 import "react-native-reanimated";
 
-import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
-import { useThemeSetup } from "@/hooks/theme/use-theme-setup";
-import { queryClient } from "@/lib/tanstack/client";
+import { LivestoreProvider } from "@/lib/livestore/components/LivestoreProvider.tsx";
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
-import { useSettingsStore } from "@/store/settings-store";
-import { focusManager, QueryClientProvider } from "@tanstack/react-query";
+import { focusManager } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { PaperProvider } from "react-native-paper";
-import { LivestoreProvider } from "@/lib/livestore/LivestoreProvider";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
