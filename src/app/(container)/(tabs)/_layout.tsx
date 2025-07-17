@@ -16,6 +16,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: true,
         tabBarButton: HapticTab,
+        lazy:false,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
@@ -27,6 +28,13 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen
         name="index"
+        // listeners={{
+        //   tabPress: (e) => {
+        //     // Prevent default behavior if needed
+        //     e.preventDefault();
+        //     console.log("Home tab pressed");
+        //   },
+        // }}
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
