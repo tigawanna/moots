@@ -8,7 +8,7 @@ import Animated, {
   withSequence,
   withTiming
 } from "react-native-reanimated";
-import { RestingIcon } from "../svg/Resting";
+import { RestingIcon } from "@/components/shared/svg/Resting";
 
 export function NoDataScreen() {
   const { colors } = useTheme();

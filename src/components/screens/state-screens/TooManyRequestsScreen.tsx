@@ -9,7 +9,7 @@ import Animated, {
   withSpring,
   withTiming
 } from 'react-native-reanimated';
-import { Chill } from '../svg/Chill';
+import { Chill } from "@/components/shared/svg/Chill";
 
 export function TooManyRequestsScreen() {
   const { colors } = useTheme();
@@ -90,7 +90,7 @@ export function TooManyRequestsScreen() {
             variant="bodyMedium" 
             style={[styles.descriptionText, { color: colors.outline }]}
           >
-            Let's take a breath and try again in a moment. 
+            Let&apos;s take a breath and try again in a moment. 
             The servers need a quick break too! 
           </Text>
         </View>

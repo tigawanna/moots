@@ -7,7 +7,7 @@ import "react-native-reanimated";
 import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
 import { useThemeSetup } from "@/hooks/theme/use-theme-setup";
 import { queryClient } from "@/lib/tanstack/client";
-import { useAppState, useOnlineManager } from "@/lib/tanstack/hooks";
+import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
 import { useSettingsStore } from "@/store/settings-store";
 import { focusManager, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
