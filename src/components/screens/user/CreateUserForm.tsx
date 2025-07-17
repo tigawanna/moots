@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
 import { Button, Surface, Text, TextInput, useTheme } from "react-native-paper";
@@ -21,6 +22,9 @@ type CreateUserFormData = z.infer<typeof createUserSchema>;
 
 export function CreateUserForm() {
   const theme = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const {
     control,
     handleSubmit,
@@ -104,7 +108,13 @@ export function CreateUserForm() {
               style={styles.input}
               error={!!errors.password}
               mode="outlined"
-              secureTextEntry
+              secureTextEntry={!showPassword}
+              right={
+                <TextInput.Icon
+                  icon={showPassword ? "eye-off" : "eye"}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+              }
             />
           )}
         />
@@ -126,7 +136,13 @@ export function CreateUserForm() {
               style={styles.input}
               error={!!errors.confirmPassword}
               mode="outlined"
-              secureTextEntry
+              secureTextEntry={!showConfirmPassword}
+              right={
+                <TextInput.Icon
+                  icon={showConfirmPassword ? "eye-off" : "eye"}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                />
+              }
             />
           )}
         />

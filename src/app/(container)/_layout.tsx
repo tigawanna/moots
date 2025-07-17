@@ -19,9 +19,14 @@ export default function ContainerLayout() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
           <Stack>
-          <Stack.Protected guard={isAuthenticated} >
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack.Protected>
+            <Stack.Protected guard={isAuthenticated}>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack.Protected>
+            {/* <Stack.Screen name="(auth)" options={{ headerShown: false }} /> */}
+            <Stack.Protected guard={!isAuthenticated}>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            </Stack.Protected>
+            {/* <Stack.Screen name="(auth)/signup" options={{ headerShown: false }} /> */}
           </Stack>
           <GlobalSnackbar />
         </GestureHandlerRootView>

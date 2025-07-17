@@ -8,7 +8,7 @@ import { makeCfSync } from "@livestore/sync-cf";
 import { useState } from "react";
 import { envVariables } from "../../env";
 
-import { events, schema, tables } from "../models/watchlist/schema";
+import { schema } from "../models/watchlist/schema";
 import { LivestoreErrorScreen, LivestoreLoadingScreen } from "./LivestoreStatesScreens";
 
 const storeId = envVariables.EXPO_PUBLIC_LIVESTORE_STORE_ID
@@ -37,9 +37,7 @@ export function LivestoreProvider({ children }: { children: React.ReactNode }) {
         );
       }}
       boot={(store) => {
-        // if (store.query(tables.todos.count()) === 0) {
-        //   store.commit(events.todoCreated({ id: nanoid(), text: "Make coffee" }));
-        // }
+
       }}
       batchUpdates={batchUpdates}>
       {children}
