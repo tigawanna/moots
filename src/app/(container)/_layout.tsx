@@ -12,13 +12,16 @@ import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalS
 export default function ContainerLayout() {
   const { dynamicColors } = useSettingsStore();
   const { colorScheme, paperTheme } = useThemeSetup(dynamicColors);
+  const isAuthenticated = false
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <PaperProvider theme={paperTheme}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
           <Stack>
+          <Stack.Protected guard={isAuthenticated} >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack.Protected>
           </Stack>
           <GlobalSnackbar />
         </GestureHandlerRootView>

@@ -27,14 +27,13 @@ export function LivestoreErrorScreen({ error }: LivestoreErrorScreenProps) {
                 style={{ 
                   width: 64, 
                   height: 64, 
-                  borderRadius: 32, 
-                  backgroundColor: useTheme().colors.errorContainer,
+                  borderRadius: 32,
                   justifyContent: "center", 
                   alignItems: "center",
                   marginBottom: 16
                 }}
               >
-                <Text style={{ fontSize: 32, color: useTheme().colors.onErrorContainer }}>
+                <Text style={{ fontSize: 32}}>
                   ⚠️
                 </Text>
               </View>
@@ -45,7 +44,6 @@ export function LivestoreErrorScreen({ error }: LivestoreErrorScreenProps) {
                 style={{ 
                   marginBottom: 8, 
                   textAlign: "center",
-                  color: useTheme().colors.onSurface
                 }}
               >
                 Something went wrong
@@ -56,7 +54,6 @@ export function LivestoreErrorScreen({ error }: LivestoreErrorScreenProps) {
                 variant="bodyMedium" 
                 style={{ 
                   textAlign: "center",
-                  color: useTheme().colors.error,
                   marginBottom: 24,
                   lineHeight: 20
                 }}

@@ -1,4 +1,3 @@
-import { TestQueryScreen } from "@/components/screens/home/TestQueryScreen";
 import { StyleSheet } from "react-native";
 import { Surface, Text } from "react-native-paper";
 

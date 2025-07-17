@@ -1,10 +1,11 @@
+import { CreateUserForm } from '@/components/screens/user';
 import { StyleSheet } from 'react-native'
-import { Text,Surface } from 'react-native-paper';
+import { Surface } from 'react-native-paper';
  
 export function signup(){
 return (
 <Surface style={{ ...styles.container }}>
-    <Text variant='titleLarge'>signup</Text>
+  <CreateUserForm/>
 </Surface>
 );
 }
