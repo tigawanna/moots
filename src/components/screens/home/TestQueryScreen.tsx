@@ -1,34 +1,10 @@
-import { nanoid } from "@livestore/livestore";
-import { useQuery, useStore } from "@livestore/react";
 import React from "react";
-import {
-  FlatList,
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { Button, Card, Chip, List, Surface, Text, TextInput, useTheme } from "react-native-paper";
+import { StyleSheet } from "react-native";
+import { Surface, Text } from "react-native-paper";
 
-import {
-  activeTodosCount$,
-  completedTodosCount$,
-  totalTodosCount$,
-  uiState$,
-  visibleTodos$,
-} from "../../../lib/livestore/queries";
-import { events } from "../../../lib/livestore/schema";
 import { TestQueryList } from "./TestQueryList";
 
 export function TestQueryScreen() {
-  const theme = useTheme();
-  const { store } = useStore();
-
-
-
-
-
   return (
     <Surface style={styles.container}>
       <Text variant="titleLarge">TestQueryFilters</Text>

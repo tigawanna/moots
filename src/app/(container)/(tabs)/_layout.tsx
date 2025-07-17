@@ -6,6 +6,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { HapticTab } from '@/components/default/HapticTab';
 import TabBarBackground from '@/components/default/ui/TabBarBackground';
 import { IconSymbol, MaterialIcon } from '@/components/default/ui/IconSymbol.ios';
+import { Easing } from 'react-native-reanimated';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -13,10 +14,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        // transitionSpec: { animation: "timing", config: { delay: 0, duration: 3, easing: Easing.bounce } },
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: true,
         tabBarButton: HapticTab,
-        lazy:false,
+        lazy: false,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {

@@ -1,9 +1,6 @@
 import { FlatList, StyleSheet, View } from "react-native";
 import { Text, Surface, List, useTheme, Button, MD3Theme } from "react-native-paper";
 import {
-  activeTodosCount$,
-  completedTodosCount$,
-  totalTodosCount$,
   uiState$,
   visibleTodos$,
 } from "@/lib/livestore/queries";
@@ -50,7 +47,7 @@ export function TestQueryList() {
           />
         )}
         keyExtractor={keyExtractor}
-        windowSize={2}
+        windowSize={20}
 
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
