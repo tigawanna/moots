@@ -1,7 +1,7 @@
 import { nanoid } from '@livestore/livestore'
 import { useQuery, useStore } from '@livestore/react'
 import React from 'react'
-import { Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
+import { FlatList, Keyboard, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native'
 import { Button, Card, Chip, List, Surface, Text, TextInput, useTheme } from 'react-native-paper'
 
 import { activeTodosCount$, completedTodosCount$, totalTodosCount$, uiState$, visibleTodos$ } from '../../../lib/livestore/queries'
@@ -61,26 +61,73 @@ export function TestQueryScreen() {
     store.commit(events.uiStateSet({ filter }))
   }
 
+  const renderTodoItem = ({ item: todo }: { item: any }) => (
+    <List.Item
+      title={todo.text}
+      titleStyle={{
+        textDecorationLine: todo.completed ? 'line-through' : 'none',
+        color: todo.completed ? theme.colors.onSurfaceVariant : theme.colors.onSurface
+      }}
+      left={() => (
+        <Button
+          mode={todo.completed ? "contained" : "outlined"}
+          onPress={() => toggleTodo(todo.id, todo.completed)}
+          compact
+          style={{ marginRight: 8 }}
+          icon={todo.completed ? "check" : "circle-outline"}
+        >
+          {todo.completed ? "" : ""}
+        </Button>
+      )}
+      right={() => (
+        <Button
+          mode="text"
+          onPress={() => deleteTodo(todo.id)}
+          textColor={theme.colors.error}
+          compact
+          icon="delete"
+        >
+          Delete
+        </Button>
+      )}
+      style={{
+        opacity: todo.completed ? 0.7 : 1,
+        backgroundColor: todo.completed ? theme.colors.surfaceVariant : 'transparent',
+        borderRadius: 8,
+        marginVertical: 2
+      }}
+    />
+  )
+
+  const keyExtractor = (item: any) => item.id
+
   return (
     <Surface style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text variant='headlineMedium' style={{ marginBottom: 8, color: theme.colors.onSurface, textAlign: 'center' }}>
+        <Text
+          variant="headlineMedium"
+          style={{ marginBottom: 8, color: theme.colors.onSurface, textAlign: "center" }}>
           LiveStore Todo Demo
         </Text>
-        
+
         {/* Stats */}
         <View style={styles.statsContainer}>
-          <Chip mode="outlined" compact>Total: {totalTodosCount || 0}</Chip>
-          <Chip mode="outlined" compact>Active: {activeTodosCount || 0}</Chip>
-          <Chip mode="outlined" compact>Done: {completedTodosCount || 0}</Chip>
+          <Chip mode="outlined" compact>
+            Total: {totalTodosCount || 0}
+          </Chip>
+          <Chip mode="outlined" compact>
+            Active: {activeTodosCount || 0}
+          </Chip>
+          <Chip mode="outlined" compact>
+            Done: {completedTodosCount || 0}
+          </Chip>
         </View>
-        
+
         <TouchableWithoutFeedback
           onPress={() => {
-            Keyboard.dismiss()
-            inputRef.current?.blur()
-          }}
-        >
+            Keyboard.dismiss();
+            inputRef.current?.blur();
+          }}>
           <View style={styles.todoContainer}>
             {/* Input Section */}
             <Card style={styles.inputCard}>
@@ -89,38 +136,32 @@ export function TestQueryScreen() {
                   ref={inputRef}
                   mode="outlined"
                   label="New Todo"
-                  value={currentUiState.newTodoText || ''}
+                  value={currentUiState.newTodoText || ""}
                   onChangeText={updatedNewTodoText}
                   onSubmitEditing={todoCreated}
                   style={styles.input}
                   contentStyle={{ fontSize: 16 }}
                   returnKeyType="done"
                 />
-                
+
                 <View style={styles.buttonContainer}>
-                  <Button 
-                    mode="contained" 
+                  <Button
+                    mode="contained"
                     onPress={todoCreated}
                     style={styles.button}
-                    disabled={!currentUiState.newTodoText?.trim()}
-                  >
+                    disabled={!currentUiState.newTodoText?.trim()}>
                     Add Todo
                   </Button>
-                  
-                  <Button 
-                    mode="outlined" 
-                    onPress={addRandom50}
-                    style={styles.button}
-                  >
+
+                  <Button mode="outlined" onPress={addRandom50} style={styles.button}>
                     Add 50 Random
                   </Button>
-                  
-                  <Button 
-                    mode="text" 
+
+                  <Button
+                    mode="text"
                     onPress={reset}
                     style={styles.button}
-                    textColor={theme.colors.error}
-                  >
+                    textColor={theme.colors.error}>
                     Clear Completed
                   </Button>
                 </View>
@@ -130,96 +171,71 @@ export function TestQueryScreen() {
             {/* Filter Section */}
             <Card style={styles.filterCard}>
               <Card.Content>
-                <Text variant="titleSmall" style={{ marginBottom: 8 }}>Filter</Text>
+                <Text variant="titleSmall" style={{ marginBottom: 8 }}>
+                  Filter
+                </Text>
                 <View style={styles.filterContainer}>
-                  <Chip 
-                    mode={currentUiState.filter === 'all' ? 'flat' : 'outlined'}
-                    onPress={() => setFilter('all')}
-                    selected={currentUiState.filter === 'all'}
-                  >
+                  <Chip
+                    mode={currentUiState.filter === "all" ? "flat" : "outlined"}
+                    onPress={() => setFilter("all")}
+                    selected={currentUiState.filter === "all"}>
                     All
                   </Chip>
-                  <Chip 
-                    mode={currentUiState.filter === 'active' ? 'flat' : 'outlined'}
-                    onPress={() => setFilter('active')}
-                    selected={currentUiState.filter === 'active'}
-                  >
+                  <Chip
+                    mode={currentUiState.filter === "active" ? "flat" : "outlined"}
+                    onPress={() => setFilter("active")}
+                    selected={currentUiState.filter === "active"}>
                     Active
                   </Chip>
-                  <Chip 
-                    mode={currentUiState.filter === 'completed' ? 'flat' : 'outlined'}
-                    onPress={() => setFilter('completed')}
-                    selected={currentUiState.filter === 'completed'}
-                  >
+                  <Chip
+                    mode={currentUiState.filter === "completed" ? "flat" : "outlined"}
+                    onPress={() => setFilter("completed")}
+                    selected={currentUiState.filter === "completed"}>
                     Completed
                   </Chip>
                 </View>
               </Card.Content>
             </Card>
-
-            {/* Todo List */}
-            <Card style={styles.todoList}>
-              <Card.Title 
-                title={`${currentUiState.filter === 'all' ? 'All' : currentUiState.filter === 'active' ? 'Active' : 'Completed'} Todos`}
-                subtitle={`${visibleTodos?.length || 0} items`}
-              />
-              <Card.Content>
-                {visibleTodos && visibleTodos.length > 0 ? (
-                  visibleTodos.map((todo: any) => (
-                    <List.Item
-                      key={todo.id}
-                      title={todo.text}
-                      titleStyle={{
-                        textDecorationLine: todo.completed ? 'line-through' : 'none',
-                        color: todo.completed ? theme.colors.onSurfaceVariant : theme.colors.onSurface
-                      }}
-                      left={() => (
-                        <Button
-                          mode={todo.completed ? "contained" : "outlined"}
-                          onPress={() => toggleTodo(todo.id, todo.completed)}
-                          compact
-                          style={{ marginRight: 8 }}
-                          icon={todo.completed ? "check" : "circle-outline"}
-                        >
-                          {todo.completed ? "" : ""}
-                        </Button>
-                      )}
-                      right={() => (
-                        <Button
-                          mode="text"
-                          onPress={() => deleteTodo(todo.id)}
-                          textColor={theme.colors.error}
-                          compact
-                          icon="delete"
-                        >
-                          Delete
-                        </Button>
-                      )}
-                      style={{
-                        opacity: todo.completed ? 0.7 : 1,
-                        backgroundColor: todo.completed ? theme.colors.surfaceVariant : 'transparent',
-                        borderRadius: 8,
-                        marginVertical: 2
-                      }}
-                    />
-                  ))
-                ) : (
-                  <View style={styles.emptyState}>
-                    <Text style={{ textAlign: 'center', color: theme.colors.onSurfaceVariant }}>
-                      {currentUiState.filter === 'all' 
-                        ? 'No todos yet. Add one above!' 
-                        : `No ${currentUiState.filter} todos.`
-                      }
-                    </Text>
-                  </View>
-                )}
-              </Card.Content>
-            </Card>
           </View>
         </TouchableWithoutFeedback>
       </ScrollView>
+      {/* Todo List */}
+      <Card style={styles.todoList}>
+        <Card.Title
+          title={`${
+            currentUiState.filter === "all"
+              ? "All"
+              : currentUiState.filter === "active"
+              ? "Active"
+              : "Completed"
+          } Todos`}
+          subtitle={`${visibleTodos?.length || 0} items`}
+        />
+        <Card.Content>
+          <FlatList
+            data={visibleTodos || []}
+            renderItem={renderTodoItem}
+            keyExtractor={keyExtractor}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyState}>
+                <Text style={{ textAlign: "center", color: theme.colors.onSurfaceVariant }}>
+                  {currentUiState.filter === "all"
+                    ? "No todos yet. Add one above!"
+                    : `No ${currentUiState.filter} todos.`}
+                </Text>
+              </View>
+            )}
+            contentContainerStyle={
+              visibleTodos && visibleTodos.length === 0
+                ? { flex: 1, justifyContent: "center" }
+                : undefined
+            }
+          />
+        </Card.Content>
+      </Card>
     </Surface>
-  )
+  );
 }
 
 
@@ -230,7 +246,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   scrollContent: {
-    flexGrow: 1,
+    flex: 1,
     padding: 20,
     alignItems: 'center',
   },
@@ -274,7 +290,7 @@ const styles = StyleSheet.create({
   },
   todoList: {
     width: '100%',
-    maxHeight: 500,
+    height: 400,
   },
   emptyState: {
     padding: 20,
