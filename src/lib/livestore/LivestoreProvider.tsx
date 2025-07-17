@@ -8,6 +8,8 @@ import { makeCfSync } from "@livestore/sync-cf";
 import { events, schema, tables } from "./schema";
 import { useState } from "react";
 import { envVariables } from "../env";
+import { LoadingFallback } from "@/components/screens/state-screens/LoadingFallback";
+import { LivestoreErrorScreen, LivestoreLoadingScreen } from "./LivestoreStatesScreens";
 
 const storeId = envVariables.EXPO_PUBLIC_LIVESTORE_STORE_ID
 const syncUrl = envVariables.EXPO_PUBLIC_LIVESTORE_SYNC_URL;
@@ -24,13 +26,13 @@ export function LivestoreProvider({ children }: { children: React.ReactNode }) {
       adapter={adapter}
       storeId={storeId}
       syncPayload={{ authToken: "insecure-token-change-me" }}
-      renderLoading={(_) => <Text>Loading LiveStore ({_.stage})...</Text>}
-      renderError={(error: any) => <Text>Error: {error.toString()}</Text>}
+      renderLoading={(_) => <LivestoreLoadingScreen />}
+      renderError={(error: any) => <LivestoreErrorScreen error={error.toString()} />}
       renderShutdown={() => {
         return (
           <View>
             <Text>LiveStore Shutdown</Text>
-            <Button onPress={() => rerender({})} >Reload</Button>
+            <Button onPress={() => rerender({})}>Reload</Button>
           </View>
         );
       }}
@@ -44,12 +46,4 @@ export function LivestoreProvider({ children }: { children: React.ReactNode }) {
     </LiveStoreProvider>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+
