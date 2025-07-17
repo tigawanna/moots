@@ -1,11 +1,13 @@
 import { TestQueryScreen } from "@/components/screens/home/TestQueryScreen";
 import { StyleSheet } from "react-native";
-import { Surface } from "react-native-paper";
+import { Surface, Text } from "react-native-paper";
+
+// On this screen we'll render the current user's movie list
 
 export default function HomeScreen() {
   return (
     <Surface style={styles.container}>
-      <TestQueryScreen />
+    <Text style={styles.title}>Home Screen</Text>
     </Surface>
   );
 }
