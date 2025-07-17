@@ -8,7 +8,7 @@ import { makeCfSync } from "@livestore/sync-cf";
 import { useState } from "react";
 import { envVariables } from "../../env";
 
-import { events, schema, tables } from "../schema";
+import { events, schema, tables } from "../models/todos/schema";
 import { LivestoreErrorScreen, LivestoreLoadingScreen } from "./LivestoreStatesScreens";
 
 const storeId = envVariables.EXPO_PUBLIC_LIVESTORE_STORE_ID

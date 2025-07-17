@@ -1,5 +1,5 @@
 import { queryDb } from '@livestore/livestore'
-import { tables } from './models/todos/schema'
+import { tables } from './schema'
 
 // Define reactive queries using queryDb
 export const uiState$ = queryDb(tables.uiState, { label: 'uiState$' })

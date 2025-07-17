@@ -1,12 +1,12 @@
-import { FlatList, StyleSheet, View } from "react-native";
-import { Text, Surface, List, useTheme, Button, MD3Theme } from "react-native-paper";
 import {
-  uiState$,
-  visibleTodos$,
-} from "@/lib/livestore/queries";
+    uiState$,
+    visibleTodos$,
+} from "@/lib/livestore/models/todos/queries";
+import { events } from "@/lib/livestore/models/todos/schema";
 import { useQuery, useStore } from "@livestore/react";
-import { events } from "@/lib/livestore/schema";
 import { useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import { Button, List, MD3Theme, Surface, Text, useTheme } from "react-native-paper";
 
 export function TestQueryList() {
   const visibleTodos = useQuery(visibleTodos$);
