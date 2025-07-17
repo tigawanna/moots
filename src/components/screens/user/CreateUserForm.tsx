@@ -1,10 +1,10 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
 import { LocalAccountForm, SyncedAccountForm } from "./forms";
 
 export function CreateUserForm() {
-  const theme = useTheme();
+
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>

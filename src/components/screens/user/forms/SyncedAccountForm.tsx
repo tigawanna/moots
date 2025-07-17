@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
-import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Card, Text, TextInput } from "react-native-paper";
 import { z } from "zod";
 
 // Define validation schema using zod
@@ -25,7 +25,6 @@ interface SyncedAccountFormProps {
 }
 
 export function SyncedAccountForm({ onSubmit }: SyncedAccountFormProps) {
-  const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 

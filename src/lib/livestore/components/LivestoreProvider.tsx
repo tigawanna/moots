@@ -2,7 +2,7 @@ import { View, unstable_batchedUpdates as batchUpdates } from "react-native";
 import { Button, Text } from "react-native-paper";
 
 import { makePersistedAdapter } from "@livestore/adapter-expo";
-import { nanoid } from "@livestore/livestore";
+// import { nanoid } from "@livestore/livestore";
 import { LiveStoreProvider } from "@livestore/react";
 import { makeCfSync } from "@livestore/sync-cf";
 import { useState } from "react";

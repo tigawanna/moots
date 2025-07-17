@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
-import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Card, Text, TextInput } from "react-native-paper";
 import { z } from "zod";
 
 // Define schema for local account login
@@ -16,7 +16,7 @@ interface LocalLoginFormProps {
 }
 
 export function LocalLoginForm({ onSubmit }: LocalLoginFormProps) {
-  const theme = useTheme();
+
 
   const { 
     control, 

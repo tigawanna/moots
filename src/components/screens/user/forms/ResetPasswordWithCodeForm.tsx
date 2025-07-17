@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
-import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
+import { Button, Card, Text, TextInput } from "react-native-paper";
 import { useTabNavigation } from "react-native-paper-tabs";
 import { z } from "zod";
 
@@ -22,7 +22,6 @@ interface ResetPasswordWithCodeFormProps {
 }
 
 export function ResetPasswordWithCodeForm({ onSubmit }: ResetPasswordWithCodeFormProps) {
-  const theme = useTheme();
   const goTo = useTabNavigation();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
