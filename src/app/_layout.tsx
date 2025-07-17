@@ -15,6 +15,7 @@ import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
+import { LivestoreProvider } from "@/lib/livestore/LivestoreProvider";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -48,24 +49,26 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <PaperProvider theme={paperTheme}>
-            <ThemeProvider value={paperTheme as any}>
-              <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { flex: 1, backgroundColor: "transparent" },
-                }}>
-                <Stack.Screen name="(container)" options={{ headerShown: false }} />
-              </Stack>
-              <GlobalSnackbar />
-            </ThemeProvider>
-          </PaperProvider>
-        </GestureHandlerRootView>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <LivestoreProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <PaperProvider theme={paperTheme}>
+              <ThemeProvider value={paperTheme as any}>
+                <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    contentStyle: { flex: 1, backgroundColor: "transparent" },
+                  }}>
+                  <Stack.Screen name="(container)" options={{ headerShown: false }} />
+                </Stack>
+                <GlobalSnackbar />
+              </ThemeProvider>
+            </PaperProvider>
+          </GestureHandlerRootView>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </LivestoreProvider>
   );
 }
