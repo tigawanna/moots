@@ -1,4 +1,5 @@
 import { events } from "@/lib/livestore/simple-schema";
+import { useLocalUserStore } from "@/store/user-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { nanoid } from "@livestore/livestore";
 import { useStore } from "@livestore/react";
@@ -20,6 +21,7 @@ interface LocalAccountFormProps {
 
 export function LocalAccountForm({ onSubmit }: LocalAccountFormProps) {
   const { store } = useStore();
+  const { setUser } = useLocalUserStore();
   const {
     control,
     handleSubmit,
@@ -42,7 +44,12 @@ export function LocalAccountForm({ onSubmit }: LocalAccountFormProps) {
         id: userId,
         username: data.username,
       })
-    );
+    )
+    setUser({
+      id: userId,
+      username: data.username,
+    });
+
     // Handle local account creation
   };
 
