@@ -1,4 +1,7 @@
+import { events } from "@/lib/livestore/simple-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { nanoid } from "@livestore/livestore";
+import { useStore } from "@livestore/react";
 import { Controller, useForm } from "react-hook-form";
 import { StyleSheet, View } from "react-native";
 import { Button, Card, Text, TextInput } from "react-native-paper";
@@ -16,10 +19,11 @@ interface LocalAccountFormProps {
 }
 
 export function LocalAccountForm({ onSubmit }: LocalAccountFormProps) {
+  const { store } = useStore();
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors,isSubmitting },
   } = useForm<LocalAccountFormData>({
     resolver: zodResolver(localAccountSchema),
     defaultValues: {
@@ -32,6 +36,13 @@ export function LocalAccountForm({ onSubmit }: LocalAccountFormProps) {
     if (onSubmit) {
       onSubmit(data);
     }
+    const userId = `local-${nanoid()}`;
+    store.commit(
+      events.userCreated({
+        id: userId,
+        username: data.username,
+      })
+    );
     // Handle local account creation
   };
 
@@ -69,7 +80,7 @@ export function LocalAccountForm({ onSubmit }: LocalAccountFormProps) {
           style={styles.button}
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}>
-          Create Local Account
+          {isSubmitting ? "Creating Local Account..." : "Create Local Account"}
         </Button>
       </Card.Content>
     </Card>
