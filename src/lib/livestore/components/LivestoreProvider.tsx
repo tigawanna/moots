@@ -19,7 +19,7 @@ const adapter = makePersistedAdapter({
 });
 
 export function LivestoreProvider({ children }: { children: React.ReactNode }) {
-    const [, rerender] = useState({});
+  const [, rerender] = useState({});
   return (
     <LiveStoreProvider
       schema={schema}

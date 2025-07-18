@@ -44,9 +44,9 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-    <LivestoreProvider>
+      <LivestoreProvider>
         <Slot />
-    </LivestoreProvider>
+      </LivestoreProvider>
     </QueryClientProvider>
   );
 }
