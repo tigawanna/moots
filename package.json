@@ -3,7 +3,7 @@
   "main": "./src/index",
   "version": "1.0.0",
   "scripts": {
-    "start": "EXPO_PUBLIC_LIVESTORE_SYNC_URL=http://localhost:8787 expo start",
+    "start": "expo start",
     "wrangler:deploy": "wrangler deploy",
     "wrangler:dev": "wrangler dev --port 8787 --inspector-port 9230",
     "reset-project": "node ./scripts/reset-project.js",
@@ -16,10 +16,8 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@better-auth/expo": "^1.2.12",
     "@expo/vector-icons": "^14.1.0",
     "@hookform/resolvers": "^5.1.1",
-    "@libsql/kysely-libsql": "^0.4.1",
     "@livestore/adapter-expo": "^0.3.1",
     "@livestore/devtools-expo": "^0.3.1",
     "@livestore/livestore": "^0.3.1",
@@ -33,8 +31,6 @@
     "@react-navigation/native": "^7.1.6",
     "@tanstack/react-query": "^5.83.0",
     "babel-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
-    "better-auth": "^1.2.12",
-    "drizzle-orm": "^0.44.3",
     "eslint-plugin-react-compiler": "19.1.0-rc.2",
     "expo": "~53.0.17",
     "expo-blur": "~14.1.5",
@@ -58,7 +54,6 @@
     "react-dom": "19.0.0",
     "react-hook-form": "^7.60.0",
     "react-native": "0.79.5",
-    "react-native-appwrite": "^0.10.1",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-pager-view": "6.7.1",
     "react-native-paper": "^5.14.5",
