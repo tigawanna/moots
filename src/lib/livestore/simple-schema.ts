@@ -1,4 +1,4 @@
-import { Events, makeSchema, Schema, State } from "@livestore/livestore";
+import { Events, makeSchema, Schema, State, } from "@livestore/livestore";
 
 // You can model your state as SQLite tables (https://docs.livestore.dev/reference/state/sqlite-schema)
 export const tables = {
@@ -78,3 +78,6 @@ const materializers = State.SQLite.materializers(events, {
 const state = State.SQLite.makeState({ tables, materializers });
 
 export const schema = makeSchema({ events, state });
+
+export type UserColumnType = typeof tables.users.Type
+export type TodoColumnType = typeof tables.todos.Type

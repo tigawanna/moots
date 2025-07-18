@@ -10,7 +10,7 @@ interface LoginFormData {
 }
 
 interface LocalLoginFormData {
-  deviceId: string;
+  username: string;
 }
 
 interface LoginUserFormProps {
@@ -24,7 +24,7 @@ export function LoginUserForm({
   onSubmit,
   onLocalLogin,
   onForgotPassword,
-  onCreateAccount
+  onCreateAccount,
 }: LoginUserFormProps) {
   const theme = useTheme();
 
@@ -32,7 +32,9 @@ export function LoginUserForm({
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text variant="headlineMedium" style={styles.title}>Login</Text>
+          <Text variant="headlineMedium" style={styles.title}>
+            Login
+          </Text>
           <Text variant="bodyMedium" style={styles.subtitle}>
             Access your account
           </Text>
@@ -42,7 +44,7 @@ export function LoginUserForm({
           <Tabs mode="fixed" showLeadingSpace={true}>
             <TabScreen label="Synced Account" icon="cloud-sync">
               <View style={styles.tabContent}>
-                <SyncedLoginForm 
+                <SyncedLoginForm
                   onSubmit={onSubmit}
                   onForgotPassword={onForgotPassword}
                 />
@@ -61,10 +63,10 @@ export function LoginUserForm({
           <Text style={styles.dividerText}>OR</Text>
           <View style={styles.dividerLine} />
         </View>
-        
-        <Button 
-          mode="outlined" 
-          onPress={onCreateAccount} 
+
+        <Button
+          mode="outlined"
+          onPress={onCreateAccount}
           style={styles.createAccountButton}
           contentStyle={styles.buttonContent}
           labelStyle={styles.buttonLabel}
@@ -125,5 +127,5 @@ const styles = StyleSheet.create({
   buttonLabel: {
     fontSize: 16,
     fontWeight: "600",
-  }
+  },
 });
