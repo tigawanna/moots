@@ -7,10 +7,11 @@ import "react-native-reanimated";
 
 import { LivestoreProvider } from "@/lib/livestore/components/LivestoreProvider.tsx";
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
-import { focusManager } from "@tanstack/react-query";
+import { focusManager, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
+import { queryClient } from "@/lib/tanstack/client.ts";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -42,8 +43,10 @@ export default function RootLayout() {
   }
 
   return (
+    <QueryClientProvider client={queryClient}>
     <LivestoreProvider>
         <Slot />
     </LivestoreProvider>
+    </QueryClientProvider>
   );
 }
