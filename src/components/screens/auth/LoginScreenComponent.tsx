@@ -3,6 +3,7 @@ import { Platform, StyleSheet } from "react-native";
 import { Text, Surface, Button } from "react-native-paper";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
+import { useMutation } from "@tanstack/react-query";
 
 export function LoginScreenComponent() {
   const loginWithGoogle = () => {
@@ -12,26 +13,36 @@ export function LoginScreenComponent() {
       });
     }
 
-    return pb
-      .from("users")
-      .authWithOAuth2({
-        provider: "google",
-        urlCallback(url: string) {
-          console.log("urlCallback === >", url);
-          WebBrowser.openAuthSessionAsync(url, Linking.createURL("/")).then((res) => {
+    return pb.from("users").authWithOAuth2({
+      provider: "google",
+      urlCallback(url: string) {
+        WebBrowser.openAuthSessionAsync(url, Linking.createURL("/")).then((res) => {
+          if (Platform.OS === "ios" || Platform.OS === "web") {
             WebBrowser.dismissAuthSession();
-          });
-        },
-      })
-      .catch((err) => {
-        console.log(" err ", err);
-      });
+          }
+        });
+      },
+    });
   };
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => {
+      return loginWithGoogle();
+    },
+    onSuccess: (data) => {
+      console.log("Login successful", data);
+    },
+    onError: (error) => {
+      console.error("Login failed", error);
+    },
+    meta: {
+      invalidates: [["viewer"]],
+    },
+  });
   return (
     <Surface style={{ ...styles.container }}>
       <Text variant="titleLarge">LoginScreenComponent</Text>
-      <Button mode="contained" onPress={loginWithGoogle} style={{ marginTop: 20 }}>
-        Login with Google
+      <Button mode="contained" onPress={() => mutate()} style={{ marginTop: 20 }}>
+        {isPending ? "Logging in with Google..." : "Login with Google"}
       </Button>
     </Surface>
   );
