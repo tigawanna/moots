@@ -1,13 +1,13 @@
+import { LoginScreenComponent } from "@/components/screens/auth/LoginScreenComponent";
 import { StyleSheet } from "react-native";
-import { Text, Surface } from "react-native-paper";
+import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 
 export default function Signin() {
   const { top } = useSafeAreaInsets();
   return (
     <Surface style={{ ...styles.container, paddingTop: top }}>
-      <Text variant="titleLarge">signin</Text>
+      <LoginScreenComponent />
     </Surface>
   );
 }

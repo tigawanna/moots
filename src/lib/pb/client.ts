@@ -11,4 +11,4 @@ const store = new AsyncAuthStore({
 });
 
 
-export const db = new TypedPocketBase<Schema>(envVariables.EXPO_PUBLIC_PB_URL,store);
+export const pb = new TypedPocketBase<Schema>(envVariables.EXPO_PUBLIC_PB_URL,store);

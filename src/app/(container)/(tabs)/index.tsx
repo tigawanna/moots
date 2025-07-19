@@ -1,12 +1,13 @@
+import { HomeScreenComponent } from "@/components/screens/home/HomeScreenComponent";
 import { StyleSheet } from "react-native";
-import { Surface, Text } from "react-native-paper";
+import { Surface } from "react-native-paper";
 
 // On this screen we'll render the current user's movie list
 
 export default function HomeScreen() {
   return (
     <Surface style={styles.container}>
-      <Text style={styles.title}>Home Screen</Text>
+      <HomeScreenComponent />
     </Surface>
   );
 }
