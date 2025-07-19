@@ -1,24 +1,27 @@
+import { TraktSvg } from "@/components/shared/svg/TraktSvg";
 import { pb } from "@/lib/pb/client";
-import { Platform, StyleSheet } from "react-native";
-import { Text, Surface, Button } from "react-native-paper";
-import * as WebBrowser from "expo-web-browser";
-import * as Linking from "expo-linking";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
+import { Platform, Pressable, StyleSheet, View } from "react-native";
+import { Card, Surface, Text, useTheme } from "react-native-paper";
 import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
+import { AppLogoSvg } from "@/components/shared/svg/AppLogoSvg";
 
 export function LoginScreenComponent() {
+  const { colors } = useTheme();
   const { data, isPending: isCurrentUserPending } = useQuery(viewerQueryOptions());
 
   const loginWithGoogle = () => {
     if (Platform.OS === "web") {
       return pb.collection("users").authWithOAuth2({
-        provider: "google",
+        provider: "trakt",
       });
     }
 
     return pb.from("users").authWithOAuth2({
-      provider: "google",
+      provider: "trakt",
       urlCallback(url: string) {
         WebBrowser.openAuthSessionAsync(url, Linking.createURL("/")).then((res) => {
           if (Platform.OS === "ios") {
@@ -43,22 +46,153 @@ export function LoginScreenComponent() {
     },
   });
   return (
-    <Surface style={{ ...styles.container }}>
-      <Text variant="titleLarge">LoginScreenComponent</Text>
-      <Button mode="contained" onPress={() => mutate()} style={{ marginTop: 20 }}>
-        {isPending ? "Logging in with Google..." : "Login with Google"}
-      </Button>
-      {!data && isCurrentUserPending && isSuccess && <LoadingIndicatorDots />}
+    <Surface style={styles.container}>
+      <View style={styles.content}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <Text variant="displaySmall" style={[styles.title, { color: colors.onSurface }]}>
+            Welcome to Moots
+          </Text>
+          <Text variant="bodyLarge" style={[styles.subtitle, { color: colors.onSurfaceVariant }]}>
+            Your movie social network
+          </Text>
+          <AppLogoSvg/>
+        </View>
+
+        {/* Login Card */}
+
+        <Card style={styles.loginCard}>
+          <Card.Content style={styles.cardContent}>
+            <Text variant="titleLarge" style={[styles.cardTitle, { color: colors.onSurface }]}>
+              Connect with Trakt
+            </Text>
+            <Text
+              variant="bodyMedium"
+              style={[styles.cardSubtitle, { color: colors.onSurfaceVariant }]}>
+              Sync your watchlists and discover new movies and shows with your friends.
+            </Text>
+            <Pressable
+              onPress={() => mutate()}
+              disabled={isPending}
+              style={({ pressed }) => [
+                styles.loginButton,
+                {
+                  backgroundColor: pressed ? colors.primaryContainer : colors.surface,
+                  borderColor: colors.primary,
+                  shadowColor: colors.shadow,
+                  opacity: isPending ? 0.7 : 1,
+                },
+              ]}>
+              <TraktSvg width={24} height={24} />
+              <Text variant="titleMedium" style={[styles.buttonText, { color: colors.primary }]}>
+              Continue with Trakt
+              </Text>
+              {isPending && (
+                <View style={styles.loadingContainer}>
+                  <LoadingIndicatorDots />
+                </View>
+              )}
+            </Pressable>
+          </Card.Content>
+        </Card>
+        <View style={styles.footer}>
+          <Text variant="bodySmall" style={[styles.footerText, { color: colors.onSurfaceVariant }]}>
+            By signing in, you agree to our Terms of Service and Privacy Policy
+          </Text>
+        </View>
+      </View>
+
+      {!data && isCurrentUserPending && isSuccess && (
+        <View style={styles.globalLoading}>
+          <LoadingIndicatorDots />
+        </View>
+      )}
     </Surface>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100%",
-    width: "100%",
+  },
+  content: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 20,
+    padding: 24,
+    paddingTop: 60,
+    gap: 16,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 48,
+    gap: 8,
+  },
+  title: {
+    fontWeight: "bold",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  subtitle: {
+    textAlign: "center",
+    opacity: 0.8,
+  },
+  loginCard: {
+    maxWidth: 400,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  cardContent: {
+    padding: 32,
+  },
+  cardTitle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  cardSubtitle: {
+    textAlign: "center",
+    marginBottom: 32,
+    lineHeight: 20,
+  },
+  loginButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 16,
+    gap: 12,
+    marginBottom: 24,
+    elevation: 4,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  buttonText: {
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  loadingContainer: {
+    position: "absolute",
+    right: 16,
+  },
+  footer: {
+    alignItems: "center",
+  },
+  footerText: {
+    textAlign: "center",
+    lineHeight: 18,
+    opacity: 0.7,
+  },
+  globalLoading: {
+    position: "absolute",
+    bottom: 40,
+    left: 0,
+    right: 0,
+    alignItems: "center",
   },
 });
