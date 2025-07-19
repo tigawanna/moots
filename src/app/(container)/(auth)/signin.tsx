@@ -1,4 +1,4 @@
-import { LoginScreenComponent } from "@/components/screens/auth/LoginScreenComponent";
+import { LoginScreenComponent } from "@/components/screens/auth/login/LoginScreenComponent";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

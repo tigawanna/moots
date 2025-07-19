@@ -1,19 +1,20 @@
-import { StyleSheet } from 'react-native'
-import { Text,Surface } from 'react-native-paper';
- 
-export default function Profile(){
-return (
-<Surface style={{ ...styles.container }}>
-    <Text variant='titleLarge'>profile</Text>
-</Surface>
-);
+import { ProfileScreenComponent } from "@/components/screens/auth/profile/ProfileScreenComponent";
+import { StyleSheet } from "react-native";
+import { Surface } from "react-native-paper";
+
+export default function Profile() {
+  return (
+    <Surface style={{ ...styles.container }}>
+      <ProfileScreenComponent />
+    </Surface>
+  );
 }
 const styles = StyleSheet.create({
-container:{
-  flex:1,
-  height:'100%',
-   width: '100%',
-  justifyContent: 'center',
-  alignItems: 'center',
-}
-})
+  container: {
+    flex: 1,
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

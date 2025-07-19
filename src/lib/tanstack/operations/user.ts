@@ -1,6 +1,6 @@
 import { pb } from "@/lib/pb/client";
 import { UsersResponse } from "@/lib/pb/types/pb-types";
-import { queryOptions } from "@tanstack/react-query";
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
 
 export function viewerQueryOptions() {
   return queryOptions({
@@ -13,4 +13,13 @@ export function viewerQueryOptions() {
   });
 }
 
-
+export function logoutViewerMutationOptions() {
+  return mutationOptions({
+    mutationFn: async () => {
+      await pb.authStore.clear();
+    },
+    meta: {
+      invalidates: [["viewer"]],
+    },
+  });
+}
