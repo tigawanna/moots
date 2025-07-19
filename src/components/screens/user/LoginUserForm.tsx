@@ -1,31 +1,13 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Text, useTheme } from "react-native-paper";
 import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
-import { LocalLoginForm, SyncedLoginForm } from "./forms";
 
-// Define types for the form data
-interface LoginFormData {
-  email: string;
-  password: string;
-}
 
-interface LocalLoginFormData {
-  username: string;
-}
 
 interface LoginUserFormProps {
-  onSubmit?: (data: LoginFormData) => void;
-  onLocalLogin?: (data: LocalLoginFormData) => void;
-  onForgotPassword?: () => void;
-  onCreateAccount?: () => void;
+  // Define any props if needed
 }
-
-export function LoginUserForm({
-  onSubmit,
-  onLocalLogin,
-  onForgotPassword,
-  onCreateAccount,
-}: LoginUserFormProps) {
+export function LoginUserForm({}: LoginUserFormProps) {
   const theme = useTheme();
 
   return (
@@ -40,23 +22,7 @@ export function LoginUserForm({
           </Text>
         </View>
 
-        <TabsProvider defaultIndex={0}>
-          <Tabs mode="fixed" showLeadingSpace={true}>
-            <TabScreen label="Synced Account" icon="cloud-sync">
-              <View style={styles.tabContent}>
-                <SyncedLoginForm
-                  onSubmit={onSubmit}
-                  onForgotPassword={onForgotPassword}
-                />
-              </View>
-            </TabScreen>
-            <TabScreen label="Local Account" icon="cellphone">
-              <View style={styles.tabContent}>
-                <LocalLoginForm onSubmit={onLocalLogin} />
-              </View>
-            </TabScreen>
-          </Tabs>
-        </TabsProvider>
+
 
         <View style={styles.divider}>
           <View style={styles.dividerLine} />
@@ -64,15 +30,7 @@ export function LoginUserForm({
           <View style={styles.dividerLine} />
         </View>
 
-        <Button
-          mode="outlined"
-          onPress={onCreateAccount}
-          style={styles.createAccountButton}
-          contentStyle={styles.buttonContent}
-          labelStyle={styles.buttonLabel}
-        >
-          Create New Account
-        </Button>
+
       </View>
     </ScrollView>
   );

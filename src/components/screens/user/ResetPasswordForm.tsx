@@ -2,13 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Paragraph, Text, TextInput, Title, useTheme } from 'react-native-paper';
+import { Button, Card,Text, TextInput, useTheme } from 'react-native-paper';
 import { Tabs, TabScreen, TabsProvider, useTabNavigation } from 'react-native-paper-tabs';
 import { z } from 'zod';
 
 // Define validation schema using zod
 const resetPasswordSchema = z.object({
-  email: z.string().email('Please enter a valid email'),
+  email: z.email('Please enter a valid email'),
 });
 
 const newPasswordSchema = z.object({
@@ -84,9 +84,9 @@ export function ResetPasswordForm({
     return (
       <Card style={styles.formCard} elevation={2}>
         <Card.Content style={styles.form}>
-          <Paragraph style={styles.instructions}>
-            Enter your email address and we'll send you a verification code to reset your password.
-          </Paragraph>
+          <Text variant="bodyMedium" style={styles.instructions}>
+            Enter your email address and we&apos;ll send you a verification code to reset your password.
+          </Text>
           
           <Controller
             control={emailControl}
@@ -135,9 +135,9 @@ export function ResetPasswordForm({
     return (
       <Card style={styles.formCard} elevation={2}>
         <Card.Content style={styles.form}>
-          <Paragraph style={styles.instructions}>
+          <Text variant="bodyMedium" style={styles.instructions}>
             Enter the verification code sent to your email and create a new password.
-          </Paragraph>
+          </Text>
           
           <Controller
             control={passwordControl}
@@ -245,10 +245,10 @@ export function ResetPasswordForm({
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Title style={styles.title}>Reset Password</Title>
-          <Paragraph style={styles.subtitle}>
+          <Text variant="titleLarge" style={styles.title}>Reset Password</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
             Follow the steps to reset your password
-          </Paragraph>
+          </Text>
         </View>
 
         <TabsProvider defaultIndex={0}>

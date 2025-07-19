@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
-import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
-import { LocalAccountForm, SyncedAccountForm } from "./forms";
+
+
 
 export function CreateUserForm() {
 
@@ -15,27 +15,6 @@ export function CreateUserForm() {
             Choose the type of account you want to create
           </Text>
         </View>
-
-        <TabsProvider defaultIndex={0}>
-          <Tabs mode="fixed" showLeadingSpace={true}>
-            <TabScreen label="Synced Account" icon="cloud-sync">
-              <View style={styles.tabContent}>
-                <Text variant="bodyMedium" style={styles.tabDescription}>
-                  A synced account allows you to access your data across devices and join the larger community
-                </Text>
-                <SyncedAccountForm />
-              </View>
-            </TabScreen>
-            <TabScreen label="Local Only" icon="cellphone">
-              <View style={styles.tabContent}>
-                <Text variant="bodyMedium" style={styles.tabDescription}>
-                  A local account stores your data only on this device
-                </Text>
-                <LocalAccountForm />
-              </View>
-            </TabScreen>
-          </Tabs>
-        </TabsProvider>
       </View>
     </ScrollView>
   );

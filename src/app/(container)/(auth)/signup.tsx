@@ -1,15 +1,13 @@
-import { LocalAccountForm, SyncedAccountForm } from "@/components/screens/user/forms";
+
 import { StyleSheet, View } from "react-native";
-import { Surface, useTheme, Text } from "react-native-paper";
-import { Tabs, TabScreen, TabsProvider } from "react-native-paper-tabs";
+import { Surface, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Signup() {
   const { top } = useSafeAreaInsets();
-  const theme = useTheme();
+
 
   return (
-    <TabsProvider defaultIndex={0}>
       <Surface style={{ flex: 1, paddingTop: top + 10 }}>
         <View style={styles.header}>
           <Text variant="headlineMedium" style={styles.title}>
@@ -19,29 +17,8 @@ export default function Signup() {
             Choose the type of account you want to create
           </Text>
         </View>
-        <Tabs
-          mode="fixed"
-          showLeadingSpace={true}
-          theme={theme}
-          tabHeaderStyle={{
-            backgroundColor: theme.colors.surface,
-            padding: 4,
-          }}
-        >
-          <TabScreen label="Local Only" icon="cellphone" >
-            <View style={styles.tabContent}>
-              <LocalAccountForm />
-            </View>
-          </TabScreen>
-          <TabScreen label="Synced Account" icon="cloud-sync">
-            <View style={styles.tabContent}>
 
-              <SyncedAccountForm />
-            </View>
-          </TabScreen>
-        </Tabs>
       </Surface>
-    </TabsProvider>
   );
 }
 

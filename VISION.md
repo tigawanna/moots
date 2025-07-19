@@ -1,4 +1,3 @@
-Below, I’ll flesh out the idea for your Expo app that enables social media mutuals to connect around various events—whether in real life (IRL) or online—using Appwrite as the backend. The app will allow users to suggest activities like meetups, hikes, or movie outings, include a voting mechanism for these suggestions, enable posting links to attract mutuals, and facilitate building secondary friendship graphs based on past activities. Since you’ve locked in Appwrite and Expo as the tech stack, I’ll focus on the features, database models, relationships, and rules for an agent to build this app, leveraging Appwrite’s capabilities.
 
 ---
 

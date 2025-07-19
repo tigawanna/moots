@@ -5,7 +5,6 @@ import { Slot } from "expo-router";
 
 import "react-native-reanimated";
 
-import { LivestoreProvider } from "@/lib/livestore/components/LivestoreProvider.tsx";
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
 import { focusManager, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
@@ -44,9 +43,7 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <LivestoreProvider>
-        <Slot />
-      </LivestoreProvider>
+      <Slot />
     </QueryClientProvider>
   );
 }
