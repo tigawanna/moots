@@ -5,6 +5,7 @@ export const queryKeyPrefixes = {
   viewer: "viewer",
   auth: "auth",
   trakt_tokens_state: "trakt_tokens_state",
+  trakt:"trakt"
 } as const;
 
 type QueryKey = [keyof typeof queryKeyPrefixes, ...readonly unknown[]];

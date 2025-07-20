@@ -1,0 +1,1 @@
+// implement the base data fetching logic here the rest will be implemented in tanstack query functions here we'll only handle the generic wrapper everyone will use the api key is in the api-key store
