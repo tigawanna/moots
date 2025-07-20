@@ -25,7 +25,7 @@ export const useLogout = () => {
  * Hook that provides the overall authentication state
  */
 export const useAuthState = () => {
-  const { isAuthenticated, tokens } = useTraktStore();
+  const { isAuthenticated, tokens, isValidatingTokens } = useTraktStore();
   const { userInfo } = useUserInfoStore();
 
   return {
@@ -33,5 +33,6 @@ export const useAuthState = () => {
     hasTokens: Boolean(tokens?.accessToken),
     userInfo,
     isTokenExpired: useTraktStore().isTokenExpired(),
+    isValidatingTokens,
   };
 };

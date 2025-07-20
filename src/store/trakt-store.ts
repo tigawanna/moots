@@ -13,7 +13,8 @@ type TraktStoreType = {
   tokens: TraktTokens | null;
   rateLimits: Limits | null;
   isAuthenticated: boolean;
-  
+  isValidatingTokens: boolean;
+
   // Actions
   setTokens: (tokens: TraktTokens) => void;
   updateTokens: (updates: Partial<TraktTokens>) => void;
@@ -23,6 +24,7 @@ type TraktStoreType = {
   logout: () => void;
   isTokenExpired: () => boolean;
   refreshTokenIfNeeded: () => Promise<boolean>;
+  isTokensPresent: () => Promise<boolean>;
 };
 
 export const useTraktStore = create<TraktStoreType>()(
@@ -32,6 +34,7 @@ export const useTraktStore = create<TraktStoreType>()(
       tokens: null,
       rateLimits: null,
       isAuthenticated: false,
+      isValidatingTokens: false,
 
       // Actions
       setTokens: (tokens) => set({ tokens, isAuthenticated: true }),
@@ -43,15 +46,16 @@ export const useTraktStore = create<TraktStoreType>()(
 
       setRateLimits: (rateLimits) => set({ rateLimits }),
 
-      clearAuth: () => set({ tokens: null, rateLimits: null, isAuthenticated: false }),
+      clearAuth: () => set({ tokens: null, rateLimits: null, isAuthenticated: false, isValidatingTokens: false }),
 
-      login: (tokens, rateLimits) => set({ 
-        tokens, 
-        rateLimits: rateLimits || null, 
-        isAuthenticated: true 
-      }),
+      login: (tokens, rateLimits) =>
+        set({
+          tokens,
+          rateLimits: rateLimits || null,
+          isAuthenticated: true,
+        }),
 
-      logout: () => set({ tokens: null, rateLimits: null, isAuthenticated: false }),
+      logout: () => set({ tokens: null, rateLimits: null, isAuthenticated: false, isValidatingTokens: false }),
 
       isTokenExpired: () => {
         const state = get();
@@ -74,20 +78,57 @@ export const useTraktStore = create<TraktStoreType>()(
           return false;
         }
       },
+
+      isTokensPresent: async () => {
+        const state = get();
+        const tokens = state.tokens;
+
+        // Set loading state
+        set({ isValidatingTokens: true });
+
+        try {
+          // Case 1: Both tokens exist and access token is not expired - return true
+          if (tokens?.accessToken && tokens?.refreshToken && !state.isTokenExpired()) {
+            return true;
+          }
+
+          // Case 2: Access token expired but refresh token exists - try to refresh
+          if (tokens?.refreshToken && state.isTokenExpired()) {
+            return await state.refreshTokenIfNeeded();
+          }
+
+          // Case 3: No access token but refresh token exists - try to refresh
+          if (!tokens?.accessToken && tokens?.refreshToken) {
+            return await state.refreshTokenIfNeeded();
+          }
+
+          // Case 4: No tokens at all - return false
+          if (!tokens?.accessToken && !tokens?.refreshToken) {
+            return false;
+          }
+
+          // Case 5: Only access token exists (no refresh token) - check if expired
+          if (tokens?.accessToken && !tokens?.refreshToken) {
+            return !state.isTokenExpired();
+          }
+
+          return false;
+        } finally {
+          // Always clear loading state
+          set({ isValidatingTokens: false });
+        }
+      },
     }),
     {
       name: "trakt-store",
       storage: createJSONStorage(() => AsyncStorage),
-      // Only persist the tokens, rate limits, and auth state
+      // Only persist the tokens, rate limits, and auth state (not loading states)
       partialize: (state) => ({
         tokens: state.tokens,
         rateLimits: state.rateLimits,
         isAuthenticated: state.isAuthenticated,
+        // Don't persist isValidatingTokens as it's a transient state
       }),
     }
   )
 );
-
-
-
-

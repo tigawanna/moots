@@ -44,10 +44,9 @@ export function LoginScreenComponent() {
     },
     onSuccess: (data) => {
       console.log("Login successful", data);
-      const traktMeta = data.meta as TraktMeta;
-      
+      const traktMeta = data.meta as TraktMeta; 
       // Store Trakt tokens and rate limits
-      if (traktMeta.accessToken && traktMeta.refreshToken) {
+      if (traktMeta?.accessToken && traktMeta?.refreshToken) {
         loginToTraktStore(
           {
             accessToken: traktMeta.accessToken,
