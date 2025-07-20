@@ -4,7 +4,8 @@ import { MutationCache, QueryClient } from "@tanstack/react-query";
 export const queryKeyPrefixes = {
   viewer: "viewer",
   auth: "auth",
-} as const
+  trakt_tokens_state: "trakt_tokens_state",
+} as const;
 
 type QueryKey = [keyof typeof queryKeyPrefixes, ...readonly unknown[]];
 

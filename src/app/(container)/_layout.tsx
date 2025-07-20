@@ -17,21 +17,26 @@ export default function ContainerLayout() {
   const { dynamicColors } = useSettingsStore();
   const { colorScheme, paperTheme } = useThemeSetup(dynamicColors);
   const { data, isPending } = useQuery(viewerQueryOptions());
-  const { isAuthenticated: isTraktAuthenticated } = useAuthState();
-  
-  if (isPending) {
+
+  const { isValidatingTokens, isTokensPresent } = useAuthState();
+  const { isPending: isVerifyingTokens, data: isVerifyingTokensData } = useQuery({
+    queryKey: ["trakt_tokens_state"],
+    queryFn: () => isTokensPresent(),
+  });
+
+  if (isPending || isValidatingTokens || isVerifyingTokens) {
     return (
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <PaperProvider theme={paperTheme}>
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-          <LoadingFallback/>
+          <LoadingFallback />
         </PaperProvider>
       </ThemeProvider>
     );
   }
-  
+
   // User is authenticated if they have either PocketBase auth or Trakt auth
-  const isAuthenticated = !!data?.id || isTraktAuthenticated;
+  const isAuthenticated = !!data?.id || !!isVerifyingTokensData;
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
