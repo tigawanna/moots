@@ -1,17 +1,24 @@
+import { AppLogoSvg } from "@/components/shared/svg/AppLogoSvg";
 import { TraktSvg } from "@/components/shared/svg/TraktSvg";
 import { pb } from "@/lib/pb/client";
+import { TraktMeta } from "@/lib/pb/types/trakt-meta-types";
 import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
+import { useTraktStore } from "@/store/trakt-store";
+import { useUserInfoStore } from "@/store/user-info-store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
 import { Card, Surface, Text, useTheme } from "react-native-paper";
 import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
-import { AppLogoSvg } from "@/components/shared/svg/AppLogoSvg";
 
 export function LoginScreenComponent() {
   const { colors } = useTheme();
   const { data, isPending: isCurrentUserPending } = useQuery(viewerQueryOptions());
+  const { login: loginToTraktStore } = useTraktStore();
+  const { setFromTraktUser } = useUserInfoStore();
+
+  // const watchedEmail = watch("email");
 
   const loginWithGoogle = () => {
     if (Platform.OS === "web") {
@@ -37,9 +44,28 @@ export function LoginScreenComponent() {
     },
     onSuccess: (data) => {
       console.log("Login successful", data);
+      const traktMeta = data.meta as TraktMeta;
+      
+      // Store Trakt tokens and rate limits
+      if (traktMeta.accessToken && traktMeta.refreshToken) {
+        loginToTraktStore(
+          {
+            accessToken: traktMeta.accessToken,
+            refreshToken: traktMeta.refreshToken,
+            // Convert expiry string to timestamp if available
+            expiresAt: traktMeta.expiry ? new Date(traktMeta.expiry).getTime() : undefined,
+          },
+          traktMeta.rawUser?.limits
+        );
+      }
+
+      // Store user information
+      if (traktMeta.rawUser?.user) {
+        setFromTraktUser(traktMeta.rawUser.user, traktMeta.email);
+      }
     },
     onError: (error) => {
-      console.error("Login failed", error);
+      console.log("Login failed", error.message);
     },
     meta: {
       invalidates: [["viewer"]],
@@ -56,7 +82,7 @@ export function LoginScreenComponent() {
           <Text variant="bodyLarge" style={[styles.subtitle, { color: colors.onSurfaceVariant }]}>
             Your movie social network
           </Text>
-          <AppLogoSvg/>
+          <AppLogoSvg />
         </View>
 
         {/* Login Card */}
@@ -71,6 +97,7 @@ export function LoginScreenComponent() {
               style={[styles.cardSubtitle, { color: colors.onSurfaceVariant }]}>
               Sync your watchlists and discover new movies and shows with your friends.
             </Text>
+
             <Pressable
               onPress={() => mutate()}
               disabled={isPending}
@@ -79,17 +106,26 @@ export function LoginScreenComponent() {
                 {
                   backgroundColor: pressed ? colors.primaryContainer : colors.surface,
                   borderColor: colors.primary,
-                  shadowColor: colors.shadow,
-                  opacity: isPending ? 0.7 : 1,
+                  opacity: isPending ? 0.4 : 1,
                 },
               ]}>
-              <TraktSvg width={24} height={24} />
-              <Text variant="titleMedium" style={[styles.buttonText, { color: colors.primary }]}>
-              Continue with Trakt
-              </Text>
-              {isPending && (
-                <View style={styles.loadingContainer}>
+              {isPending ? (
+                <View style={{}}>
                   <LoadingIndicatorDots />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 12,
+                  }}>
+                  <TraktSvg width={24} height={24} />
+                  <Text
+                    variant="titleMedium"
+                    style={[styles.buttonText, { color: colors.primary }]}>
+                    Continue with Trakt
+                  </Text>
                 </View>
               )}
             </Pressable>
@@ -151,8 +187,26 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     textAlign: "center",
-    marginBottom: 32,
+    marginBottom: 24,
     lineHeight: 20,
+  },
+  emailSection: {
+    width: "100%",
+    marginBottom: 24,
+  },
+  emailInput: {
+    backgroundColor: "transparent",
+  },
+  errorText: {
+    marginTop: 4,
+    marginLeft: 16,
+    fontSize: 12,
+  },
+  emailNote: {
+    marginTop: 8,
+    textAlign: "center",
+    lineHeight: 16,
+    fontStyle: "italic",
   },
   loginButton: {
     flexDirection: "row",
@@ -165,21 +219,12 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 24,
     elevation: 4,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
   },
   buttonText: {
     fontWeight: "600",
     textAlign: "center",
   },
-  loadingContainer: {
-    position: "absolute",
-    right: 16,
-  },
+
   footer: {
     alignItems: "center",
   },

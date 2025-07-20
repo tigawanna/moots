@@ -1,14 +1,15 @@
+import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
+import { LoadingFallback } from "@/components/screens/state-screens/LoadingFallback";
 import { useThemeSetup } from "@/hooks/theme/use-theme-setup";
+import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
+import { useAuthState } from "@/store/auth-utils";
 import { useSettingsStore } from "@/store/settings-store";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar";
-import { useQuery } from "@tanstack/react-query";
-import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
-import { LoadingFallback } from "@/components/screens/state-screens/LoadingFallback";
 
 // this grouped routes  (contaner) layout exists because tanstcak query provider is defined in the root layout making it hard to useQuery to check for logged i user in that layout
 
@@ -16,6 +17,7 @@ export default function ContainerLayout() {
   const { dynamicColors } = useSettingsStore();
   const { colorScheme, paperTheme } = useThemeSetup(dynamicColors);
   const { data, isPending } = useQuery(viewerQueryOptions());
+  const { isAuthenticated: isTraktAuthenticated } = useAuthState();
   
   if (isPending) {
     return (
@@ -28,7 +30,8 @@ export default function ContainerLayout() {
     );
   }
   
-  const isAuthenticated = !!data?.id
+  // User is authenticated if they have either PocketBase auth or Trakt auth
+  const isAuthenticated = !!data?.id || isTraktAuthenticated;
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
