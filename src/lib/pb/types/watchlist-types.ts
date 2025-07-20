@@ -9,7 +9,7 @@ export interface Watchlist {
   isPublic: boolean;
   category?: 'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other';
   coverImage?: string; // File field
-  tags?: string[]; // JSON array of tags
+  tags?: any[]; // JSON array of tags
   created: string; // ISO date string
   updated: string; // ISO date string
   
@@ -26,28 +26,26 @@ export interface Watchlist {
 export interface WatchlistItem {
   id: string;
   watchlist: string; // Watchlist ID
-  mediaType: 'movie' | 'show' | 'season' | 'episode';
-  traktId?: number;
+  mediaType: 'movie' | 'tv_show';
+  traktId: number;
   tmdbId?: number;
   imdbId?: string;
   title: string;
   year?: number;
   slug?: string;
-  posterUrl?: string;
-  overview?: string;
+  metadata?: any; // JSON metadata
+  personalNote?: string;
   status?: 'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold';
   rating?: number; // 1-10
-  notes?: string;
   order?: number;
-  addedBy: string; // User ID
   created: string; // ISO date string
   updated: string; // ISO date string
   
   // Expanded relations
   expand?: {
     watchlist?: Watchlist;
-    addedBy?: User;
   };
+}
 }
 
 export interface UserFollow {
@@ -80,16 +78,13 @@ export interface WatchlistShare {
   id: string;
   watchlist: string; // Watchlist ID
   user: string; // User ID (who the watchlist is shared with)
-  canView: boolean;
-  canEdit: boolean;
-  sharedBy: string; // User ID (who shared the watchlist)
+  permission: 'view' | 'edit';
   created: string; // ISO date string
   
   // Expanded relations
   expand?: {
     watchlist?: Watchlist;
     user?: User;
-    sharedBy?: User;
   };
 }
 
@@ -177,9 +172,7 @@ export const WATCHLIST_CATEGORIES = [
 
 export const MEDIA_TYPES = [
   'movie',
-  'show',
-  'season',
-  'episode'
+  'tv_show'
 ] as const;
 
 export type WatchlistStatus = typeof WATCHLIST_STATUSES[number];
