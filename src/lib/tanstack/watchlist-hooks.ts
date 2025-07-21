@@ -1,378 +1,595 @@
+/**
+ * MOVIE SOCIAL APP - REACT QUERY HOOKS
+ * 
+ * Provides comprehensive hooks for all watchlist operations using typed PocketBase.
+ * Includes proper cache invalidation and optimistic updates.
+ */
+
+import { pb } from '@/lib/pb/client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { and, eq } from '@tigawanna/typed-pocketbase';
 import {
-    userFollowsApi,
-    watchlistCommentsApi,
-    watchlistItemsApi,
-    watchlistLikesApi,
-    watchlistsApi,
-    watchlistSharesApi,
-} from '../pb/watchlist-api';
+    isFollowingQueryOptions,
+    isWatchlistLikedQueryOptions,
+    publicWatchlistsQueryOptions,
+    searchWatchlistsQueryOptions,
+    sharedWatchlistsQueryOptions,
+    userFollowersQueryOptions,
+    userFollowingQueryOptions,
+    userKeys,
+    userLikedWatchlistsQueryOptions,
+    userWatchlistsQueryOptions,
+    watchlistCommentsQueryOptions,
+    watchlistDetailQueryOptions,
+    watchlistItemsQueryOptions,
+    // Query options
+    watchlistKeys,
+    watchlistLikesQueryOptions,
+    watchlistsListQueryOptions,
+} from './operations/watchlist';
 
-// Query key factories
-export const watchlistKeys = {
-  all: ['watchlist'] as const,
-  lists: () => ['watchlist', 'list'] as const,
-  list: (filters: Record<string, any>) => ['watchlist', 'list', { filters }] as const,
-  details: () => ['watchlist', 'detail'] as const,
-  detail: (id: string) => ['watchlist', 'detail', id] as const,
-  items: (id: string) => ['watchlist', 'detail', id, 'items'] as const,
-  likes: (id: string) => ['watchlist', 'detail', id, 'likes'] as const,
-  comments: (id: string) => ['watchlist', 'detail', id, 'comments'] as const,
-  shares: (id: string) => ['watchlist', 'detail', id, 'shares'] as const,
-  userWatchlists: (userId: string) => ['watchlist', 'user', userId] as const,
-  publicWatchlists: () => ['watchlist', 'public'] as const,
-  searchWatchlists: (query: string) => ['watchlist', 'search', query] as const,
-}
+// =============================================================================
+// WATCHLIST CRUD HOOKS
+// =============================================================================
 
-export const userKeys = {
-  all: ['user'] as const,
-  follows: () => ['user', 'follows'] as const,
-  followers: (userId: string) => ['user', 'follows', 'followers', userId] as const,
-  following: (userId: string) => ['user', 'follows', 'following', userId] as const,
-  likedWatchlists: (userId: string) => ['user', 'liked', userId] as const,
-  sharedWatchlists: (userId: string) => ['user', 'shared', userId] as const,
-}
-
-// Watchlist hooks
-export const useWatchlists = (options?: { 
-  filter?: string; 
-  sort?: string; 
-  expand?: string;
-  page?: number;
-  perPage?: number;
-}) => {
-  return useQuery({
-    queryKey: watchlistKeys.list(options || {}) as any,
-    queryFn: () => watchlistsApi.list(options),
-  });
+/**
+ * Get paginated list of watchlists with filtering
+ */
+export const useWatchlists = (options?: Parameters<typeof watchlistsListQueryOptions>[0]) => {
+  return useQuery(watchlistsListQueryOptions(options));
 };
 
-export const useWatchlist = (id: string, expand?: string) => {
-  return useQuery({
-    queryKey: watchlistKeys.detail(id) as any,
-    queryFn: () => watchlistsApi.getById(id, expand),
-    enabled: !!id,
-  });
+/**
+ * Get single watchlist with full details
+ */
+export const useWatchlist = (id: string, options?: Parameters<typeof watchlistDetailQueryOptions>[1]) => {
+  return useQuery(watchlistDetailQueryOptions(id, options));
 };
 
-export const usePublicWatchlists = (options?: { sort?: string; expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: watchlistKeys.publicWatchlists() as any,
-    queryFn: () => watchlistsApi.getPublic(options),
-  });
+/**
+ * Get public watchlists for discovery
+ */
+export const usePublicWatchlists = (options?: Parameters<typeof publicWatchlistsQueryOptions>[0]) => {
+  return useQuery(publicWatchlistsQueryOptions(options));
 };
 
-export const useUserWatchlists = (userId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: watchlistKeys.userWatchlists(userId) as any,
-    queryFn: () => watchlistsApi.getUserWatchlists(userId, options),
-    enabled: !!userId,
-  });
+/**
+ * Get user's own watchlists
+ */
+export const useUserWatchlists = (userId: string, options?: Parameters<typeof userWatchlistsQueryOptions>[1]) => {
+  return useQuery(userWatchlistsQueryOptions(userId, options));
 };
 
-export const useSearchWatchlists = (query: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: watchlistKeys.searchWatchlists(query) as any,
-    queryFn: () => watchlistsApi.search(query, options),
-    enabled: !!query && query.length > 2,
-  });
+/**
+ * Search watchlists by query
+ */
+export const useSearchWatchlists = (query: string, options?: Parameters<typeof searchWatchlistsQueryOptions>[1]) => {
+  return useQuery(searchWatchlistsQueryOptions(query, options));
 };
 
+/**
+ * Create a new watchlist
+ */
 export const useCreateWatchlist = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: watchlistsApi.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.all as any });
+    mutationFn: (data: {
+      title: string;
+      description?: string;
+      owner: string;
+      isPublic?: boolean;
+      category?: string;
+      coverImage?: File;
+      tags?: any[];
+    }) => pb.from('watchlists').create(data),
+    onSuccess: (newWatchlist, variables) => {
+      // Invalidate relevant queries
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      
+      // Add to user's watchlists cache if possible
+      const userWatchlistsKey = watchlistKeys.userWatchlists(variables.owner);
+      queryClient.invalidateQueries({ queryKey: userWatchlistsKey });
     },
   });
 };
 
+/**
+ * Update an existing watchlist
+ */
 export const useUpdateWatchlist = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => watchlistsApi.update(id, data),
-    onSuccess: (_, { id }) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.detail(id) as any });
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.lists() as any });
+    mutationFn: ({ id, data }: { 
+      id: string; 
+      data: Partial<{
+        title: string;
+        description?: string;
+        isPublic?: boolean;
+        category?: string;
+        coverImage?: File;
+        tags?: any[];
+      }>;
+    }) => pb.from('watchlists').update(id, data),
+    onSuccess: (updatedWatchlist, { id }) => {
+      // Update specific watchlist cache
+      queryClient.setQueryData(
+        watchlistKeys.detail(id),
+        updatedWatchlist
+      );
+      
+      // Invalidate lists to reflect changes
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.publicWatchlists() });
     },
   });
 };
 
+/**
+ * Delete a watchlist
+ */
 export const useDeleteWatchlist = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: watchlistsApi.delete,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.all as any });
-    },
-  });
-};
-
-// Watchlist items hooks
-export const useWatchlistItems = (watchlistId: string, options?: { expand?: string; sort?: string }) => {
-  return useQuery({
-    queryKey: watchlistKeys.items(watchlistId) as any,
-    queryFn: () => watchlistItemsApi.getByWatchlist(watchlistId, options),
-    enabled: !!watchlistId,
-  });
-};
-
-export const useAddWatchlistItem = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: watchlistItemsApi.create,
-    onSuccess: (_, data) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.items(data.watchlist) as any });
-    },
-  });
-};
-
-export const useUpdateWatchlistItem = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => watchlistItemsApi.update(id, data),
-    onSuccess: (result) => {
-      if (result.watchlist) {
-        queryClient.invalidateQueries({ queryKey: watchlistKeys.items(result.watchlist) as any });
-      }
-    },
-  });
-};
-
-export const useDeleteWatchlistItem = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: watchlistItemsApi.delete,
-    onSuccess: () => {
-      // Invalidate all watchlist items queries since we don't know which watchlist this belonged to
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.all as any });
-    },
-  });
-};
-
-export const useImportWatchlistItems = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ sourceWatchlistId, targetWatchlistId, userId }: { 
-      sourceWatchlistId: string; 
-      targetWatchlistId: string; 
-      userId: string; 
-    }) => watchlistItemsApi.importFromWatchlist(sourceWatchlistId, targetWatchlistId, userId),
-    onSuccess: (_, { targetWatchlistId }) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.items(targetWatchlistId) as any });
-    },
-  });
-};
-
-// User follow hooks
-export const useFollowers = (userId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: userKeys.followers(userId),
-    queryFn: () => userFollowsApi.getFollowers(userId, options),
-    enabled: !!userId,
-  });
-};
-
-export const useFollowing = (userId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: userKeys.following(userId),
-    queryFn: () => userFollowsApi.getFollowing(userId, options),
-    enabled: !!userId,
-  });
-};
-
-export const useIsFollowing = (followingUserId: string, followerUserId: string) => {
-  return useQuery({
-    queryKey: [...userKeys.follows(), 'isFollowing', followerUserId, followingUserId],
-    queryFn: () => userFollowsApi.isFollowing(followingUserId, followerUserId),
-    enabled: !!followingUserId && !!followerUserId,
-  });
-};
-
-export const useFollowUser = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ followingUserId, followerUserId }: { followingUserId: string; followerUserId: string }) => 
-      userFollowsApi.follow(followingUserId, followerUserId),
-    onSuccess: (_, { followingUserId, followerUserId }) => {
-      queryClient.invalidateQueries({ queryKey: userKeys.followers(followingUserId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.following(followerUserId) });
-      queryClient.invalidateQueries({ queryKey: [...userKeys.follows(), 'isFollowing', followerUserId, followingUserId] });
-    },
-  });
-};
-
-export const useUnfollowUser = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ followingUserId, followerUserId }: { followingUserId: string; followerUserId: string }) => 
-      userFollowsApi.unfollow(followingUserId, followerUserId),
-    onSuccess: (_, { followingUserId, followerUserId }) => {
-      queryClient.invalidateQueries({ queryKey: userKeys.followers(followingUserId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.following(followerUserId) });
-      queryClient.invalidateQueries({ queryKey: [...userKeys.follows(), 'isFollowing', followerUserId, followingUserId] });
-    },
-  });
-};
-
-// Watchlist likes hooks
-export const useWatchlistLikes = (watchlistId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: watchlistKeys.likes(watchlistId),
-    queryFn: () => watchlistLikesApi.getByWatchlist(watchlistId, options),
-    enabled: !!watchlistId,
-  });
-};
-
-export const useUserLikedWatchlists = (userId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: userKeys.likedWatchlists(userId),
-    queryFn: () => watchlistLikesApi.getUserLikes(userId, options),
-    enabled: !!userId,
-  });
-};
-
-export const useIsWatchlistLiked = (watchlistId: string, userId: string) => {
-  return useQuery({
-    queryKey: [...watchlistKeys.likes(watchlistId), 'isLiked', userId],
-    queryFn: () => watchlistLikesApi.isLiked(watchlistId, userId),
-    enabled: !!watchlistId && !!userId,
-  });
-};
-
-export const useLikeWatchlist = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ watchlistId, userId }: { watchlistId: string; userId: string }) => 
-      watchlistLikesApi.like(watchlistId, userId),
-    onSuccess: (_, { watchlistId, userId }) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.likes(watchlistId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.likedWatchlists(userId) });
-      queryClient.invalidateQueries({ queryKey: [...watchlistKeys.likes(watchlistId), 'isLiked', userId] });
-    },
-  });
-};
-
-export const useUnlikeWatchlist = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ watchlistId, userId }: { watchlistId: string; userId: string }) => 
-      watchlistLikesApi.unlike(watchlistId, userId),
-    onSuccess: (_, { watchlistId, userId }) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.likes(watchlistId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.likedWatchlists(userId) });
-      queryClient.invalidateQueries({ queryKey: [...watchlistKeys.likes(watchlistId), 'isLiked', userId] });
-    },
-  });
-};
-
-// Watchlist sharing hooks
-export const useWatchlistShares = (watchlistId: string, options?: { expand?: string }) => {
-  return useQuery({
-    queryKey: watchlistKeys.shares(watchlistId),
-    queryFn: () => watchlistSharesApi.getByWatchlist(watchlistId, options),
-    enabled: !!watchlistId,
-  });
-};
-
-export const useSharedWatchlists = (userId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: userKeys.sharedWatchlists(userId),
-    queryFn: () => watchlistSharesApi.getSharedWithUser(userId, options),
-    enabled: !!userId,
-  });
-};
-
-export const useShareWatchlist = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: ({ watchlistId, userId, sharedByUserId, permissions }: { 
-      watchlistId: string; 
-      userId: string; 
-      sharedByUserId: string; 
-      permissions: { canView: boolean; canEdit: boolean };
-    }) => watchlistSharesApi.share(watchlistId, userId, sharedByUserId, permissions),
-    onSuccess: (_, { watchlistId, userId }) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.shares(watchlistId) });
-      queryClient.invalidateQueries({ queryKey: userKeys.sharedWatchlists(userId) });
-    },
-  });
-};
-
-export const useUnshareWatchlist = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: watchlistSharesApi.unshare,
-    onSuccess: () => {
+    mutationFn: (id: string) => pb.from('watchlists').delete(id),
+    onSuccess: (_, deletedId) => {
+      // Remove from all caches
+      queryClient.removeQueries({ queryKey: watchlistKeys.detail(deletedId) });
       queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
       queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
   });
 };
 
-// Watchlist comments hooks
-export const useWatchlistComments = (watchlistId: string, options?: { expand?: string; page?: number; perPage?: number }) => {
-  return useQuery({
-    queryKey: watchlistKeys.comments(watchlistId),
-    queryFn: () => watchlistCommentsApi.getByWatchlist(watchlistId, options),
-    enabled: !!watchlistId,
+// =============================================================================
+// WATCHLIST ITEMS HOOKS
+// =============================================================================
+
+/**
+ * Get items for a watchlist
+ */
+export const useWatchlistItems = (watchlistId: string, options?: Parameters<typeof watchlistItemsQueryOptions>[1]) => {
+  return useQuery(watchlistItemsQueryOptions(watchlistId, options));
+};
+
+/**
+ * Add item to watchlist
+ */
+export const useAddWatchlistItem = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (data: {
+      watchlist: string;
+      mediaType: 'movie' | 'tv_show';
+      traktId: number;
+      tmdbId?: number;
+      imdbId?: string;
+      title: string;
+      year?: number;
+      slug?: string;
+      metadata?: any;
+      personalNote?: string;
+      status?: 'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold';
+      rating?: number;
+      order?: number;
+    }) => pb.from('watchlistItems').create(data),
+    onSuccess: (newItem) => {
+      // Invalidate items for this watchlist
+      queryClient.invalidateQueries({ 
+        queryKey: watchlistKeys.items(newItem.watchlist) 
+      });
+      
+      // Invalidate watchlist detail to update counts
+      queryClient.invalidateQueries({ 
+        queryKey: watchlistKeys.detail(newItem.watchlist) 
+      });
+    },
   });
 };
 
-export const useCommentReplies = (commentId: string, options?: { expand?: string }) => {
-  return useQuery({
-    queryKey: [...watchlistKeys.all, 'comment', commentId, 'replies'],
-    queryFn: () => watchlistCommentsApi.getReplies(commentId, options),
-    enabled: !!commentId,
+/**
+ * Update watchlist item
+ */
+export const useUpdateWatchlistItem = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, data }: { 
+      id: string; 
+      data: Partial<{
+        personalNote?: string;
+        status?: 'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold';
+        rating?: number;
+        order?: number;
+      }>;
+    }) => pb.from('watchlistItems').update(id, data),
+    onSuccess: (updatedItem) => {
+      // Invalidate items for this watchlist
+      queryClient.invalidateQueries({ 
+        queryKey: watchlistKeys.items(updatedItem.watchlist) 
+      });
+    },
   });
 };
 
+/**
+ * Remove item from watchlist
+ */
+export const useRemoveWatchlistItem = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: string) => pb.from('watchlistItems').delete(id),
+    onSuccess: (_, deletedId) => {
+      // Invalidate all watchlist items queries since we don't know which watchlist
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
+    },
+  });
+};
+
+// =============================================================================
+// SOCIAL INTERACTION HOOKS
+// =============================================================================
+
+/**
+ * Get user's followers
+ */
+export const useUserFollowers = (userId: string, options?: Parameters<typeof userFollowersQueryOptions>[1]) => {
+  return useQuery(userFollowersQueryOptions(userId, options));
+};
+
+/**
+ * Get users that a user is following
+ */
+export const useUserFollowing = (userId: string, options?: Parameters<typeof userFollowingQueryOptions>[1]) => {
+  return useQuery(userFollowingQueryOptions(userId, options));
+};
+
+/**
+ * Check if user is following another user
+ */
+export const useIsFollowing = (followerId: string, followingId: string) => {
+  return useQuery(isFollowingQueryOptions(followerId, followingId));
+};
+
+/**
+ * Follow a user
+ */
+export const useFollowUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ followerId, followingId }: { followerId: string; followingId: string }) => 
+      pb.from('userFollows').create({
+        follower: followerId,
+        following: followingId,
+      }),
+    onSuccess: (_, { followerId, followingId }) => {
+      // Update follow status cache
+      queryClient.setQueryData(
+        [...userKeys.follows(), 'isFollowing', followerId, followingId],
+        true
+      );
+      
+      // Invalidate follow lists
+      queryClient.invalidateQueries({ queryKey: userKeys.followers(followingId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.following(followerId) });
+    },
+  });
+};
+
+/**
+ * Unfollow a user
+ */
+export const useUnfollowUser = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ followerId, followingId }: { followerId: string; followingId: string }) => {
+      const record = await pb.from('userFollows').getFirstListItem({
+        filter: and(
+          eq('follower', followerId),
+          eq('following', followingId)
+        )
+      });
+      return pb.from('userFollows').delete(record.id);
+    },
+    onSuccess: (_, { followerId, followingId }) => {
+      // Update follow status cache
+      queryClient.setQueryData(
+        [...userKeys.follows(), 'isFollowing', followerId, followingId],
+        false
+      );
+      
+      // Invalidate follow lists
+      queryClient.invalidateQueries({ queryKey: userKeys.followers(followingId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.following(followerId) });
+    },
+  });
+};
+
+// =============================================================================
+// WATCHLIST LIKES HOOKS
+// =============================================================================
+
+/**
+ * Get likes for a watchlist
+ */
+export const useWatchlistLikes = (watchlistId: string, options?: Parameters<typeof watchlistLikesQueryOptions>[1]) => {
+  return useQuery(watchlistLikesQueryOptions(watchlistId, options));
+};
+
+/**
+ * Check if user liked a watchlist
+ */
+export const useIsWatchlistLiked = (watchlistId: string, userId: string) => {
+  return useQuery(isWatchlistLikedQueryOptions(watchlistId, userId));
+};
+
+/**
+ * Get user's liked watchlists
+ */
+export const useUserLikedWatchlists = (userId: string, options?: Parameters<typeof userLikedWatchlistsQueryOptions>[1]) => {
+  return useQuery(userLikedWatchlistsQueryOptions(userId, options));
+};
+
+/**
+ * Like a watchlist
+ */
+export const useLikeWatchlist = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ watchlistId, userId }: { watchlistId: string; userId: string }) => 
+      pb.from('watchlistLikes').create({
+        watchlist: watchlistId,
+        user: userId,
+      }),
+    onSuccess: (_, { watchlistId, userId }) => {
+      // Update like status cache
+      queryClient.setQueryData(
+        [...watchlistKeys.likes(watchlistId), 'isLiked', userId],
+        true
+      );
+      
+      // Invalidate like lists
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.likes(watchlistId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.likedWatchlists(userId) });
+      
+      // Update watchlist detail to reflect new like count
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.detail(watchlistId) });
+    },
+  });
+};
+
+/**
+ * Unlike a watchlist
+ */
+export const useUnlikeWatchlist = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ watchlistId, userId }: { watchlistId: string; userId: string }) => {
+      const record = await pb.from('watchlistLikes').getFirstListItem({
+        filter: and(
+          eq('watchlist', watchlistId),
+          eq('user', userId)
+        )
+      });
+      return pb.from('watchlistLikes').delete(record.id);
+    },
+    onSuccess: (_, { watchlistId, userId }) => {
+      // Update like status cache
+      queryClient.setQueryData(
+        [...watchlistKeys.likes(watchlistId), 'isLiked', userId],
+        false
+      );
+      
+      // Invalidate like lists
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.likes(watchlistId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.likedWatchlists(userId) });
+      
+      // Update watchlist detail to reflect new like count
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.detail(watchlistId) });
+    },
+  });
+};
+
+// =============================================================================
+// WATCHLIST COMMENTS HOOKS
+// =============================================================================
+
+/**
+ * Get comments for a watchlist
+ */
+export const useWatchlistComments = (watchlistId: string, options?: Parameters<typeof watchlistCommentsQueryOptions>[1]) => {
+  return useQuery(watchlistCommentsQueryOptions(watchlistId, options));
+};
+
+/**
+ * Add a comment to a watchlist
+ */
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: watchlistCommentsApi.create,
-    onSuccess: (_, data) => {
-      queryClient.invalidateQueries({ queryKey: watchlistKeys.comments(data.watchlist) });
-      if (data.parentComment) {
-        queryClient.invalidateQueries({ queryKey: [...watchlistKeys.all, 'comment', data.parentComment, 'replies'] });
+    mutationFn: (data: {
+      watchlist: string;
+      author: string;
+      content: string;
+      parentComment?: string;
+    }) => pb.from('watchlistComments').create(data),
+    onSuccess: (newComment) => {
+      // Invalidate comments for this watchlist
+      queryClient.invalidateQueries({ 
+        queryKey: watchlistKeys.comments(newComment.watchlist) 
+      });
+      
+      // If it's a reply, also invalidate parent comment queries
+      if (newComment.parentComment) {
+        queryClient.invalidateQueries({ 
+          queryKey: [...watchlistKeys.all, 'comment', newComment.parentComment, 'replies'] 
+        });
       }
     },
   });
 };
 
+/**
+ * Update a comment
+ */
 export const useUpdateComment = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) => watchlistCommentsApi.update(id, data),
+    mutationFn: ({ id, data }: { 
+      id: string; 
+      data: { content: string };
+    }) => pb.from('watchlistComments').update(id, data),
     onSuccess: () => {
+      // Invalidate all comment queries to ensure consistency
       queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
     },
   });
 };
 
+/**
+ * Delete a comment
+ */
 export const useDeleteComment = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: watchlistCommentsApi.delete,
+    mutationFn: (id: string) => pb.from('watchlistComments').delete(id),
     onSuccess: () => {
+      // Invalidate all comment queries to ensure consistency
       queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
+    },
+  });
+};
+
+// =============================================================================
+// WATCHLIST SHARING HOOKS
+// =============================================================================
+
+/**
+ * Get watchlists shared with a user
+ */
+export const useSharedWatchlists = (userId: string, options?: Parameters<typeof sharedWatchlistsQueryOptions>[1]) => {
+  return useQuery(sharedWatchlistsQueryOptions(userId, options));
+};
+
+/**
+ * Share a watchlist with a user
+ */
+export const useShareWatchlist = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ watchlistId, userId, permission }: { 
+      watchlistId: string; 
+      userId: string; 
+      permission: 'view' | 'edit';
+    }) => pb.from('watchlistShares').create({
+      watchlist: watchlistId,
+      user: userId,
+      permission,
+    }),
+    onSuccess: (_, { watchlistId, userId }) => {
+      // Invalidate share queries
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.shares(watchlistId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.sharedWatchlists(userId) });
+      
+      // Invalidate watchlist detail to show new share
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.detail(watchlistId) });
+    },
+  });
+};
+
+/**
+ * Update share permissions
+ */
+export const useUpdateWatchlistShare = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, permission }: { 
+      id: string; 
+      permission: 'view' | 'edit';
+    }) => pb.from('watchlistShares').update(id, { permission }),
+    onSuccess: () => {
+      // Invalidate all share queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+};
+
+/**
+ * Remove watchlist share
+ */
+export const useUnshareWatchlist = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (shareId: string) => pb.from('watchlistShares').delete(shareId),
+    onSuccess: () => {
+      // Invalidate all share queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: watchlistKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+};
+
+// =============================================================================
+// UTILITY HOOKS
+// =============================================================================
+
+/**
+ * Batch operations for importing items from one watchlist to another
+ */
+export const useImportWatchlistItems = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ 
+      sourceWatchlistId, 
+      targetWatchlistId 
+    }: { 
+      sourceWatchlistId: string; 
+      targetWatchlistId: string; 
+    }) => {
+      // Get source items
+      const sourceItems = await pb.from('watchlistItems').getFullList({
+        filter: eq('watchlist', sourceWatchlistId)
+      });
+      
+      // Create batch operations
+      const batch = pb.fromBatch();
+      sourceItems.forEach((item) => {
+        const { id, created, updated, watchlist, ...itemData } = item;
+        batch.from('watchlistItems').create({
+          ...itemData,
+          watchlist: targetWatchlistId,
+        });
+      });
+      
+      return batch.send();
+    },
+    onSuccess: (_, { targetWatchlistId }) => {
+      // Invalidate target watchlist items
+      queryClient.invalidateQueries({ 
+        queryKey: watchlistKeys.items(targetWatchlistId) 
+      });
+      
+      // Invalidate target watchlist detail
+      queryClient.invalidateQueries({ 
+        queryKey: watchlistKeys.detail(targetWatchlistId) 
+      });
     },
   });
 };

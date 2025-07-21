@@ -1,4 +1,7 @@
 import { MutationCache, QueryClient } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 
 
 export const queryKeyPrefixes = {
@@ -26,6 +29,9 @@ declare module "@tanstack/react-query" {
   }
 }
 
+export const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+});
 
 export const queryClient = new QueryClient({
   mutationCache: new MutationCache({

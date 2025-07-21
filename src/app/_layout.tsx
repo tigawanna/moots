@@ -6,11 +6,12 @@ import { Slot } from "expo-router";
 import "react-native-reanimated";
 
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
-import { focusManager, QueryClientProvider } from "@tanstack/react-query";
+import { focusManager } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
-import { queryClient } from "@/lib/tanstack/client.ts";
+import { asyncStoragePersister, queryClient } from "@/lib/tanstack/client.ts";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -42,8 +43,10 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister: asyncStoragePersister }}>
       <Slot />
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
