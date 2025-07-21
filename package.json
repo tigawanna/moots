@@ -12,6 +12,7 @@
     "build:android": "expo run:android",
     "build-apk": "eas build --platform android --profile preview --local",
     "pb-types": "tsx scripts/typegen.ts",
+    "pb-collections": "tsx scripts/get-collection-structure.ts",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
