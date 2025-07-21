@@ -4,8 +4,6 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
-    "wrangler:deploy": "wrangler deploy",
-    "wrangler:dev": "wrangler dev --port 8787 --inspector-port 9230",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "prebuild:android": " expo prebuild -p android --clean",
@@ -13,6 +11,7 @@
     "build-apk": "eas build --platform android --profile preview --local",
     "pb-types": "tsx scripts/typegen.ts",
     "pb-collections": "tsx scripts/get-collection-structure.ts",
+    "poststart": "npm run pb-collections",
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint"
