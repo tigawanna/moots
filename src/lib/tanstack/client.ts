@@ -11,6 +11,7 @@ export const queryKeyPrefixes = {
   watchlist: "watchlist",
   watchlistItem: "watchlistItem",
   user: "user",
+  testId:"testId"
 } as const;
 
 type QueryKey = [keyof typeof queryKeyPrefixes, ...readonly unknown[]];

@@ -1,4 +1,8 @@
+import { useTraktStore } from "@/store/trakt-store";
 import { queryOptions } from "@tanstack/react-query";
+import { envVariables } from "../env";
+
+
 
 const TRAKT_API_BASE = "https://api.trakt.tv";
 const TRAKT_API_VERSION = "2";
@@ -64,11 +68,14 @@ async function fetchTraktTrendingShows(): Promise<TraktTrendingShowResponse[]> {
 }
 
 async function fetchTraktTrendingMovies(): Promise<TraktTrendingMovieResponse[]> {
+  const traktAccessToken = useTraktStore.getState().tokens?.accessToken
+ const trakktClientId = envVariables.EXPO_PUBLIC_TRAKT_CLIENT_ID 
   const response = await fetch(`${TRAKT_API_BASE}/movies/trending`, {
     headers: {
       'Content-Type': 'application/json',
       'trakt-api-version': TRAKT_API_VERSION,
-      'trakt-api-key': process.env.EXPO_PUBLIC_TRAKT_CLIENT_ID!,
+      'trakt-api-key': trakktClientId,
+      'Authorization': `Bearer ${traktAccessToken}`,
     },
   });
 

@@ -4,7 +4,7 @@ import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import "react-native-reanimated";
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
-import { focusManager } from "@tanstack/react-query";
+import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
@@ -41,10 +41,12 @@ export default function RootLayout() {
   }
 
   return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister: asyncStoragePersister }}>
-      <Slot />
-    </PersistQueryClientProvider>
+    // <PersistQueryClientProvider
+    //   client={queryClient}
+    //   persistOptions={{ persister: asyncStoragePersister }}>
+      <QueryClientProvider client={queryClient}>
+        <Slot />
+      </QueryClientProvider>
+    // </PersistQueryClientProvider>
   );
 }

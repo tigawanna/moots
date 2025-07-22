@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const envSchema = z.object({
   EXPO_PUBLIC_PB_URL: z.url(),
+  EXPO_PUBLIC_TRAKT_CLIENT_ID: z.string().min(1, "Trakt Client ID is required"),
 });
 
 export type Env = z.infer<typeof envSchema>;
