@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import { Schema, UsersCreate, WatchlistItemsCreate, WatchlistsCreate } from "../types/pb-types";
 import { TypedPocketBase } from "@tigawanna/typed-pocketbase";
 import { faker } from "@faker-js/faker";
-import { WatchlistItem } from "../types/watchlist-types";
+
 
 const url = process.env.EXPO_PUBLIC_PB_URL;
 const email = process.env.PB_TYPEGEN_EMAIL;

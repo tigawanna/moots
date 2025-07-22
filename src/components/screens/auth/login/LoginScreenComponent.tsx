@@ -26,15 +26,16 @@ export function LoginScreenComponent() {
         provider: "trakt",
       });
     }
-
-    return pb.from("users").authWithOAuth2({
+    return pb.collection("users").authWithOAuth2({
       provider: "trakt",
       urlCallback(url: string) {
-        WebBrowser.openAuthSessionAsync(url, Linking.createURL("/")).then((res) => {
+        WebBrowser.openAuthSessionAsync(url, Linking.createURL("/"))
+        .then((res) => {
           if (Platform.OS === "ios") {
             WebBrowser.dismissAuthSession();
           }
-        });
+        })
+
       },
     });
   };
@@ -188,24 +189,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 20,
-  },
-  emailSection: {
-    width: "100%",
-    marginBottom: 24,
-  },
-  emailInput: {
-    backgroundColor: "transparent",
-  },
-  errorText: {
-    marginTop: 4,
-    marginLeft: 16,
-    fontSize: 12,
-  },
-  emailNote: {
-    marginTop: 8,
-    textAlign: "center",
-    lineHeight: 16,
-    fontStyle: "italic",
   },
   loginButton: {
     flexDirection: "row",
