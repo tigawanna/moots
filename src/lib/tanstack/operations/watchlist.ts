@@ -1,5 +1,6 @@
 import { pb } from "@/lib/pb/client";
-import { queryOptions } from "@tanstack/react-query";
+import { WatchlistItemsCreate } from "@/lib/pb/types/pb-types";
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { eq } from "@tigawanna/typed-pocketbase";
 
 interface GetWatchlistQueryOptionsprops {
@@ -27,4 +28,35 @@ export function getWatchlistQueryOptions({
       return response;
     },
   });
+}
+
+interface GetWatchlistitemQueryOptionsprops {
+  userId?: string;
+  page?: number;
+  perPage?: number;
+}
+export function getWatchlistitemQueryOptions({
+  userId,
+  page = 1,
+  perPage = 24,
+}: GetWatchlistitemQueryOptionsprops) {
+  return queryOptions({
+    queryKey: userId ? ["watchlistItem", userId, page, perPage] : ["watchlistItem", page, perPage],
+    queryFn: async () => {
+      const response = await pb.from("watchlistItems").getList(page, perPage, {
+        sort: "-created"
+      });
+      return response;
+    },
+  });
+}
+
+export function addWatchlistitemMutationOptions(){
+    return mutationOptions({
+      mutationFn: async (newItem: WatchlistItemsCreate) => {
+        const response = await pb.from("watchlistItems").create(newItem);
+        return response;
+      },
+      
+    });
 }

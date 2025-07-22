@@ -693,32 +693,15 @@
         "type": "file"
       },
       {
-        "autogeneratePattern": "",
+        "exceptDomains": null,
         "hidden": false,
-        "id": "text1317259462",
-        "max": 0,
-        "min": 0,
-        "name": "traktAccessToken",
-        "pattern": "",
+        "id": "url742587758",
+        "name": "avatarUrl",
+        "onlyDomains": null,
         "presentable": false,
-        "primaryKey": false,
         "required": false,
         "system": false,
-        "type": "text"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text3463398231",
-        "max": 0,
-        "min": 0,
-        "name": "traktRefreshToken",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": false,
-        "system": false,
-        "type": "text"
+        "type": "url"
       },
       {
         "hidden": false,
@@ -746,7 +729,7 @@
       "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
     ],
     "created": "2025-07-18 18:39:45.902Z",
-    "updated": "2025-07-20 11:06:07.142Z",
+    "updated": "2025-07-21 10:44:12.777Z",
     "system": false,
     "authRule": "",
     "manageRule": null,
@@ -778,23 +761,13 @@
           "userInfoURL": "",
           "displayName": "",
           "extra": null
-        },
-        {
-          "pkce": null,
-          "name": "gitee",
-          "clientId": "hahahahahahahahaha",
-          "authURL": "",
-          "tokenURL": "",
-          "userInfoURL": "",
-          "displayName": "",
-          "extra": null
         }
       ],
       "mappedFields": {
         "id": "",
         "name": "name",
         "username": "",
-        "avatarURL": "avatar"
+        "avatarURL": "avatarUrl"
       },
       "enabled": true
     },

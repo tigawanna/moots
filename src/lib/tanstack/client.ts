@@ -1,6 +1,5 @@
 import { MutationCache, QueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 
 
@@ -10,6 +9,7 @@ export const queryKeyPrefixes = {
   trakt_tokens_state: "trakt_tokens_state",
   trakt: "trakt",
   watchlist: "watchlist",
+  watchlistItem: "watchlistItem",
   user: "user",
 } as const;
 
@@ -51,6 +51,7 @@ export const queryClient = new QueryClient({
       staleTime: 1000 * 60 * 60,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
     },
   },
 });

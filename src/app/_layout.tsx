@@ -2,9 +2,7 @@ import "../polyfill.ts";
 
 import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
-
 import "react-native-reanimated";
-
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
 import { focusManager } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";

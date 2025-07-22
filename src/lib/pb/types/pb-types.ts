@@ -4,15 +4,12 @@
  
   }>;
   // === end of custom type ===
-
-
 // === start of custom type ===
   // WatchlistItems.WatchlistItemsMetadata.metadata
   export type WatchlistItemsMetadata = Array<{
  
   }>;
   // === end of custom type ===
-
 
 /**
  * This file was @generated using typed-pocketbase
@@ -371,8 +368,7 @@ export interface UsersResponse extends AuthCollectionResponse {
 	verified: boolean;
 	name: string;
 	avatar: string;
-	traktAccessToken: string;
-	traktRefreshToken: string;
+	avatarUrl: string;
 	created: string;
 	updated: string;
 }
@@ -384,8 +380,7 @@ export interface UsersCreate extends AuthCollectionCreate {
 	verified?: boolean;
 	name?: string;
 	avatar?: File | null;
-	traktAccessToken?: string;
-	traktRefreshToken?: string;
+	avatarUrl?: string | URL;
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -397,8 +392,7 @@ export interface UsersUpdate extends AuthCollectionUpdate {
 	verified?: boolean;
 	name?: string;
 	avatar?: File | null;
-	traktAccessToken?: string;
-	traktRefreshToken?: string;
+	avatarUrl?: string | URL;
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -443,7 +437,7 @@ export interface WatchlistsCreate extends BaseCollectionCreate {
 	isPublic?: boolean;
 	category?: MaybeArray<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
 	coverImage?: MaybeArray<File>;
-	tags?: Record<string, any> | Array<any> | null;
+	tags?: WatchlistsTags
 }
 
 export interface WatchlistsUpdate extends BaseCollectionUpdate {
@@ -459,7 +453,7 @@ export interface WatchlistsUpdate extends BaseCollectionUpdate {
 	'category-'?: MaybeArray<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
 	coverImage?: MaybeArray<File>;
 	'coverImage-'?: string;
-	tags?: Record<string, any> | Array<any> | null;
+	tags?: WatchlistsTags
 }
 
 export interface WatchlistsCollection {
@@ -651,7 +645,7 @@ export interface WatchlistItemsCreate extends BaseCollectionCreate {
 	title: string;
 	year?: number;
 	slug?: string;
-	metadata?: Record<string, any> | Array<any> | null;
+	metadata?: WatchlistItemsMetadata
 	personalNote?: string;
 	status?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
 	rating?: number;
@@ -680,7 +674,7 @@ export interface WatchlistItemsUpdate extends BaseCollectionUpdate {
 	'year+'?: number;
 	'year-'?: number;
 	slug?: string;
-	metadata?: Record<string, any> | Array<any> | null;
+	metadata?: WatchlistItemsMetadata
 	personalNote?: string;
 	status?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
 	'status+'?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
