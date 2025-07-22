@@ -8,8 +8,17 @@ import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
+import { StatusBar } from "expo-status-bar";
 import { asyncStoragePersister, queryClient } from "@/lib/tanstack/client.ts";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+
+import { useThemeSetup } from "@/hooks/theme/use-theme-setup.tsx";
+import { useSettingsStore } from "@/store/settings-store.ts";
+import { PaperProvider } from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar.tsx";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useExtrenalDevTools } from "@/lib/tanstack/external-dev-tools.ts";
+// Define your copy function based on your platform
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +33,8 @@ function onAppStateChange(status: AppStateStatus) {
 export default function RootLayout() {
   useOnlineManager();
   useAppState(onAppStateChange);
+  const { dynamicColors } = useSettingsStore();
+  const { colorScheme, paperTheme } = useThemeSetup(dynamicColors);
 
   const [loaded] = useFonts({
     SpaceMono: require("@/assets/fonts/SpaceMono-Regular.ttf"),
@@ -41,12 +52,20 @@ export default function RootLayout() {
   }
 
   return (
-    // <PersistQueryClientProvider
-    //   client={queryClient}
-    //   persistOptions={{ persister: asyncStoragePersister }}>
-      <QueryClientProvider client={queryClient}>
-        <Slot />
-      </QueryClientProvider>
-    // </PersistQueryClientProvider>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <PaperProvider theme={paperTheme}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+          {/* <PersistQueryClientProvider
+            client={queryClient}
+            persistOptions={{ persister: asyncStoragePersister }}> */}
+          <QueryClientProvider client={queryClient}>
+            <Slot />
+          </QueryClientProvider>
+          {/* </PersistQueryClientProvider> */}
+          <GlobalSnackbar />
+        </GestureHandlerRootView>
+      </PaperProvider>
+    </ThemeProvider>
   );
 }
