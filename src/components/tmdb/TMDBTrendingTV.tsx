@@ -1,8 +1,9 @@
-import { LoadingIndicatorDots } from '@/components/screens/state-screens/LoadingIndicatorDots';
-import { TMDBTVShow, buildTMDBImageUrl } from '@/lib/tmdb/sdk-via-pb';
-import { useTMDBTrendingTV } from '@/lib/tmdb/tmdb-hooks';
-import { FlatList, Image, StyleSheet, View } from 'react-native';
-import { Card, Surface, Text, useTheme } from 'react-native-paper';
+import { LoadingIndicatorDots } from "@/components/screens/state-screens/LoadingIndicatorDots";
+import { TMDBTVShow, buildTMDBImageUrl } from "@/lib/tmdb/sdk-via-pb";
+import { useTMDBTrendingTV } from "@/lib/tmdb/tmdb-hooks";
+import { FlatList, Image, StyleSheet, View } from "react-native";
+import { Card, Surface, Text, useTheme } from "react-native-paper";
+import { EmptyRoadSVG } from "../shared/svg/empty";
 
 interface TVShowItemProps {
   item: TMDBTVShow;
@@ -11,40 +12,33 @@ interface TVShowItemProps {
 
 function TVShowItem({ item, onPress }: TVShowItemProps) {
   const { colors } = useTheme();
-  const posterUrl = buildTMDBImageUrl(item.poster_path, 'w342');
-  
+  const posterUrl = buildTMDBImageUrl(item.poster_path, "w342");
+
   return (
-    <Card 
-      style={styles.showCard} 
-      onPress={() => onPress?.(item)}
-      mode="contained"
-    >
+    <Card style={styles.showCard} onPress={() => onPress?.(item)} mode="contained">
       <Card.Content>
         <View style={styles.contentContainer}>
-          {posterUrl && (
-            <Image source={{ uri: posterUrl }} style={styles.poster} />
-          )}
+          {posterUrl && <Image source={{ uri: posterUrl }} style={styles.poster} />}
           <View style={styles.textContent}>
             <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
               {item.name}
             </Text>
             <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-              {item.first_air_date ? new Date(item.first_air_date).getFullYear() : 'N/A'}
+              {item.first_air_date ? new Date(item.first_air_date).getFullYear() : "N/A"}
             </Text>
-            
+
             {item.overview && (
-              <Text 
-                variant="bodySmall" 
-                numberOfLines={3} 
-                style={[styles.overview, { color: colors.onSurfaceVariant }]}
-              >
+              <Text
+                variant="bodySmall"
+                numberOfLines={3}
+                style={[styles.overview, { color: colors.onSurfaceVariant }]}>
                 {item.overview}
               </Text>
             )}
-            
+
             <View style={styles.statsContainer}>
               <Text variant="labelSmall" style={{ color: colors.primary }}>
-                ⭐ {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
+                ⭐ {item.vote_average ? item.vote_average.toFixed(1) : "N/A"}
               </Text>
               <Text variant="labelSmall" style={{ color: colors.secondary }}>
                 🗳️ {item.vote_count} votes
@@ -62,7 +56,7 @@ export function TMDBTrendingTV() {
   const { data: tvResponse, isLoading, error } = useTMDBTrendingTV();
 
   const handleShowPress = (show: TMDBTVShow) => {
-    console.log('TV Show pressed:', show.name);
+    console.log("TV Show pressed:", show.name);
   };
 
   if (isLoading) {
@@ -79,12 +73,21 @@ export function TMDBTrendingTV() {
   if (error) {
     return (
       <Surface style={styles.statesContainer}>
-        <Text variant="titleMedium" style={{ color: colors.error }}>
-          Failed to load trending TV shows
-        </Text>
-        <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-          {error instanceof Error ? error.message : "Unknown error"}
-        </Text>
+        {__DEV__ ? (
+          <View>
+            <Text variant="titleMedium" style={{ color: colors.error }}>
+              Failed to load trending TV shows
+            </Text>
+            <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
+              {error instanceof Error ? error.message : "Unknown error"}
+            </Text>
+          </View>
+        ) : (
+          <View style={{ alignItems: "center", justifyContent: "center", gap: 40 }}>
+            <EmptyRoadSVG />
+            <Text variant="titleLarge">Something went wrong</Text>
+          </View>
+        )}
       </Surface>
     );
   }
@@ -103,9 +106,7 @@ export function TMDBTrendingTV() {
     <Surface style={styles.container}>
       <FlatList
         data={tvResponse.results}
-        renderItem={({ item }) => (
-          <TVShowItem item={item} onPress={handleShowPress} />
-        )}
+        renderItem={({ item }) => <TVShowItem item={item} onPress={handleShowPress} />}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}

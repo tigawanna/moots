@@ -3,6 +3,7 @@ import { TMDBSearchResult, buildTMDBImageUrl, isMovie, isPerson, isTVShow } from
 import { FlatList, Image, StyleSheet, View } from "react-native";
 import { Card, Chip, Text, useTheme } from "react-native-paper";
 import { TrendingOnTMDB } from "./TrendingOnTMDB";
+import { EmptyRoadSVG } from "../shared/svg/empty";
 
 interface SearchResultItemProps {
   item: TMDBSearchResult;
@@ -196,12 +197,21 @@ export function TMDBSearchResults({
   if (error) {
     return (
       <View style={styles.statesContainer}>
-        <Text variant="titleMedium" style={{ color: colors.error }}>
-          Search failed
-        </Text>
-        <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-          {error instanceof Error ? error.message : "Unknown error occurred"}
-        </Text>
+        {__DEV__ ? (
+          <View>
+            <Text variant="titleMedium" style={{ color: colors.error }}>
+              Failed to load search results
+            </Text>
+            <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
+              {error instanceof Error ? error.message : "Unknown error"}
+            </Text>
+          </View>
+        ) : (
+          <View style={{ alignItems: "center", justifyContent: "center", gap: 40 }}>
+            <EmptyRoadSVG />
+            <Text variant="titleLarge">Something went wrong</Text>
+          </View>
+        )}
       </View>
     );
   }

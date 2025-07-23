@@ -3,6 +3,7 @@ import { TMDBMovie, buildTMDBImageUrl } from '@/lib/tmdb/sdk-via-pb';
 import { useTMDBTrendingMovies } from '@/lib/tmdb/tmdb-hooks';
 import { FlatList, Image, StyleSheet, View } from 'react-native';
 import { Card, Surface, Text, useTheme } from 'react-native-paper';
+import { EmptyRoadSVG } from '../shared/svg/empty';
 
 interface MovieItemProps {
   item: TMDBMovie;
@@ -79,12 +80,21 @@ export function TMDBTrendingMovies() {
   if (error) {
     return (
       <Surface style={styles.statesContainer}>
-        <Text variant="titleMedium" style={{ color: colors.error }}>
-          Failed to load trending movies
-        </Text>
-        <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-          {error instanceof Error ? error.message : "Unknown error"}
-        </Text>
+        {__DEV__ ? (
+          <View>
+            <Text variant="titleMedium" style={{ color: colors.error }}>
+              Failed to load trending 
+            </Text>
+            <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
+              {error instanceof Error ? error.message : "Unknown error"}
+            </Text>
+          </View>
+        ) : (
+          <View style={{ alignItems: "center", justifyContent: "center", gap: 40 }}>
+            <EmptyRoadSVG />
+            <Text variant="titleLarge">Something went wrong</Text>
+          </View>
+        )}
       </Surface>
     );
   }
