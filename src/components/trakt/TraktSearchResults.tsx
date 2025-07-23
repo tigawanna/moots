@@ -84,12 +84,14 @@ export function TraktSearchResults({
   if (error) {
     return (
       <View style={styles.statesContainer}>
+      <View>
         <Text variant="titleMedium" style={{ color: colors.error }}>
           Search failed
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           {error instanceof Error ? error.message : "Unknown error occurred"}
         </Text>
+      </View>
       </View>
     );
   }
@@ -100,12 +102,14 @@ export function TraktSearchResults({
   if (!results || results.length === 0) {
     return (
       <View style={styles.statesContainer}>
+      <View>
         <Text variant="titleMedium" style={{ color: colors.onSurfaceVariant }}>
           No results found
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           Try searching with different keywords
         </Text>
+      </View>
       </View>
     );
   }

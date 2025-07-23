@@ -49,7 +49,7 @@ export function TraktTrendingMovies() {
 
   if (isLoading) {
     return (
-      <Surface style={styles.container}>
+      <Surface style={styles.statesContainer}>
         <LoadingIndicatorDots />
         <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           Loading trending movies...
@@ -60,12 +60,12 @@ export function TraktTrendingMovies() {
 
   if (error) {
     return (
-      <Surface style={styles.container}>
+      <Surface style={styles.statesContainer}>
         <Text variant="titleMedium" style={{ color: colors.error }}>
           Failed to load trending movies
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-          {error instanceof Error ? error.message : 'Unknown error'}
+          {error instanceof Error ? error.message : "Unknown error"}
         </Text>
       </Surface>
     );
@@ -93,6 +93,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     width: "100%",
+  },
+  statesContainer: {
+    flex: 1,
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   listContent: {
     gap: 12,

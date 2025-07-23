@@ -67,7 +67,7 @@ export function TMDBTrendingTV() {
 
   if (isLoading) {
     return (
-      <Surface style={styles.container}>
+      <Surface style={styles.statesContainer}>
         <LoadingIndicatorDots />
         <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           Loading trending TV shows...
@@ -78,12 +78,12 @@ export function TMDBTrendingTV() {
 
   if (error) {
     return (
-      <Surface style={styles.container}>
+      <Surface style={styles.statesContainer}>
         <Text variant="titleMedium" style={{ color: colors.error }}>
           Failed to load trending TV shows
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-          {error instanceof Error ? error.message : 'Unknown error'}
+          {error instanceof Error ? error.message : "Unknown error"}
         </Text>
       </Surface>
     );
@@ -91,7 +91,7 @@ export function TMDBTrendingTV() {
 
   if (!tvResponse?.results || tvResponse.results.length === 0) {
     return (
-      <Surface style={styles.container}>
+      <Surface style={styles.statesContainer}>
         <Text variant="titleMedium" style={{ color: colors.onSurfaceVariant }}>
           No trending TV shows found
         </Text>
@@ -120,6 +120,13 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
+  statesContainer: {
+    flex: 1,
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   listContent: {
     gap: 12,
   },
@@ -129,14 +136,14 @@ const styles = StyleSheet.create({
     minHeight: 140,
   },
   contentContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   poster: {
     width: 80,
     height: 120,
     borderRadius: 4,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
   },
   textContent: {
     flex: 1,
