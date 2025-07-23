@@ -5,3 +5,7 @@ This is a react native expo app using typescript
 
 - zod for validation schemas, use `z.object({...})` for defining schemas and `zodResolver` from `@hookform/resolvers/zod` for integrating with forms
 - react hook form for forms, use `useForm` and `Controller` from `react-hook-form`, ensure to use `zod` for validation schemas
+
+- with react query prefer createing `queryOptions` and or custom hooks to encapsulate logic
+ - Do not nest a `Flatlist` in a `ScrollView`
+    
