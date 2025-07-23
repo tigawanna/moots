@@ -27,9 +27,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
                   <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
                     {item.title}
                   </Text>
-                  <Chip mode="outlined" compact style={styles.typeChip}>
+                  <Text  style={styles.typeChip}>
                     Movie
-                  </Chip>
+                  </Text>
                 </View>
                 
                 <View style={styles.metadata}>
@@ -77,9 +77,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
                   <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
                     {item.name}
                   </Text>
-                  <Chip mode="outlined" compact style={styles.typeChip}>
+                  <Text  style={styles.typeChip}>
                     TV Show
-                  </Chip>
+                  </Text>
                 </View>
                 
                 <View style={styles.metadata}>
@@ -127,9 +127,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
                   <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
                     {item.name}
                   </Text>
-                  <Chip mode="outlined" compact style={styles.typeChip}>
+                  <Text  style={styles.typeChip}>
                     Person
-                  </Chip>
+                  </Text>
                 </View>
                 
                 <View style={styles.metadata}>
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   typeChip: {
-    height: 24,
+    // height: 24,
   },
   metadata: {
     flexDirection: "row",

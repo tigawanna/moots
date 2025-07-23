@@ -36,14 +36,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="trakt"
-        options={{
-          headerShown:false,
-          title: "Trakt",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="tmbd"
         options={{
           headerShown:false,
