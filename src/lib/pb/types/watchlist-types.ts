@@ -46,7 +46,6 @@ export interface WatchlistItem {
     watchlist?: Watchlist;
   };
 }
-}
 
 export interface UserFollow {
   id: string;
