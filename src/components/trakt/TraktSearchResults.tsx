@@ -1,7 +1,7 @@
 import { LoadingIndicatorDots } from '@/components/screens/state-screens/LoadingIndicatorDots';
 import { TraktSearchResult } from '@/lib/trakt/trakt-trending';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { Card, Chip, Surface, Text, useTheme } from 'react-native-paper';
+import { Card , Text, useTheme } from 'react-native-paper';
 
 interface SearchResultItemProps {
   item: TraktSearchResult;
@@ -27,9 +27,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
           <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
             {content.title}
           </Text>
-          <Chip mode="outlined" compact style={styles.typeChip}>
+          <Text   style={styles.typeChip}>
             {isMovie ? 'Movie' : 'TV Show'}
-          </Chip>
+          </Text>
         </View>
         
         <View style={styles.metadata}>
@@ -80,43 +80,43 @@ export function TraktSearchResults({
 
   if (isLoading) {
     return (
-      <Surface style={styles.container}>
+      <View style={styles.container}>
         <LoadingIndicatorDots />
         <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           Searching for &quot;{query}&quot;...
         </Text>
-      </Surface>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <Surface style={styles.container}>
+      <View style={styles.container}>
         <Text variant="titleMedium" style={{ color: colors.error }}>
           Search failed
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           {error instanceof Error ? error.message : 'Unknown error occurred'}
         </Text>
-      </Surface>
+      </View>
     );
   }
 
   if (!results || results.length === 0) {
     return (
-      <Surface style={styles.container}>
+      <View style={styles.container}>
         <Text variant="titleMedium" style={{ color: colors.onSurfaceVariant }}>
           No results found
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           Try searching with different keywords
         </Text>
-      </Surface>
+      </View>
     );
   }
 
   return (
-    <Surface style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text variant="titleSmall" style={{ color: colors.onSurface }}>
           Found {results.length} results for &quot;{query}&quot;
@@ -135,7 +135,7 @@ export function TraktSearchResults({
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-    </Surface>
+    </View>
   );
 }
 
@@ -167,7 +167,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   typeChip: {
-    height: 24,
+    // height: ,
+    height:"auto"
   },
   metadata: {
     flexDirection: 'row',
