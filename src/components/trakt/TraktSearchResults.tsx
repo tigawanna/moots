@@ -14,8 +14,8 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
   const isMovie = item.type === 'movie';
   const content = isMovie ? item.movie : item.show;
   
-  if (!content) return null;
-
+  if (!content || !content.ids.imdb) return null;
+// console.log(" content  == ")
   return (
     <Card 
       style={styles.resultCard} 
@@ -27,9 +27,6 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
           <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
             {content.title}
           </Text>
-          <Text   style={styles.typeChip}>
-            {isMovie ? 'Movie' : 'TV Show'}
-          </Text>
         </View>
         
         <View style={styles.metadata}>
@@ -38,9 +35,7 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
           </Text>
           {/* Basic search results don't include genres */}
         </View>
-        
-        {/* Basic search results don't include overview */}
-        
+      
         <View style={styles.statsContainer}>
           <Text variant="labelSmall" style={{ color: colors.primary }}>
             🎬 {isMovie ? 'Movie' : 'TV Show'}
@@ -80,7 +75,7 @@ export function TraktSearchResults({
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View style={styles.statesContainer}>
         <LoadingIndicatorDots />
         <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
           Searching for &quot;{query}&quot;...
@@ -91,7 +86,7 @@ export function TraktSearchResults({
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={styles.statesContainer}>
         <Text variant="titleMedium" style={{ color: colors.error }}>
           Search failed
         </Text>
@@ -104,7 +99,7 @@ export function TraktSearchResults({
 
   if (!results || results.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={styles.statesContainer}>
         <Text variant="titleMedium" style={{ color: colors.onSurfaceVariant }}>
           No results found
         </Text>
@@ -144,6 +139,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     width: '100%',
+  },
+  statesContainer: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    alignItems:"center",
+    justifyContent:"center"
   },
   headerContainer: {
     padding: 16,
