@@ -21,7 +21,8 @@ export function getTMDBImageUrl(
 export async function getTMDBImages(tmdbId: number, type: "movie" | "tv") {
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${process.env.EXPO_PUBLIC_TMDB_API_KEY}`
+      // `https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${process.env.EXPO_PUBLIC_TMDB_API_KEY}`
+      `https://api.themoviedb.org/3/${type}/${tmdbId}`
     );
     
     if (!response.ok) {

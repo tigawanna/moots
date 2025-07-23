@@ -10,6 +10,7 @@ export const queryKeyPrefixes = {
   trakt: "trakt",
   watchlist: "watchlist",
   watchlistItem: "watchlistItem",
+  tmdb: "tmdb",
   user: "user",
   testId:"testId"
 } as const;
