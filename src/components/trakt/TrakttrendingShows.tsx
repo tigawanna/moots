@@ -79,8 +79,8 @@ export function TrakttrendingShows() {
           <ShowItem item={item} onPress={handleShowPress} />
         )}
         keyExtractor={(item) => item.show.ids.trakt.toString()}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
+        // numColumns={2}
+        // columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
@@ -91,24 +91,21 @@ export function TrakttrendingShows() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   listContent: {
-    padding: 16,
+    gap: 12,
   },
-  row: {
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
+
   showCard: {
     flex: 1,
     marginHorizontal: 4,
     minHeight: 120,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 8,
   },
 });

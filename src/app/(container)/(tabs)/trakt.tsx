@@ -6,10 +6,10 @@ import { Surface, useTheme,Searchbar } from "react-native-paper";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function Search() {
+export default function Trakt() {
   const { colors } = useTheme();
   const { top } = useSafeAreaInsets();
-  const [query, setQuery] = useState("uwu");
+  const [query, setQuery] = useState("");
 
   const handleSearchChange = useCallback((query: string) => {
     setQuery(query);

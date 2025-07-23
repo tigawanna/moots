@@ -79,8 +79,8 @@ export function TraktTrendingMovies() {
           <MovieItem item={item} onPress={handleMoviePress} />
         )}
         keyExtractor={(item) => item.movie.ids.trakt.toString()}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
+        // numColumns={2}
+        // columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
@@ -91,15 +91,11 @@ export function TraktTrendingMovies() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
   },
   listContent: {
-    padding: 16,
-  },
-  row: {
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    gap: 12,
   },
   movieCard: {
     flex: 1,
@@ -107,8 +103,8 @@ const styles = StyleSheet.create({
     minHeight: 120,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 8,
   },
 });

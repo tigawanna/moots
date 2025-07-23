@@ -1,7 +1,8 @@
-import { LoadingIndicatorDots } from '@/components/screens/state-screens/LoadingIndicatorDots';
-import { TraktSearchResult } from '@/lib/trakt/trakt-trending';
-import { FlatList, StyleSheet, View } from 'react-native';
-import { Card , Text, useTheme } from 'react-native-paper';
+import { LoadingIndicatorDots } from "@/components/screens/state-screens/LoadingIndicatorDots";
+import { TraktSearchResult } from "@/lib/trakt/trakt-trending";
+import { FlatList, StyleSheet, View } from "react-native";
+import { Card, Text, useTheme } from "react-native-paper";
+import { TrendingOnTrakt } from "./TrendingOnTrakt";
 
 interface SearchResultItemProps {
   item: TraktSearchResult;
@@ -10,35 +11,31 @@ interface SearchResultItemProps {
 
 function SearchResultItem({ item, onPress }: SearchResultItemProps) {
   const { colors } = useTheme();
-  
-  const isMovie = item.type === 'movie';
+
+  const isMovie = item.type === "movie";
   const content = isMovie ? item.movie : item.show;
-  
+
   if (!content || !content.ids.imdb) return null;
-// console.log(" content  == ")
+  // console.log(" content  == ")
   return (
-    <Card 
-      style={styles.resultCard} 
-      onPress={() => onPress?.(item)}
-      mode="contained"
-    >
+    <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
       <Card.Content>
         <View style={styles.header}>
           <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
             {content.title}
           </Text>
         </View>
-        
+
         <View style={styles.metadata}>
           <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
             {content.year}
           </Text>
           {/* Basic search results don't include genres */}
         </View>
-      
+
         <View style={styles.statsContainer}>
           <Text variant="labelSmall" style={{ color: colors.primary }}>
-            🎬 {isMovie ? 'Movie' : 'TV Show'}
+            🎬 {isMovie ? "Movie" : "TV Show"}
           </Text>
           <Text variant="labelSmall" style={{ color: colors.secondary }}>
             {content.year}
@@ -57,18 +54,18 @@ interface TraktSearchResultsProps {
   onItemPress?: (result: TraktSearchResult) => void;
 }
 
-export function TraktSearchResults({ 
-  query, 
-  results, 
-  isLoading, 
-  error, 
-  onItemPress 
+export function TraktSearchResults({
+  query,
+  results,
+  isLoading,
+  error,
+  onItemPress,
 }: TraktSearchResultsProps) {
   const { colors } = useTheme();
 
   const handleItemPress = (result: TraktSearchResult) => {
     // TODO: Navigate to content details screen
-    const content = result.type === 'movie' ? result.movie : result.show;
+    const content = result.type === "movie" ? result.movie : result.show;
     console.log(`${result.type} pressed:`, content?.title);
     onItemPress?.(result);
   };
@@ -91,12 +88,15 @@ export function TraktSearchResults({
           Search failed
         </Text>
         <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-          {error instanceof Error ? error.message : 'Unknown error occurred'}
+          {error instanceof Error ? error.message : "Unknown error occurred"}
         </Text>
       </View>
     );
   }
 
+  if (!query || query.length === 0) {
+    return <TrendingOnTrakt />;
+  }
   if (!results || results.length === 0) {
     return (
       <View style={styles.statesContainer}>
@@ -117,14 +117,12 @@ export function TraktSearchResults({
           Found {results.length} results for &quot;{query}&quot;
         </Text>
       </View>
-      
+
       <FlatList
         data={results}
-        renderItem={({ item }) => (
-          <SearchResultItem item={item} onPress={handleItemPress} />
-        )}
+        renderItem={({ item }) => <SearchResultItem item={item} onPress={handleItemPress} />}
         keyExtractor={(item, index) => {
-          const content = item.type === 'movie' ? item.movie : item.show;
+          const content = item.type === "movie" ? item.movie : item.show;
           return content?.ids.trakt.toString() || `${item.type}-${index}`;
         }}
         contentContainerStyle={styles.listContent}
@@ -137,48 +135,47 @@ export function TraktSearchResults({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
+    gap:6
   },
   statesContainer: {
     flex: 1,
-    height: '100%',
-    width: '100%',
-    alignItems:"center",
-    justifyContent:"center"
+    height: "100%",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerContainer: {
     padding: 16,
     paddingBottom: 8,
   },
   listContent: {
-    padding: 16,
-    paddingTop: 0,
+    paddingTop:6,
+    gap: 12,
   },
   resultCard: {
-    marginBottom: 12,
+    flex: 1,
+    marginHorizontal: 4,
+    minHeight: 120,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
   title: {
     flex: 1,
     marginRight: 8,
   },
-  typeChip: {
-    // height: ,
-    height:"auto"
-  },
   metadata: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
