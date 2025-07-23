@@ -1,6 +1,6 @@
 import { LoadingIndicatorDots } from '@/components/screens/state-screens/LoadingIndicatorDots';
-import { TraktTrendingMovieResponse, traktTrendingMoviesQueryOptions } from '@/lib/trakt/trakt-trending';
-import { useQuery } from '@tanstack/react-query';
+import { useTraktTrendingMovies } from '@/lib/trakt/trakt-hooks';
+import { TraktTrendingMovieResponse } from '@/lib/trakt/trakt-trending';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Card, Surface, Text, useTheme } from 'react-native-paper';
 
@@ -40,7 +40,7 @@ function MovieItem({ item, onPress }: MovieItemProps) {
 
 export function TraktTrendingMovies() {
   const { colors } = useTheme();
-  const { data: trendingMovies, isLoading, error } = useQuery(traktTrendingMoviesQueryOptions());
+  const { data: trendingMovies, isLoading, error } = useTraktTrendingMovies();
 
   const handleMoviePress = (movie: TraktTrendingMovieResponse) => {
     // TODO: Navigate to movie details screen

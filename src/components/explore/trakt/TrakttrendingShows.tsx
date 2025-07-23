@@ -1,6 +1,6 @@
 import { LoadingIndicatorDots } from '@/components/screens/state-screens/LoadingIndicatorDots';
-import { TraktTrendingShowResponse, traktTrendingShowsQueryOptions } from '@/lib/trakt/trakt-trending';
-import { useQuery } from '@tanstack/react-query';
+import { useTraktTrendingShows } from '@/lib/trakt/trakt-hooks';
+import { TraktTrendingShowResponse } from '@/lib/trakt/trakt-trending';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { Card, Surface, Text, useTheme } from 'react-native-paper';
 
@@ -40,7 +40,7 @@ function ShowItem({ item, onPress }: ShowItemProps) {
 
 export function TrakttrendingShows() {
   const { colors } = useTheme();
-  const { data: trendingShows, isLoading, error } = useQuery(traktTrendingShowsQueryOptions());
+  const { data: trendingShows, isLoading, error } = useTraktTrendingShows();
 
   const handleShowPress = (show: TraktTrendingShowResponse) => {
     // TODO: Navigate to show details screen
