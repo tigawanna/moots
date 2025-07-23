@@ -1,12 +1,12 @@
-import { TraktPopularMovies, TraktPopularShows } from "@/components/explore/trakt/TraktPopularContent";
-import { TraktSearchResults } from "@/components/explore/trakt/TraktSearchResults";
-import { TraktTrendingMovies } from "@/components/explore/trakt/TraktTrendingMovies";
-import { TrakttrendingShows } from "@/components/explore/trakt/TrakttrendingShows";
+import { TraktPopularMovies, TraktPopularShows } from "@/components/trakt/TraktPopularContent";
+import { TraktSearchResults } from "@/components/trakt/TraktSearchResults";
+import { TraktTrendingMovies } from "@/components/trakt/TraktTrendingMovies";
+import { TrakttrendingShows } from "@/components/trakt/TrakttrendingShows";
 import { useTraktPopularDramaShows, useTraktPopularHorrorMovies, useTraktSearch } from "@/lib/trakt/trakt-hooks";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Chip, Searchbar, Surface, useTheme } from "react-native-paper";
-import { TabScreen, Tabs } from "react-native-paper-tabs";
+import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
 
 // On this screen we'll render trending movies and shows from Trakt API
 // It has nested material tabs that show trending movies and shows
@@ -17,49 +17,53 @@ export default function ExploreScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <Surface style={styles.container}>
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Searchbar
-          placeholder="Search movies and shows..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchbar}
-        />
-      </View>
+    <TabsProvider
+      defaultIndex={0}
+      // onChangeIndex={handleChangeIndex} optional
+    >
+      <View style={styles.container}>
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Searchbar
+            placeholder="Search movies and shows..."
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+            style={styles.searchbar}
+          />
+        </View>
 
-      <Tabs
-        style={styles.tabs}
-        theme={{
-          colors: {
-            primary: colors.primary,
-            background: colors.surface,
-          },
-        }}
-      >
-        <TabScreen label="Trending" icon="trending-up">
-          <TrendingContent />
-        </TabScreen>
-        
-        <TabScreen label="Movies" icon="movie">
-          <TraktTrendingMovies />
-        </TabScreen>
-        
-        <TabScreen label="TV Shows" icon="television">
-          <TrakttrendingShows />
-        </TabScreen>
-
-        <TabScreen label="Popular" icon="star">
-          <PopularContent />
-        </TabScreen>
-
-        {searchQuery.length >= 2 && (
-          <TabScreen label="Search" icon="magnify">
-            <SearchResults query={searchQuery} />
+        <Tabs
+          style={styles.tabs}
+          theme={{
+            colors: {
+              primary: colors.primary,
+              background: colors.surface,
+            },
+          }}>
+          <TabScreen label="Trending" icon="trending-up">
+            <TrendingContent />
           </TabScreen>
-        )}
-      </Tabs>
-    </Surface>
+
+          <TabScreen label="Movies" icon="movie">
+            <TraktTrendingMovies />
+          </TabScreen>
+
+          <TabScreen label="TV Shows" icon="television">
+            <TrakttrendingShows />
+          </TabScreen>
+
+          <TabScreen label="Popular" icon="star">
+            <PopularContent />
+          </TabScreen>
+
+          {/* {searchQuery.length >= 2 && (
+            <TabScreen label="Search" icon="magnify">
+              <SearchResults query={searchQuery} />
+            </TabScreen>
+          )} */}
+        </Tabs>
+      </View>
+    </TabsProvider>
   );
 }
 
@@ -102,21 +106,7 @@ function PopularContent() {
   );
 }
 
-function SearchResults({ query }: { query: string }) {
-  const { data: searchResults, isLoading, error } = useTraktSearch({ 
-    query, 
-    limit: 20 
-  });
 
-  return (
-    <TraktSearchResults 
-      query={query}
-      results={searchResults}
-      isLoading={isLoading}
-      error={error}
-    />
-  );
-}
 
 const styles = StyleSheet.create({
   container: {

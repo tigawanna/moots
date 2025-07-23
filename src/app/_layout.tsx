@@ -18,6 +18,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar.tsx";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useExtrenalDevTools } from "@/lib/tanstack/external-dev-tools.ts";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+
 // Define your copy function based on your platform
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -56,13 +58,13 @@ export default function RootLayout() {
       <PaperProvider theme={paperTheme}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-          {/* <PersistQueryClientProvider
+          <PersistQueryClientProvider
             client={queryClient}
-            persistOptions={{ persister: asyncStoragePersister }}> */}
-          <QueryClientProvider client={queryClient}>
+            persistOptions={{ persister: asyncStoragePersister }}>
+          {/* <QueryClientProvider client={queryClient}> */}
             <Slot />
-          </QueryClientProvider>
-          {/* </PersistQueryClientProvider> */}
+          {/* </QueryClientProvider> */}
+          </PersistQueryClientProvider>
           <GlobalSnackbar />
         </GestureHandlerRootView>
       </PaperProvider>
