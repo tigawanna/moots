@@ -78,12 +78,8 @@ function PopularContent() {
   const { data: dramaShows, isLoading: loadingShows, error: showError } = useTraktPopularDramaShows({ limit: 10 });
 
   return (
-    <ScrollView style={styles.tabContent}>
+    // <ScrollView style={styles.tabContent}>
       <View style={styles.section}>
-        <View style={styles.genreChips}>
-          <Chip mode="outlined" style={styles.chip}>Horror Movies ({horrorMovies?.length || 0})</Chip>
-          <Chip mode="outlined" style={styles.chip}>Drama Shows ({dramaShows?.length || 0})</Chip>
-        </View>
         <View style={styles.section}>
           <TraktPopularMovies 
             movies={horrorMovies} 
@@ -102,7 +98,7 @@ function PopularContent() {
           />
         </View>
       </View>
-    </ScrollView>
+    // </ScrollView>
   );
 }
 
