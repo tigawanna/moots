@@ -44,6 +44,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="tmbd"
+        options={{
+          headerShown:false,
+          title: "Tmdb",
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
