@@ -13,7 +13,7 @@ export interface BaseWatchlistItem {
   media_type: "movie" | "tv" | Array<"movie" | "tv">;
   original_language?: string;
 
-  origin_country: string[];
+  origin_country?: string[];
 
   // User-specific fields (optional for TMDB data)
   watched_status?: boolean;

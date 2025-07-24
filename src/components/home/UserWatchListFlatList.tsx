@@ -2,7 +2,9 @@ import { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import React, { useCallback } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { WatchlistItemCard } from "./WatchlistItemCard";
+import { WatchlistItemCard } from "@/components/shared/watchlist/WatchlistItemCard";
+
+
 
 interface UserWatchListFlatListProps {
   watchList: WatchlistResponse[];
@@ -26,9 +28,17 @@ export function UserWatchListFlatList({
   const { colors } = useTheme();
 
   const renderItem = useCallback(
-    ({ item }: { item: WatchlistResponse }) => (
-      <WatchlistItemCard item={item} viewMode={viewMode} />
-    ),
+    ({ item }: { item: WatchlistResponse }) => {
+      const unifiedItem = {
+        ...item,
+        media_type: item.media_type, // Already in correct format
+        user_id: item.user_id, // Already in correct format
+      };
+      return (
+        // <WatchlistItemCard item={item} viewMode={viewMode} />
+        <WatchlistItemCard item={unifiedItem} viewMode={viewMode} />
+      );
+    },
     [viewMode]
   );
 
@@ -48,16 +58,10 @@ export function UserWatchListFlatList({
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text
-        variant="headlineSmall"
-        style={[styles.emptyTitle, { color: colors.onSurfaceVariant }]}
-      >
+      <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurfaceVariant }]}>
         No items found
       </Text>
-      <Text
-        variant="bodyMedium"
-        style={[styles.emptyMessage, { color: colors.onSurfaceVariant }]}
-      >
+      <Text variant="bodyMedium" style={[styles.emptyMessage, { color: colors.onSurfaceVariant }]}>
         {emptyMessage}
       </Text>
     </View>
@@ -70,10 +74,7 @@ export function UserWatchListFlatList({
       keyExtractor={keyExtractor}
       numColumns={viewMode === "grid" ? 2 : 1}
       key={viewMode} // Force re-render when view mode changes
-      contentContainerStyle={[
-        styles.container,
-        watchList.length === 0 && styles.emptyContainer,
-      ]}
+      contentContainerStyle={[styles.container, watchList.length === 0 && styles.emptyContainer]}
       columnWrapperStyle={viewMode === "grid" ? styles.row : undefined}
       showsVerticalScrollIndicator={false}
       refreshControl={

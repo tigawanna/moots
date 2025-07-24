@@ -1,5 +1,6 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistCreate, WatchlistResponse, WatchlistUpdate } from "@/lib/pb/types/pb-types";
+import { logger } from "@/utils/logger";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { and, eq, like } from "@tigawanna/typed-pocketbase";
 
@@ -84,6 +85,8 @@ interface AddToWatchListMutationOptionsProps {
 export function addToWatchListMutationOptions() {
   return mutationOptions({
     mutationFn: ({ userId, payload }: AddToWatchListMutationOptionsProps) => {
+      // console.log("Adding to watchlist:", payload);
+      logger.log(payload, "Add to Watchlist Payload");
       return pb.from("watchlist").create({
         user_id: userId,
         media_type: payload.media_type,

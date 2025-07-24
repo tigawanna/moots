@@ -78,7 +78,7 @@ export function WatchlistItemRating({
   if (!rating || rating === 0) return null;
 
   const iconSize = size === 'small' ? 12 : 16;
-  const textSize = size === 'small' ? 10 : 12;
+  // const textSize = size === 'small' ? 10 : 12;
 
   if (type === 'personal') {
     // Show star rating for personal ratings (1-10 scale converted to 1-5 stars)

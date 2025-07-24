@@ -1,15 +1,16 @@
-import React from "react";
-import { Alert, StyleSheet, View } from "react-native";
-import { IconButton, useTheme } from "react-native-paper";
-import { UnifiedWatchlistItem } from "./types";
-import { WatchlistItemUtils } from "./WatchlistItemUtils";
+import { useSnackbar } from "@/components/react-native-paper/snackbar/global-snackbar-store";
+import { pb } from "@/lib/pb/client";
 import {
   addToWatchListMutationOptions,
   removeFromWatchListMutationOptions,
   toggleWatchedListItemMutationOptions,
 } from "@/lib/tanstack/operations/watchlist/user-watchlist";
 import { useMutation } from "@tanstack/react-query";
-import { pb } from "@/lib/pb/client";
+import React from "react";
+import { Alert, StyleSheet, View } from "react-native";
+import { IconButton, useTheme } from "react-native-paper";
+import { UnifiedWatchlistItem } from "./types";
+import { WatchlistItemUtils } from "./WatchlistItemUtils";
 
 interface WatchlistItemActionsProps {
   item: UnifiedWatchlistItem;
@@ -29,65 +30,153 @@ export function WatchlistItemActions({
   layout = "horizontal",
 }: WatchlistItemActionsProps) {
   const { colors } = useTheme();
-  
-  const user = pb.authStore.record
+  const { showSnackbar } = useSnackbar();
+
+  const user = pb.authStore.record;
   const quickAddMutation = useMutation(addToWatchListMutationOptions());
   const removeFromWatchlist = useMutation(removeFromWatchListMutationOptions());
-  const toggleWatchedStatus = useMutation(toggleWatchedListItemMutationOptions());
+  const toggleWatchedStatus = useMutation(
+    toggleWatchedListItemMutationOptions()
+  );
 
   const isWatched = WatchlistItemUtils.getWatchedStatus(item);
   const isInWatchlist = WatchlistItemUtils.isInWatchlist(item);
 
   const iconSize = size === "small" ? 18 : 20;
 
-  const handleToggleWatched = (event: any) => {
+  // Check if any mutation is loading
+  const isLoading =
+    quickAddMutation.isPending ||
+    removeFromWatchlist.isPending ||
+    toggleWatchedStatus.isPending;
+
+  const handleToggleWatched = async (event: any) => {
     event.stopPropagation();
     if (onToggleWatched) {
       onToggleWatched(item);
-    } else {
-      console.log("Toggle watched:", item.tmdb_id, !isWatched);
+      return;
+    }
+
+    if (!user || !item.id || typeof item.id !== "string") {
+      showSnackbar("Unable to update watched status");
+      return;
+    }
+
+    try {
+      await toggleWatchedStatus.mutateAsync({
+        itemId: item.id,
+        watched: !isWatched,
+      });
+      showSnackbar(`Marked as ${!isWatched ? "watched" : "unwatched"}`);
+    } catch (error) {
+      showSnackbar("Failed to update watched status");
+      console.error("Toggle watched error:", error);
     }
   };
 
   const handleRemove = (event: any) => {
     event.stopPropagation();
-    if (!onRemove) {
-      console.log("Remove item:", item.tmdb_id);
+    if (onRemove) {
+      Alert.alert(
+        "Remove from Watchlist",
+        `Remove "${item.title}" from your watchlist?`,
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Remove",
+            style: "destructive",
+            onPress: () => onRemove(item),
+          },
+        ]
+      );
       return;
     }
 
-    Alert.alert("Remove from Watchlist", `Remove "${item.title}" from your watchlist?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: () => onRemove(item),
-      },
-    ]);
+    if (!item.id || typeof item.id !== "string") {
+      showSnackbar("Unable to remove item");
+      return;
+    }
+
+    Alert.alert(
+      "Remove from Watchlist",
+      `Remove "${item.title}" from your watchlist?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              if(typeof item.id !== "string") return
+              await removeFromWatchlist.mutateAsync({
+                itemId: item.id,
+              });
+              showSnackbar("Removed from watchlist");
+            } catch (error) {
+              showSnackbar("Failed to remove from watchlist");
+              console.log("Remove error:", error);
+            }
+          },
+        },
+      ]
+    );
   };
 
-  const handleAdd = (event: any) => {
+  const handleAdd = async (event: any) => {
     event.stopPropagation();
     if (onAdd) {
       onAdd(item);
-    } else {
-      console.log("Add to watchlist:", item.tmdb_id);
+      return;
+    }
+
+    if (!user) {
+      showSnackbar("Please sign in to add to watchlist");
+      return;
+    }
+
+    try {
+      
+      await quickAddMutation.mutateAsync({
+        userId: user.id,
+
+        payload: {
+          user_id: user.id,
+          media_type: item.media_type,
+          tmdb_id: item.tmdb_id,
+          title: item.title,
+          backdrop_path: item.backdrop_path || undefined,
+          poster_path: item.poster_path || undefined,
+          overview: item.overview || undefined,
+          release_date: item.release_date || undefined,
+          vote_average: item.vote_average || 0,
+          genre_ids: item.genre_ids || [],
+        },
+      });
+      showSnackbar("Added to watchlist");
+    } catch (error) {
+      showSnackbar("Failed to add to watchlist");
+      console.log("Add error:", error);
     }
   };
 
   const containerStyle =
-    layout === "vertical" ? styles.verticalContainer : styles.horizontalContainer;
+    layout === "vertical"
+      ? styles.verticalContainer
+      : styles.horizontalContainer;
 
   if (!isInWatchlist) {
     // Show add button for TMDB items not in watchlist
     return (
       <View style={containerStyle}>
         <IconButton
-          icon="bookmark-plus-outline"
+          icon={
+            quickAddMutation.isPending ? "loading" : "bookmark-plus-outline"
+          }
           size={iconSize}
           iconColor={colors.primary}
           onPress={handleAdd}
-          style={styles.actionButton}
+          disabled={isLoading}
+          style={[styles.actionButton, isLoading && styles.loadingButton]}
         />
       </View>
     );
@@ -97,18 +186,32 @@ export function WatchlistItemActions({
   return (
     <View style={containerStyle}>
       <IconButton
-        icon={isWatched ? "check-circle" : "check-circle-outline"}
+        icon={
+          toggleWatchedStatus.isPending
+            ? "loading"
+            : isWatched
+            ? "check-circle"
+            : "check-circle-outline"
+        }
         size={iconSize}
         iconColor={isWatched ? colors.primary : colors.outline}
         onPress={handleToggleWatched}
-        style={styles.actionButton}
+        disabled={isLoading}
+        style={[
+          styles.actionButton,
+          toggleWatchedStatus.isPending && styles.loadingButton,
+        ]}
       />
       <IconButton
-        icon="delete-outline"
+        icon={removeFromWatchlist.isPending ? "loading" : "delete-outline"}
         size={iconSize}
         iconColor={colors.error}
         onPress={handleRemove}
-        style={styles.actionButton}
+        disabled={isLoading}
+        style={[
+          styles.actionButton,
+          removeFromWatchlist.isPending && styles.loadingButton,
+        ]}
       />
     </View>
   );
@@ -125,5 +228,8 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     margin: 0,
+  },
+  loadingButton: {
+    opacity: 0.6,
   },
 });

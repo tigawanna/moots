@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserWatchListFlatList } from "./UserWatchListFlatList";
 
 
+
 export function UserWatchList({community}:{community?: boolean}) {
   // filters
   const userId = pb.authStore?.record?.id;
