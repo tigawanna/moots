@@ -12,12 +12,12 @@ import {
     Text,
     TextInput
 } from 'react-native-paper';
-import { useWatchlistLimit } from '../../hooks/useWatchlistLimit';
-import { useWatchlistStatus } from '../../hooks/useWatchlistStatus';
-import { pb } from '../../lib/pb/client';
-import { type WatchedStatus } from '../../lib/pb/types/watchlist-types';
-import { WatchlistUtils } from '../../lib/pb/watchlist-api';
-import { useAddToWatchlist, useRemoveFromWatchlist } from '../../lib/tanstack/watchlist-hooks';
+import { useWatchlistLimit } from '@/hooks/useWatchlistLimit';
+import { useWatchlistStatus } from '@/hooks/useWatchlistStatus';
+import { pb } from '@/lib/pb/client';
+import { type WatchedStatus } from '@/lib/pb/types/watchlist-types';
+import { WatchlistUtils } from '@/lib/pb/watchlist-api';
+import { useAddToWatchlist, useRemoveFromWatchlist } from '@/lib/tanstack/watchlist-hooks';
 
 interface AddToWatchlistButtonProps {
   tmdbData: any; // TMDB movie/TV data
@@ -38,7 +38,7 @@ export function AddToWatchlistButton({
   onSuccess,
   onError
 }: AddToWatchlistButtonProps) {
-  const userId = pb.authStore.model?.id;
+  const userId = pb.authStore.record?.id;
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');

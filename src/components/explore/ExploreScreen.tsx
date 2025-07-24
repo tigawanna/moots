@@ -122,7 +122,12 @@ export function ExploreScreen() {
             onPress={() => setSelectedCategory(category.key)}
             style={[
               styles.categoryChip,
-              selectedCategory === category.key && styles.selectedCategoryChip,
+              selectedCategory === category.key ? { 
+                backgroundColor: colors.tertiary,
+                borderColor: colors.secondary,
+              }:{
+                backgroundColor: colors.surfaceVariant,
+              },
             ]}
             textStyle={
               selectedCategory === category.key
@@ -190,7 +195,7 @@ export function ExploreScreen() {
       </View>
 
       {/* Tab Navigation */}
-      {!isSearchFocused && (
+      {/* {!isSearchFocused && (
         <View style={styles.tabContainer}>
           <SegmentedButtons
             value={activeTab}
@@ -211,7 +216,7 @@ export function ExploreScreen() {
             style={styles.segmentedButtons}
           />
         </View>
-      )}
+      )} */}
 
       {/* Content */}
       <View style={styles.content}>

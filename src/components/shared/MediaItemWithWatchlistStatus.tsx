@@ -103,7 +103,7 @@ export function MediaItemWithWatchlistStatus({
         </View>
 
         <Card.Content style={styles.content}>
-          <Text variant="titleSmall" numberOfLines={2} style={styles.title}>
+          <Text variant="titleSmall" numberOfLines={1} style={styles.title}>
             {title}
           </Text>
 
@@ -115,7 +115,7 @@ export function MediaItemWithWatchlistStatus({
           {isInWatchlist && (
             <Chip
               icon={statusIcon}
-              style={[styles.statusChip, { backgroundColor: statusColor + "20" }]}
+              style={[styles.statusChip]}
               textStyle={{ color: statusColor, fontSize: 10 }}
               compact>
               {statusText}

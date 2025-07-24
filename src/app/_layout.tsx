@@ -4,7 +4,7 @@ import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import "react-native-reanimated";
 import { useAppState, useOnlineManager } from "@/lib/tanstack/react-native-setup-hooks";
-import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { focusManager } from "@tanstack/react-query";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { AppStateStatus, Platform } from "react-native";
@@ -17,12 +17,9 @@ import { PaperProvider } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { GlobalSnackbar } from "@/components/react-native-paper/snackbar/GlobalSnackbar.tsx";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { useExtrenalDevTools } from "@/lib/tanstack/external-dev-tools.ts";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 
-// Define your copy function based on your platform
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 function onAppStateChange(status: AppStateStatus) {

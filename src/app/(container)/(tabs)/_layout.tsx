@@ -40,7 +40,7 @@ export default function TabLayout() {
         options={{
           headerShown: false,
           title: "Explore",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcon size={28} name="map" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -54,7 +54,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcon size={28} name="verified-user" color={color} />,
         }}
       />
       <Tabs.Screen
