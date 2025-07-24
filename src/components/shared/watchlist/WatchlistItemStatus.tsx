@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Chip, useTheme,Text } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 import { UnifiedWatchlistItem } from './types';
 import { WatchlistItemUtils } from './WatchlistItemUtils';
 
@@ -35,29 +35,26 @@ export function WatchlistItemStatus({
     return isWatched ? 'Watched' : 'To Watch';
   };
 
-  const chipHeight = size === 'small' ? 20 : 24;
   const fontSize = size === 'small' ? 10 : 12;
-
+  const iconSize = size === 'small' ? 12 : 16;
   const statusColor = getStatusColor();
   
   return (
-    <Chip
-      icon={getStatusIcon()}
-      style={[
-        styles.statusChip,
-        { 
-          backgroundColor: colors.surfaceVariant,
-          height: chipHeight
-        }
-      ]}
-      textStyle={{ 
-        color: statusColor, 
-        fontSize 
-      }}
-      compact
-    >
-      {showText ? getStatusText() : ''}
-    </Chip>
+    <View style={styles.statusContainer}>
+      <MaterialIcons
+        name={getStatusIcon()}
+        size={iconSize}
+        color={statusColor}
+      />
+      {showText && (
+        <Text style={[
+          styles.statusText,
+          { color: statusColor, fontSize }
+        ]}>
+          {getStatusText()}
+        </Text>
+      )}
+    </View>
   );
 }
 
@@ -126,8 +123,13 @@ export function WatchlistItemRating({
 }
 
 const styles = StyleSheet.create({
-  statusChip: {
-    alignSelf: 'flex-start',
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  statusText: {
+    fontWeight: '500',
   },
   ratingContainer: {
     flexDirection: 'row',

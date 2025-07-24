@@ -1,13 +1,13 @@
-import { ExpoRouter, Href } from 'expo-router';
+import { Href } from 'expo-router';
 import { UnifiedWatchlistItem, isPocketBaseItem } from './types';
 
 export class WatchlistItemUtils {
   // Get normalized media type
   static getMediaType(item: UnifiedWatchlistItem): 'movie' | 'tv' {
     if (isPocketBaseItem(item)) {
-      return item.media_type[0] || 'movie';
+      return item.media_type?.[0] || 'movie';
     }
-    return item.media_type;
+    return item.media_type || 'movie';
   }
 
   // Get display ID for navigation
@@ -78,16 +78,16 @@ export class WatchlistItemUtils {
     return `${route}/${item.tmdb_id}`;
   }
 
-  // Get media type display text
-  static getMediaTypeText(item: UnifiedWatchlistItem): string {
-    const mediaType = this.getMediaType(item);
-    return mediaType === 'movie' ? 'Movie' : 'TV Show';
-  }
-
   // Get short media type text
   static getShortMediaTypeText(item: UnifiedWatchlistItem): string {
     const mediaType = this.getMediaType(item);
     return mediaType === 'movie' ? 'Movie' : 'TV';
+  }
+
+  // Get media type display text
+  static getMediaTypeText(item: UnifiedWatchlistItem): string {
+    const mediaType = this.getMediaType(item);
+    return mediaType === 'movie' ? 'Movie' : 'TV Show';
   }
 }
 

@@ -27,7 +27,8 @@ export function WatchlistItemActions({
   
   const iconSize = size === 'small' ? 18 : 20;
 
-  const handleToggleWatched = () => {
+  const handleToggleWatched = (event: any) => {
+    event.stopPropagation();
     if (onToggleWatched) {
       onToggleWatched(item);
     } else {
@@ -35,7 +36,8 @@ export function WatchlistItemActions({
     }
   };
 
-  const handleRemove = () => {
+  const handleRemove = (event: any) => {
+    event.stopPropagation();
     if (!onRemove) {
       console.log('Remove item:', item.tmdb_id);
       return;
@@ -55,7 +57,8 @@ export function WatchlistItemActions({
     );
   };
 
-  const handleAdd = () => {
+  const handleAdd = (event: any) => {
+    event.stopPropagation();
     if (onAdd) {
       onAdd(item);
     } else {

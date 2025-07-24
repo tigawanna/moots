@@ -4,13 +4,6 @@ import React, { useCallback, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, View } from "react-native";
 import { Chip, Searchbar, Surface, Text, useTheme } from "react-native-paper";
 import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
-import { router } from "expo-router";
-
-const TRENDING_CATEGORIES = [
-  { key: "movie", label: "Movies", endpoint: "trending/movie/week" },
-  { key: "tv", label: "TV Shows", endpoint: "trending/tv/week" },
-  { key: "all", label: "All", endpoint: "trending/all/week" },
-];
 
 const DISCOVER_CATEGORIES = [
   {
@@ -58,7 +51,7 @@ export function ExploreScreen() {
   const [activeTab, setActiveTab] = useState("discover");
   const [selectedCategory, setSelectedCategory] = useState("popular_movies");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [listType, setListType] = useState<"grid" | "list">("list");
+
   // Search hook
   const {
     data: searchResults,
@@ -70,14 +63,8 @@ export function ExploreScreen() {
   });
 
   // Discover hook
-  const currentCategory = DISCOVER_CATEGORIES.find(
-    (cat) => cat.key === selectedCategory
-  );
-  const {
-    data: discoverResults,
-    isLoading: discoverLoading,
-    error: discoverError,
-  } = useTMDBDiscover({
+  const currentCategory = DISCOVER_CATEGORIES.find((cat) => cat.key === selectedCategory);
+  const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
     type: (currentCategory?.type as "movie" | "tv") || "movie",
     params: {
       sort_by: currentCategory?.sort || "popularity.desc",
@@ -107,8 +94,7 @@ export function ExploreScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.categoryScroll}
-        contentContainerStyle={styles.categoryContent}
-      >
+        contentContainerStyle={styles.categoryContent}>
         {DISCOVER_CATEGORIES.map((category) => (
           <Chip
             key={category.key}
@@ -125,13 +111,8 @@ export function ExploreScreen() {
                     backgroundColor: colors.surfaceVariant,
                   },
             ]}
-            textStyle={
-              selectedCategory === category.key
-                ? styles.selectedCategoryText
-                : undefined
-            }
-          >
-            {category.label}
+            textStyle={selectedCategory === category.key ? styles.selectedCategoryText : undefined}>
+            <Text>{category.label}</Text>
           </Chip>
         ))}
       </ScrollView>
@@ -142,7 +123,7 @@ export function ExploreScreen() {
         renderItem={({ item }) => (
           <WatchlistItemCard
             item={item}
-            viewMode={listType}
+            viewMode="grid"
             // onPress={(id)=>{
             //   router.push(id)
             // }}
@@ -150,8 +131,8 @@ export function ExploreScreen() {
           />
         )}
         keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
-        numColumns={listType === "grid" ? 2 : 1}
-        contentContainerStyle={listType === "grid" ? styles.resultsGrid : undefined}
+        numColumns={2}
+        contentContainerStyle={styles.resultsGrid}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           discoverLoading ? (
@@ -220,7 +201,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-
+  // Tab styles
+  tabContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  segmentedButtons: {
+    backgroundColor: "transparent",
+  },
 
   // Content styles
   content: {
