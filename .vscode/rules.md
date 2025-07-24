@@ -8,4 +8,14 @@ This is a react native expo app using typescript
 
 - with react query prefer createing `queryOptions` and or custom hooks to encapsulate logic
  - Do not nest a `Flatlist` in a `ScrollView`
-    
+ - the route components in /app should be kept short not more than 25 lines of code move the rest into the appropriate components folder
+- most of the screens in the tab have safe area padding when using headerShown:true 
+
+in some cases i want to hide the header when it's ot relevent, use `headerShown: false` in the navigation options , this includes screens outside the tab navigator and even in the navigatior sould you have a screen witha a searchbox and flatlist prefer to use `headerShown: false` and implement the searchbox in the screen itself also add
+```tsx
+  const { top } = useSafeAreaInsets();
+      <View style={{ flex: 1, paddingTop: top }}>
+```
+type of manual safe area view addition
+
+- prefre the `@/` alias for most things including images in the /assets folder with `require("@/assets....)`, this is configured in the tsconfig.json file

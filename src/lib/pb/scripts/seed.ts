@@ -1,9 +1,7 @@
-import "dotenv/config";
-import Pocketbase from "pocketbase";
-import fs from "fs/promises";
-import { Schema, UsersCreate, WatchlistItemsCreate, WatchlistsCreate } from "../types/pb-types";
-import { TypedPocketBase } from "@tigawanna/typed-pocketbase";
 import { faker } from "@faker-js/faker";
+import { TypedPocketBase } from "@tigawanna/typed-pocketbase";
+import "dotenv/config";
+import { Schema, UsersCreate, WatchlistItemsCreate, WatchlistsCreate } from "../types/pb-types";
 
 
 const url = process.env.EXPO_PUBLIC_PB_URL;
@@ -47,7 +45,20 @@ async function seedWatchList(pb: TypedPocketBase<Schema>, userId: string) {
   const batch = pb.fromBatch();
   await batch.send();
 
- const watchlistItem: WatchlistItemsCreate = {
+  const watchlist: WatchlistsCreate = {
+    title: faker.lorem.sentence(),
+    description: faker.lorem.paragraph(),
+    owner: userId,
+    isPublic: faker.datatype.boolean(),
+    category: faker.helpers.arrayElement(['movies', 'tv_shows', 'mixed']),
+    coverImage: [],
+    tags: [faker.lorem.word(), faker.lorem.word()],   
+  };
+
+  const createdWatchlist = await pb.from("watchlists").create(watchlist);
+
+  const watchlistItem: WatchlistItemsCreate = {
+    watchlist: createdWatchlist.id,
     mediaType: faker.helpers.arrayElement(['movie', 'tv_show']),
     traktId: faker.number.int({ min: 1000, max: 9999 }),
     title: faker.lorem.sentence(),
@@ -57,16 +68,5 @@ async function seedWatchList(pb: TypedPocketBase<Schema>, userId: string) {
     status: ['plan_to_watch'],
     rating: faker.number.float({ min: 1, max: 10, }),
   };
-  const watchlist: WatchlistsCreate = {
-    title: faker.lorem.sentence(),
-    description: faker.lorem.paragraph(),
-    owner: userId,
-    isPublic: faker.datatype.boolean(),
-    category: faker.helpers.arrayElement(['movies', 'tv_shows', 'mixed']),
-    coverImage: [faker.image.avatar()],
-    tags: [faker.lorem.word(), faker.lorem.word()],   
-  };
-
-  const createdWatchlist = await pb.from("watchlists").create(watchlist);
   console.log("Created Watchlist:", createdWatchlist);
 }

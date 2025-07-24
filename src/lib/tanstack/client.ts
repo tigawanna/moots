@@ -1,6 +1,6 @@
-import { MutationCache, QueryClient } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { MutationCache, QueryClient } from "@tanstack/react-query";
 
 
 export const queryKeyPrefixes = {
@@ -15,10 +15,10 @@ export const queryKeyPrefixes = {
   testId:"testId"
 } as const;
 
-type QueryKey = [keyof typeof queryKeyPrefixes, ...readonly unknown[]];
+type QueryKey = [keyof typeof queryKeyPrefixes, ...unknown[]] | unknown[];
 
 interface MyMeta extends Record<string, unknown> {
-    invalidates?: [QueryKey[0], ...readonly unknown[]][];
+    invalidates?: [QueryKey[0], ...unknown[]][];
     [key: string]: unknown;
 }
 

@@ -1,7 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { createTMDBSDK, DiscoverMoviesParams, DiscoverTVParams, SearchParams } from './sdk-via-pb';
 import { pb } from '../pb/client';
+import { createTMDBSDK, DiscoverMoviesParams, DiscoverTVParams, SearchParams, TMDBDiscoverMoviesResponse, TMDBDiscoverTVResponse } from './sdk-via-pb';
 
 // Create TMDB SDK instance
 const tmdb = createTMDBSDK(pb);
@@ -11,7 +11,7 @@ const tmdb = createTMDBSDK(pb);
 // ============================================================================
 
 /**
- * Hook to discover popular movies
+ * Hook to discover movies
  */
 export function useTMDBDiscoverMovies(params: DiscoverMoviesParams = {}) {
   return useQuery({
@@ -27,7 +27,7 @@ export function useTMDBDiscoverMovies(params: DiscoverMoviesParams = {}) {
 }
 
 /**
- * Hook to discover popular TV shows
+ * Hook to discover TV shows
  */
 export function useTMDBDiscoverTV(params: DiscoverTVParams = {}) {
   return useQuery({
@@ -39,6 +39,40 @@ export function useTMDBDiscoverTV(params: DiscoverTVParams = {}) {
     }),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+}
+
+/**
+ * Unified discover response type
+ */
+export type TMDBDiscoverResponse = TMDBDiscoverMoviesResponse | TMDBDiscoverTVResponse;
+
+/**
+ * Unified discover hook for both movies and TV shows
+ */
+export function useTMDBDiscover({ type, params }: { 
+  type: 'movie' | 'tv'; 
+  params?: DiscoverMoviesParams | DiscoverTVParams 
+}) {
+  return useQuery<TMDBDiscoverResponse>({
+    queryKey: ['tmdb', 'discover', type, params],
+    queryFn: async (): Promise<TMDBDiscoverResponse> => {
+      if (type === 'movie') {
+        return await tmdb.discoverMovies({
+          sort_by: 'popularity.desc',
+          page: 1,
+          ...params,
+        } as DiscoverMoviesParams);
+      } else {
+        return await tmdb.discoverTV({
+          sort_by: 'popularity.desc',
+          page: 1,
+          ...params,
+        } as DiscoverTVParams);
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 }
 

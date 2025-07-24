@@ -1,11 +1,11 @@
+import { HapticTab } from '@/components/default/HapticTab';
+import { IconSymbol, MaterialIcon } from '@/components/default/ui/IconSymbol.ios';
+import TabBarBackground from '@/components/default/ui/TabBarBackground';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { HapticTab } from '@/components/default/HapticTab';
-import TabBarBackground from '@/components/default/ui/TabBarBackground';
-import { IconSymbol, MaterialIcon } from '@/components/default/ui/IconSymbol.ios';
 
 
 export default function TabLayout() {
@@ -31,16 +31,23 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Watchlist",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="tmbd"
+        name="explore"
         options={{
-          headerShown:false,
-          title: "Tmdb",
+          headerShown: false,
+          title: "Explore",
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="community"
+        options={{
+          title: "Community",
+          tabBarIcon: ({ color }) => <MaterialIcon size={28} name="people" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -54,7 +61,6 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: "Settings",
-
           tabBarIcon: ({ color }) => <MaterialIcon size={28} name="settings" color={color} />,
         }}
       />
