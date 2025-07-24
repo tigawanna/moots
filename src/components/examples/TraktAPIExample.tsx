@@ -1,4 +1,4 @@
-import { LoadingIndicatorDots } from "@/components/screens/state-screens/LoadingIndicatorDots";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { useTraktAPI } from "@/hooks/useTraktAPI";
 import { useAuthState } from "@/store/auth-utils";
 import React, { useState } from "react";

@@ -1,4 +1,4 @@
-import { LoadingIndicatorDots } from "@/components/screens/state-screens/LoadingIndicatorDots";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { TraktSearchResult } from "@/lib/trakt/trakt-trending";
 import { FlatList, StyleSheet, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";

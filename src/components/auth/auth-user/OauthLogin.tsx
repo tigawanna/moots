@@ -1,41 +1,34 @@
 import { AppLogoSvg } from "@/components/shared/svg/AppLogoSvg";
-import { TraktSvg } from "@/components/shared/svg/TraktSvg";
+import { GoogleSvg } from "@/components/shared/svg/GoogleSvg";
 import { pb } from "@/lib/pb/client";
-import { TraktMeta } from "@/lib/pb/types/trakt-meta-types";
 import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
-import { useTraktStore } from "@/store/trakt-store";
-import { useUserInfoStore } from "@/store/user-info-store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { Platform, Pressable, StyleSheet, View } from "react-native";
-import { Card, Surface, Text, useTheme } from "react-native-paper";
+import { Card, Text, useTheme } from "react-native-paper";
 import { LoadingIndicatorDots } from "../../state-screens/LoadingIndicatorDots";
 
-export function LoginScreenComponent() {
+export function OauthLogin() {
   const { colors } = useTheme();
   const { data, isPending: isCurrentUserPending } = useQuery(viewerQueryOptions());
-  const { login: loginToTraktStore } = useTraktStore();
-  const { setFromTraktUser } = useUserInfoStore();
 
-  // const watchedEmail = watch("email");
+ // const watchedEmail = watch("email");
 
   const loginWithGoogle = () => {
     if (Platform.OS === "web") {
       return pb.collection("users").authWithOAuth2({
-        provider: "trakt",
+        provider: "google",
       });
     }
     return pb.collection("users").authWithOAuth2({
-      provider: "trakt",
+      provider: "google",
       urlCallback(url: string) {
-        WebBrowser.openAuthSessionAsync(url, Linking.createURL("/"))
-        .then((res) => {
+        WebBrowser.openAuthSessionAsync(url, Linking.createURL("/")).then((res) => {
           if (Platform.OS === "ios") {
             WebBrowser.dismissAuthSession();
           }
-        })
-
+        });
       },
     });
   };
@@ -44,25 +37,7 @@ export function LoginScreenComponent() {
       return loginWithGoogle();
     },
     onSuccess: (data) => {
-      console.log("Login successful", data);
-      const traktMeta = data.meta as TraktMeta; 
-      // Store Trakt tokens and rate limits
-      if (traktMeta?.accessToken && traktMeta?.refreshToken) {
-        loginToTraktStore(
-          {
-            accessToken: traktMeta.accessToken,
-            refreshToken: traktMeta.refreshToken,
-            // Convert expiry string to timestamp if available
-            expiresAt: traktMeta.expiry ? new Date(traktMeta.expiry).getTime() : undefined,
-          },
-          traktMeta.rawUser?.limits
-        );
-      }
 
-      // Store user information
-      if (traktMeta.rawUser?.user) {
-        setFromTraktUser(traktMeta.rawUser.user, traktMeta.email);
-      }
     },
     onError: (error) => {
       console.log("Login failed", error.message);
@@ -72,7 +47,7 @@ export function LoginScreenComponent() {
     },
   });
   return (
-    <Surface style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.content}>
         {/* Header Section */}
         <View style={styles.header}>
@@ -120,7 +95,8 @@ export function LoginScreenComponent() {
                     alignItems: "center",
                     gap: 12,
                   }}>
-                  <TraktSvg width={24} height={24} />
+                  {/* <TraktSvg width={24} height={24} /> */}
+                  <GoogleSvg width={24} height={24} />
                   <Text
                     variant="titleMedium"
                     style={[styles.buttonText, { color: colors.primary }]}>
@@ -143,12 +119,12 @@ export function LoginScreenComponent() {
           <LoadingIndicatorDots />
         </View>
       )}
-    </Surface>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
   },
   content: {
     flex: 1,

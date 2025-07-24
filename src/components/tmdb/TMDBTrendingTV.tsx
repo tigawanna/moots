@@ -1,4 +1,4 @@
-import { LoadingIndicatorDots } from "@/components/screens/state-screens/LoadingIndicatorDots";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { TMDBTVShow, buildTMDBImageUrl } from "@/lib/tmdb/sdk-via-pb";
 import { useTMDBTrendingTV } from "@/lib/tmdb/tmdb-hooks";
 import { FlatList, Image, StyleSheet, View } from "react-native";

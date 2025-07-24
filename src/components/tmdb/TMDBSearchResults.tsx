@@ -1,9 +1,9 @@
-import { LoadingIndicatorDots } from "@/components/screens/state-screens/LoadingIndicatorDots";
+import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { TMDBSearchResult, buildTMDBImageUrl, isMovie, isPerson, isTVShow } from "@/lib/tmdb/sdk-via-pb";
 import { FlatList, Image, StyleSheet, View } from "react-native";
-import { Card, Chip, Text, useTheme } from "react-native-paper";
-import { TrendingOnTMDB } from "./TrendingOnTMDB";
+import { Card, Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "../shared/svg/empty";
+import { TrendingOnTMDB } from "./TrendingOnTMDB";
 
 interface SearchResultItemProps {
   item: TMDBSearchResult;

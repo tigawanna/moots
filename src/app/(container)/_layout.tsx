@@ -1,8 +1,7 @@
-import { LoadingFallback } from "@/components/screens/state-screens/LoadingFallback";
+import { LoadingFallback } from "@/components/state-screens/LoadingFallback";
 import { queryClient } from "@/lib/tanstack/client";
 import { useExtrenalDevTools } from "@/lib/tanstack/external-dev-tools";
 import { viewerQueryOptions } from "@/lib/tanstack/operations/user";
-import { useAuthState } from "@/store/auth-utils";
 
 import { useQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";

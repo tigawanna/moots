@@ -1,5 +1,5 @@
 import { pb } from "@/lib/pb/client";
-import { UsersResponse } from "@/lib/pb/types/pb-types";
+import { UsersCreate, UsersResponse } from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 
 export function viewerQueryOptions() {
@@ -17,6 +17,33 @@ export function logoutViewerMutationOptions() {
   return mutationOptions({
     mutationFn: async () => {
       await pb.authStore.clear();
+    },
+    meta: {
+      invalidates: [["viewer"]],
+    },
+  });
+}
+
+export function signinMutationOption() {
+  return mutationOptions({
+    mutationFn: ({ password, usernameOrEmail }: { usernameOrEmail: string; password: string }) => {
+      return pb.from("users").authWithPassword(usernameOrEmail, password);
+    },
+    meta: {
+      invalidates: [["viewer"]],
+    },
+  });
+}
+export function signupMutationOption() {
+  return mutationOptions({
+    mutationFn: (
+      input: UsersCreate & {
+        email:string;
+        password: string;
+        passwordConfirm:string
+      }
+    ) => {
+      return pb.from("users").create(input);
     },
     meta: {
       invalidates: [["viewer"]],
