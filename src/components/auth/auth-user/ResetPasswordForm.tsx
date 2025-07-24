@@ -7,7 +7,6 @@ import { Alert, StyleSheet, View } from 'react-native';
 import {
     Button,
     Card,
-    Divider,
     Text,
     TextInput,
     useTheme
@@ -15,9 +14,8 @@ import {
 import { z } from 'zod';
 import { LoadingIndicatorDots } from '../../state-screens/LoadingIndicatorDots';
 
-const signupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   passwordConfirm: z.string().min(1, 'Please confirm your password'),
 }).refine((data) => data.password === data.passwordConfirm, {
@@ -25,113 +23,85 @@ const signupSchema = z.object({
   path: ["passwordConfirm"],
 });
 
-type SignupFormData = z.infer<typeof signupSchema>;
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
-interface SignupFormProps {
-  onSwitchToLogin: () => void;
-  onVerificationSent: (email: string) => void;
+interface ResetPasswordFormProps {
+  token?: string;
+  onResetComplete: () => void;
+  onBackToLogin: () => void;
 }
 
-export function SignupForm({ onSwitchToLogin, onVerificationSent }: SignupFormProps) {
+export function ResetPasswordForm({ token, onResetComplete, onBackToLogin }: ResetPasswordFormProps) {
   const { colors } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   
-  const { control, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
+  const { control, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      name: '',
-      email: '',
+      token: token || '',
       password: '',
       passwordConfirm: '',
     },
   });
 
-  const signupMutation = useMutation({
-    mutationFn: async (data: SignupFormData) => {
-      // Create user account
-      const user = await pb.from('users').create({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        passwordConfirm: data.passwordConfirm,
-      });
-      
-      // Send verification email
-      await pb.from('users').requestVerification(data.email);
-      
-      return { user, email: data.email };
+  const resetMutation = useMutation({
+    mutationFn: async (data: ResetPasswordFormData) => {
+      await pb.from('users').confirmPasswordReset(
+        data.token,
+        data.password,
+        data.passwordConfirm
+      );
     },
-    onSuccess: (data) => {
-      onVerificationSent(data.email);
+    onSuccess: () => {
+      Alert.alert(
+        'Password Reset Successful',
+        'Your password has been reset successfully. You can now sign in with your new password.',
+        [{ text: 'OK', onPress: onResetComplete }]
+      );
     },
     onError: (error: any) => {
       Alert.alert(
-        'Signup Failed',
-        error?.message || 'Please check your information and try again.'
+        'Reset Failed',
+        error?.message || 'Failed to reset password. Please try again or request a new reset link.'
       );
     },
   });
 
-  const onSubmit = (data: SignupFormData) => {
-    signupMutation.mutate(data);
+  const onSubmit = (data: ResetPasswordFormData) => {
+    resetMutation.mutate(data);
   };
 
   return (
     <Card style={styles.card}>
       <Card.Content style={styles.cardContent}>
         <Text variant="headlineSmall" style={[styles.title, { color: colors.onSurface }]}>
-          Create Account
+          Set New Password
         </Text>
         <Text variant="bodyMedium" style={[styles.subtitle, { color: colors.onSurfaceVariant }]}>
-          Join the movie community
+          Enter your reset token and choose a new password.
         </Text>
 
         <View style={styles.form}>
           <Controller
             control={control}
-            name="name"
+            name="token"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                label="Full Name"
+                label="Reset Token"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                error={!!errors.name}
-                autoCapitalize="words"
-                autoComplete="name"
-                style={styles.input}
-                left={<TextInput.Icon icon="account" />}
-              />
-            )}
-          />
-          {errors.name && (
-            <Text variant="bodySmall" style={[styles.errorText, { color: colors.error }]}>
-              {errors.name.message}
-            </Text>
-          )}
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                label="Email"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={!!errors.email}
-                keyboardType="email-address"
+                error={!!errors.token}
                 autoCapitalize="none"
-                autoComplete="email"
                 style={styles.input}
-                left={<TextInput.Icon icon="email" />}
+                left={<TextInput.Icon icon="key" />}
               />
             )}
           />
-          {errors.email && (
+          {errors.token && (
             <Text variant="bodySmall" style={[styles.errorText, { color: colors.error }]}>
-              {errors.email.message}
+              {errors.token.message}
             </Text>
           )}
 
@@ -140,7 +110,7 @@ export function SignupForm({ onSwitchToLogin, onVerificationSent }: SignupFormPr
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                label="Password"
+                label="New Password"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -169,7 +139,7 @@ export function SignupForm({ onSwitchToLogin, onVerificationSent }: SignupFormPr
             name="passwordConfirm"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                label="Confirm Password"
+                label="Confirm New Password"
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -196,31 +166,24 @@ export function SignupForm({ onSwitchToLogin, onVerificationSent }: SignupFormPr
           <Button
             mode="contained"
             onPress={handleSubmit(onSubmit)}
-            disabled={signupMutation.isPending}
+            disabled={resetMutation.isPending}
             style={styles.submitButton}
             contentStyle={styles.submitButtonContent}
           >
-            {signupMutation.isPending ? (
+            {resetMutation.isPending ? (
               <LoadingIndicatorDots />
             ) : (
-              'Create Account'
+              'Reset Password'
             )}
           </Button>
-        </View>
 
-        <Divider style={styles.divider} />
-
-        <View style={styles.switchContainer}>
-          <Text variant="bodyMedium" style={{ color: colors.onSurfaceVariant }}>
-            Already have an account?{' '}
-          </Text>
           <Button
             mode="text"
-            onPress={onSwitchToLogin}
-            compact
+            onPress={onBackToLogin}
+            style={styles.backButton}
             labelStyle={{ color: colors.primary }}
           >
-            Sign In
+            Back to Sign In
           </Button>
         </View>
       </Card.Content>
@@ -245,6 +208,7 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
     marginBottom: 32,
+    lineHeight: 20,
   },
   form: {
     gap: 16,
@@ -262,12 +226,7 @@ const styles = StyleSheet.create({
   submitButtonContent: {
     paddingVertical: 8,
   },
-  divider: {
-    marginVertical: 24,
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  backButton: {
+    marginTop: 8,
   },
 });
