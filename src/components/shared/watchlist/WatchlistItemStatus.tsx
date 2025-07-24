@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Chip, useTheme } from 'react-native-paper';
+import { Chip, useTheme,Text } from 'react-native-paper';
 import { UnifiedWatchlistItem } from './types';
 import { WatchlistItemUtils } from './WatchlistItemUtils';
 
@@ -38,18 +38,20 @@ export function WatchlistItemStatus({
   const chipHeight = size === 'small' ? 20 : 24;
   const fontSize = size === 'small' ? 10 : 12;
 
+  const statusColor = getStatusColor();
+  
   return (
     <Chip
       icon={getStatusIcon()}
       style={[
         styles.statusChip,
         { 
-          backgroundColor: getStatusColor() + '20',
+          backgroundColor: colors.surfaceVariant,
           height: chipHeight
         }
       ]}
       textStyle={{ 
-        color: getStatusColor(), 
+        color: statusColor, 
         fontSize 
       }}
       compact
@@ -115,9 +117,9 @@ export function WatchlistItemRating({
           size={iconSize - 2} 
           color="#FFD700" 
         />
-        <View style={styles.tmdbRatingText}>
+        <Text style={styles.tmdbRatingText}>
           {rating.toFixed(1)}
-        </View>
+        </Text>
       </View>
     </View>
   );

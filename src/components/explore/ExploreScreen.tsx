@@ -1,16 +1,10 @@
-import { MediaItemWithWatchlistStatus } from "@/components/shared/MediaItemWithWatchlistStatus";
 import { TMDBSearchResults } from "@/components/tmdb/TMDBSearchResults";
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tmdb/tmdb-hooks";
 import React, { useCallback, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, View } from "react-native";
-import {
-  Chip,
-  Searchbar,
-  SegmentedButtons,
-  Surface,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Chip, Searchbar, Surface, Text, useTheme } from "react-native-paper";
+import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
+import { router } from "expo-router";
 
 const TRENDING_CATEGORIES = [
   { key: "movie", label: "Movies", endpoint: "trending/movie/week" },
@@ -64,7 +58,7 @@ export function ExploreScreen() {
   const [activeTab, setActiveTab] = useState("discover");
   const [selectedCategory, setSelectedCategory] = useState("popular_movies");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-
+  const [listType, setListType] = useState<"grid" | "list">("list");
   // Search hook
   const {
     data: searchResults,
@@ -122,12 +116,14 @@ export function ExploreScreen() {
             onPress={() => setSelectedCategory(category.key)}
             style={[
               styles.categoryChip,
-              selectedCategory === category.key ? { 
-                backgroundColor: colors.tertiary,
-                borderColor: colors.secondary,
-              }:{
-                backgroundColor: colors.surfaceVariant,
-              },
+              selectedCategory === category.key
+                ? {
+                    backgroundColor: colors.tertiary,
+                    borderColor: colors.secondary,
+                  }
+                : {
+                    backgroundColor: colors.surfaceVariant,
+                  },
             ]}
             textStyle={
               selectedCategory === category.key
@@ -144,14 +140,18 @@ export function ExploreScreen() {
       <FlatList
         data={(discoverResults?.results as any[]) || []}
         renderItem={({ item }) => (
-          <MediaItemWithWatchlistStatus
+          <WatchlistItemCard
             item={item}
-            mediaType={(currentCategory?.type as "movie" | "tv") || "movie"}
+            viewMode={listType}
+            // onPress={(id)=>{
+            //   router.push(id)
+            // }}
+            showActions={true}
           />
         )}
         keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
-        numColumns={2}
-        contentContainerStyle={styles.resultsGrid}
+        numColumns={listType === "grid" ? 2 : 1}
+        contentContainerStyle={listType === "grid" ? styles.resultsGrid : undefined}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           discoverLoading ? (
@@ -194,30 +194,6 @@ export function ExploreScreen() {
         />
       </View>
 
-      {/* Tab Navigation */}
-      {/* {!isSearchFocused && (
-        <View style={styles.tabContainer}>
-          <SegmentedButtons
-            value={activeTab}
-            onValueChange={setActiveTab}
-            buttons={[
-              {
-                value: "discover",
-                label: "Discover",
-                icon: "compass-outline",
-              },
-              {
-                value: "search",
-                label: "Search",
-                icon: "magnify",
-                disabled: !searchQuery.trim(),
-              },
-            ]}
-            style={styles.segmentedButtons}
-          />
-        </View>
-      )} */}
-
       {/* Content */}
       <View style={styles.content}>
         {(activeTab === "search" || isSearchFocused) && searchQuery.trim()
@@ -244,14 +220,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // Tab styles
-  tabContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  segmentedButtons: {
-    backgroundColor: "transparent",
-  },
+
 
   // Content styles
   content: {

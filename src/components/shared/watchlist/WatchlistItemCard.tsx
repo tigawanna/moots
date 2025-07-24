@@ -12,7 +12,7 @@ import { WatchlistItemUtils } from './WatchlistItemUtils';
 interface WatchlistItemCardProps {
   item: UnifiedWatchlistItem;
   viewMode?: 'grid' | 'list';
-  onPress?: () => void;
+  onPress?: (id:string|number) => void;
   onLongPress?: () => void;
   onToggleWatched?: (item: UnifiedWatchlistItem) => void;
   onRemove?: (item: UnifiedWatchlistItem) => void;
@@ -42,7 +42,7 @@ export function WatchlistItemCard({
 
   const handlePress = () => {
     if (onPress) {
-      onPress();
+      onPress(item?.id);
     } else {
       const route = WatchlistItemUtils.getNavigationRoute(item)
       router.push(route);
