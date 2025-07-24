@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { pb } from '../lib/pb/client';
-import { useWatchlistStatus as useWatchlistStatusQuery } from '../lib/tanstack/watchlist-hooks';
+import { useWatchlistStatus as useWatchlistStatusQuery } from '../lib/tanstack/operations/watchlist/old/watchlist-hooks';
 import { useWatchlistPendingState } from '../store/watchlist-store';
 
 /**

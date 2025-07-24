@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { type WatchedStatus, type WatchlistItem } from '../lib/pb/types/watchlist-types';
+import { type WatchedStatus, type WatchlistItem } from '../lib/tanstack/operations/watchlist/watchlist-types';
 
 /**
  * Watchlist UI State

@@ -1,5 +1,5 @@
 import { pb } from '../lib/pb/client';
-import { useWatchlistLimit as useWatchlistLimitQuery, useWatchlistStats } from '../lib/tanstack/watchlist-hooks';
+import { useWatchlistLimit as useWatchlistLimitQuery, useWatchlistStats } from '../lib/tanstack/operations/watchlist/old/watchlist-hooks';
 import { useWatchlistStatsStore } from '../store/watchlist-store';
 
 /**

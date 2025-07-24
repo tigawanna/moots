@@ -3,20 +3,20 @@ import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { pb } from "@/lib/pb/client";
 import {
   useUserWatchListFiltersStore,
-  useWatchListQueryOptions,
-} from "@/lib/tanstack/operations/user-watchlist";
+  watchListQueryOptions,
+} from "@/lib/tanstack/operations/watchlist/user-watchlist";
 
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
-import { Text, Surface, Searchbar, useTheme } from "react-native-paper";
-import { UserWatchListFlatList } from "./UserWatchListFlatList";
+import { Searchbar, Surface, Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { UserWatchListFlatList } from "./UserWatchListFlatList";
 
 
 export function UserWatchList() {
   // filters
   const userId = pb.authStore?.record?.id;
-  const { data, isLoading, error,refetch } = useQuery(useWatchListQueryOptions({ userId }));
+  const { data, isLoading, error,refetch } = useQuery(watchListQueryOptions({ userId }));
   const { colors } = useTheme();
 
   if (isLoading) {

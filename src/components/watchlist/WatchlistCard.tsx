@@ -4,8 +4,8 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { Card, Chip, IconButton, ProgressBar, Text } from 'react-native-paper';
-import { type WatchlistItem } from '../../lib/pb/types/watchlist-types';
-import { useRemoveFromWatchlist, useToggleWatchedStatus } from '../../lib/tanstack/watchlist-hooks';
+import { useRemoveFromWatchlist, useToggleWatchedStatus } from '../../lib/tanstack/operations/watchlist/old/watchlist-hooks';
+import { type WatchlistItem } from '../../lib/tanstack/operations/watchlist/watchlist-types';
 import { getOptimizedImageUrl } from '../../lib/tmdb/sdk-via-pb';
 import { useWatchlistUIStore } from '../../store/watchlist-store';
 

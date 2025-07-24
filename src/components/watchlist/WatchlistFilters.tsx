@@ -3,17 +3,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import {
-    Button,
-    Card,
-    Chip,
-    Divider,
-    Menu,
-    Modal,
-    Portal,
-    Searchbar,
-    Text
+  Button,
+  Card,
+  Chip,
+  Divider,
+  Menu,
+  Modal,
+  Portal,
+  Searchbar,
+  Text
 } from 'react-native-paper';
-import { WATCHED_STATUSES } from '../../lib/pb/types/watchlist-types';
+import { WATCHED_STATUSES } from '../../lib/tanstack/operations/watchlist/watchlist-types';
 import { useWatchlistFilters } from '../../store/watchlist-store';
 
 // TMDB genre mapping (simplified - you'd get this from TMDB API)

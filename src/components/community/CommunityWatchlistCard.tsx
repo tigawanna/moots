@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Avatar, Card, Chip, IconButton, Text } from 'react-native-paper';
-import { type CommunityWatchlist } from '../../lib/pb/types/watchlist-types';
+import { type CommunityWatchlist } from '../../lib/tanstack/operations/watchlist/watchlist-types';
 
 interface CommunityWatchlistCardProps {
   watchlist: CommunityWatchlist;

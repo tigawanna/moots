@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import {
-    MEDIA_TYPES,
-    WATCHED_STATUSES,
-    WATCHLIST_CATEGORIES
-} from '../types/watchlist-types';
+  MEDIA_TYPES,
+  WATCHED_STATUSES,
+  WATCHLIST_CATEGORIES
+} from '../../tanstack/operations/watchlist/watchlist-types';
 
 // Base schemas for validation
 export const watchedStatusSchema = z.enum(WATCHED_STATUSES);

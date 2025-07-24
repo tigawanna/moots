@@ -1,6 +1,6 @@
 import { CommunityWatchlistCard } from '@/components/community/CommunityWatchlistCard';
 import { pb } from '@/lib/pb/client';
-import { useCommunityWatchlists } from '@/lib/tanstack/watchlist-hooks';
+import { useCommunityWatchlists } from '@/lib/tanstack/operations/watchlist/old/watchlist-hooks';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';

@@ -1,11 +1,11 @@
 import { QueryClient } from '@tanstack/react-query';
-import {
-    type CreateWatchlistItemInput,
-    type UpdateWatchlistItemInput,
-    type WatchlistItem
-} from '../../pb/types/watchlist-types';
 import { WatchlistAPI, WatchlistUtils } from '../../pb/watchlist-api';
 import { watchlistKeys } from '../query-keys';
+import {
+  type CreateWatchlistItemInput,
+  type UpdateWatchlistItemInput,
+  type WatchlistItem
+} from './watchlist/watchlist-types';
 
 /**
  * Advanced watchlist operations with optimistic updates

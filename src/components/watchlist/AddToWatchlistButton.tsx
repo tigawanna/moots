@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
-import {
-    Button,
-    Card,
-    Chip,
-    IconButton,
-    Modal,
-    Portal,
-    SegmentedButtons,
-    Snackbar,
-    Text,
-    TextInput
-} from 'react-native-paper';
 import { useWatchlistLimit } from '@/hooks/useWatchlistLimit';
 import { useWatchlistStatus } from '@/hooks/useWatchlistStatus';
 import { pb } from '@/lib/pb/client';
-import { type WatchedStatus } from '@/lib/pb/types/watchlist-types';
 import { WatchlistUtils } from '@/lib/pb/watchlist-api';
-import { useAddToWatchlist, useRemoveFromWatchlist } from '@/lib/tanstack/watchlist-hooks';
+import { addToWatchListMutationOptions } from '@/lib/tanstack/operations/watchlist/user-watchlist';
+import { type WatchedStatus } from '@/lib/tanstack/operations/watchlist/watchlist-types';
+import { useMutation } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import {
+  Button,
+  Card,
+  Chip,
+  IconButton,
+  Modal,
+  Portal,
+  SegmentedButtons,
+  Snackbar,
+  Text,
+  TextInput
+} from 'react-native-paper';
+// import { useAddToWatchlist, useRemoveFromWatchlist } from '@/lib/tanstack/watchlist-hooks';
 
 interface AddToWatchlistButtonProps {
   tmdbData: any; // TMDB movie/TV data
@@ -51,8 +53,10 @@ export function AddToWatchlistButton({
   // Hooks
   const { isInWatchlist, watchlistItem, isLoading, isPending } = useWatchlistStatus(tmdbData.id, mediaType);
   const { canAdd, currentCount, limit, warningMessage } = useWatchlistLimit();
-  const addToWatchlist = useAddToWatchlist();
-  const removeFromWatchlist = useRemoveFromWatchlist();
+  // const addToWatchlist = useAddToWatchlist();
+  // const removeFromWatchlist = useRemoveFromWatchlist();
+
+  const quickAddMutation = useMutation(addToWatchListMutationOptions());
   
   if (!userId) return null;
   
@@ -69,7 +73,8 @@ export function AddToWatchlistButton({
     
     try {
       const watchlistItemData = WatchlistUtils.tmdbToWatchlistItem(tmdbData, userId, mediaType);
-      await addToWatchlist.mutateAsync(watchlistItemData);
+      // await addToWatchlist.mutateAsync(watchlistItemData);
+      quickAddMutation.mutateAsync({ userId, payload: watchlistItemData });
       
       setSnackbarMessage(`Added "${tmdbData.title || tmdbData.name}" to watchlist`);
       setSnackbarVisible(true);

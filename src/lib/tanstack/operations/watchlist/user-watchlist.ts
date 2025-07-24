@@ -1,6 +1,7 @@
 import { pb } from "@/lib/pb/client";
 import { WatchlistResponse } from "@/lib/pb/types/pb-types";
-import { queryOptions } from "@tanstack/react-query";
+import { CreateWatchlistItemInput } from "@/lib/tanstack/operations/watchlist/watchlist-types";
+import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { and, eq, like } from "@tigawanna/typed-pocketbase";
 
 import { create } from "zustand";
@@ -36,8 +37,7 @@ export const useUserWatchListFiltersStore = create<WatchlistFiltersState>()(
         sort: { field: "created", direction: "desc" },
         setSort: (sort) => set({ sort }),
         filters: { watched: false },
-        setFilters: (filters) =>
-          set((state) => ({ filters: { ...state.filters, ...filters } })),
+        setFilters: (filters) => set((state) => ({ filters: { ...state.filters, ...filters } })),
       }),
       {
         name: "watchlist-filters-storage",
@@ -46,15 +46,11 @@ export const useUserWatchListFiltersStore = create<WatchlistFiltersState>()(
   )
 );
 
-export function useWatchListQueryOptions({
-  userId,
-  page = 1,
-}: UseWatchListQueryFunctionProps) {
+export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
   return queryOptions({
     queryKey: ["user-watchlist", userId, page],
     queryFn: () => {
-      const { filters, searchTerm, sort } =
-        useUserWatchListFiltersStore.getState();
+      const { filters, searchTerm, sort } = useUserWatchListFiltersStore.getState();
 
       if (!userId) {
         return {
@@ -70,15 +66,37 @@ export function useWatchListQueryOptions({
         filter: and(
           eq("user_id", [userId]),
           searchTerm ? like("title", `%${searchTerm}%`) : undefined,
-          filters.watched !== undefined
-            ? eq("watched_status", filters.watched)
-            : undefined
+          filters.watched !== undefined ? eq("watched_status", filters.watched) : undefined
         ),
         sort: `${sort.direction === "desc" ? "-" : ""}${sort.field}` as any,
       });
     },
-    staleTime:0,
-    gcTime:0,
+    staleTime: 0,
+    gcTime: 0,
     // staleTime: 12 * 60 * 60 * 1000, // 12 hours
+  });
+}
+
+interface AddToWatchListMutationOptionsProps {
+  userId: string;
+  payload: CreateWatchlistItemInput;
+}
+
+export function addToWatchListMutationOptions() {
+  return mutationOptions({
+    mutationFn: ({ userId, payload }: AddToWatchListMutationOptionsProps) => {
+      return pb.from("watchlist").create({
+        user_id: userId,
+        media_type: payload.media_type,
+        tmdb_id: payload.tmdb_id,
+        title: payload.title || payload.name || "unknown",
+        backdrop_path: payload.backdrop_path || undefined,
+        poster_path: payload.poster_path || undefined,
+        overview: payload.overview || undefined,
+        release_date: payload.release_date || undefined,
+        vote_average: payload.vote_average || 0,
+        genre_ids: payload.genre_ids || [],
+      });
+    },
   });
 }

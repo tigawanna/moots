@@ -1,19 +1,19 @@
+import {
+  COLLECTIONS,
+  type CommunityWatchlist,
+  type CreateCommunityWatchlist,
+  type UpdateCommunityWatchlist,
+  type WatchlistItem
+} from '../tanstack/operations/watchlist/watchlist-types';
 import { pb } from './client';
 import {
-    createCommunityWatchlistSchema,
-    createWatchlistItemSchema,
-    updateCommunityWatchlistSchema,
-    updateWatchlistItemSchema,
-    type CreateWatchlistItemInput,
-    type UpdateWatchlistItemInput
+  createCommunityWatchlistSchema,
+  createWatchlistItemSchema,
+  updateCommunityWatchlistSchema,
+  updateWatchlistItemSchema,
+  type CreateWatchlistItemInput,
+  type UpdateWatchlistItemInput
 } from './schemas/watchlist-schemas';
-import {
-    COLLECTIONS,
-    type CommunityWatchlist,
-    type CreateCommunityWatchlist,
-    type UpdateCommunityWatchlist,
-    type WatchlistItem
-} from './types/watchlist-types';
 
 /**
  * Personal Watchlist API
