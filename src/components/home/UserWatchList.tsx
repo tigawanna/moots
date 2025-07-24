@@ -13,10 +13,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserWatchListFlatList } from "./UserWatchListFlatList";
 
 
-export function UserWatchList() {
+export function UserWatchList({community}:{community?: boolean}) {
   // filters
   const userId = pb.authStore?.record?.id;
-  const { data, isLoading, error,refetch } = useQuery(watchListQueryOptions({ userId }));
+  const { data, isLoading, error,refetch } = useQuery(watchListQueryOptions({ userId:community ? undefined : userId }));
   const { colors } = useTheme();
 
   if (isLoading) {

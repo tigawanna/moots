@@ -1,5 +1,4 @@
-import { HomeScreenComponent } from "@/components/home/HomeScreenComponent";
-import { UserWatchList } from "@/components/home/user-watchlist/UserWatchList";
+import { UserWatchList } from "@/components/home/UserWatchList";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 

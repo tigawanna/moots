@@ -21,7 +21,7 @@ export function UserWatchListFlatList({
   onEndReached,
   onEndReachedThreshold = 0.1,
   viewMode = "grid",
-  emptyMessage = "Your watchlist is empty. Start adding movies and TV shows!",
+  emptyMessage = "Watchlist is empty. Start adding movies and TV shows!",
 }: UserWatchListFlatListProps) {
   const { colors } = useTheme();
 

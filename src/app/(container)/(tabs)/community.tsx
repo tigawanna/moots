@@ -1,14 +1,12 @@
-import { CommunityScreen } from '@/components/community/CommunityScreen';
-import React from 'react';
-import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { UserWatchList } from "@/components/home/UserWatchList";
+import React from "react";
+import { View } from "react-native";
+
 
 export default function CommunityRoute() {
-  const { top } = useSafeAreaInsets();
-  
   return (
-    <View style={{ flex: 1, paddingTop: top }}>
-      <CommunityScreen />
+    <View style={{ flex: 1 }}>
+      <UserWatchList community />
     </View>
   );
 }

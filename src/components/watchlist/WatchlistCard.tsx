@@ -4,10 +4,12 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { Card, Chip, IconButton, ProgressBar, Text } from 'react-native-paper';
-import { useRemoveFromWatchlist, useToggleWatchedStatus } from '../../lib/tanstack/operations/watchlist/old/watchlist-hooks';
+
 import { type WatchlistItem } from '../../lib/tanstack/operations/watchlist/watchlist-types';
 import { getOptimizedImageUrl } from '../../lib/tmdb/sdk-via-pb';
 import { useWatchlistUIStore } from '../../store/watchlist-store';
+import { addToWatchListMutationOptions, removeFromWatchListMutationOptions, toggleWatchedListItemMutationOptions } from '@/lib/tanstack/operations/watchlist/user-watchlist';
+import { useMutation } from '@tanstack/react-query';
 
 interface WatchlistCardProps {
   item: WatchlistItem;
@@ -29,8 +31,10 @@ export function WatchlistCard({
   const router = useRouter();
   const { selectedItems, toggleItemSelection } = useWatchlistUIStore();
   
-  const removeFromWatchlist = useRemoveFromWatchlist();
-  const toggleWatchedStatus = useToggleWatchedStatus();
+
+
+    const removeFromWatchlist = useMutation(removeFromWatchListMutationOptions());
+    const toggleWatchedStatus = useMutation(toggleWatchedListItemMutationOptions());
   
   // Get poster image URL
   const posterUrl = item.poster_path ? getOptimizedImageUrl(item.poster_path, 'poster', 'medium') : undefined;
@@ -94,7 +98,7 @@ export function WatchlistCard({
         {
           text: 'Remove',
           style: 'destructive',
-          onPress: () => removeFromWatchlist.mutate(item.id)
+          onPress: () => removeFromWatchlist.mutate({itemId: item.id}),
         }
       ]
     );
@@ -103,7 +107,7 @@ export function WatchlistCard({
   // Handle toggle watched status
   const handleToggleWatched = () => {
     const newStatus = item.watched_status === 'watched' ? false : true;
-    toggleWatchedStatus.mutate({ id: item.id, watched: newStatus });
+    toggleWatchedStatus.mutate({ itemId: item.id, watched: newStatus });
   };
   
   // Render rating stars

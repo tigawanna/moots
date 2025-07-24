@@ -1,6 +1,5 @@
 import { pb } from "@/lib/pb/client";
-import { WatchlistResponse } from "@/lib/pb/types/pb-types";
-import { CreateWatchlistItemInput } from "@/lib/tanstack/operations/watchlist/watchlist-types";
+import { WatchlistCreate, WatchlistResponse, WatchlistUpdate } from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { and, eq, like } from "@tigawanna/typed-pocketbase";
 
@@ -79,7 +78,7 @@ export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFun
 
 interface AddToWatchListMutationOptionsProps {
   userId: string;
-  payload: CreateWatchlistItemInput;
+  payload: WatchlistCreate;
 }
 
 export function addToWatchListMutationOptions() {
@@ -89,7 +88,7 @@ export function addToWatchListMutationOptions() {
         user_id: userId,
         media_type: payload.media_type,
         tmdb_id: payload.tmdb_id,
-        title: payload.title || payload.name || "unknown",
+        title: payload.title,
         backdrop_path: payload.backdrop_path || undefined,
         poster_path: payload.poster_path || undefined,
         overview: payload.overview || undefined,
@@ -97,6 +96,44 @@ export function addToWatchListMutationOptions() {
         vote_average: payload.vote_average || 0,
         genre_ids: payload.genre_ids || [],
       });
+    },
+  });
+}
+
+interface RemoveFromWatchListMutationOptionsProps {
+  itemId: string;
+}
+
+export function removeFromWatchListMutationOptions() {
+  return mutationOptions({
+    mutationFn: ({ itemId }: RemoveFromWatchListMutationOptionsProps) => {
+      return pb.from("watchlist").delete(itemId);
+    },
+  });
+}
+
+interface UpdateWatchListMutationOptionsProps {
+  itemId: string;
+  payload: WatchlistUpdate;
+}
+
+export function updateWatchListItemMutationOptions() {
+  return mutationOptions({
+    mutationFn: ({ itemId, payload }: UpdateWatchListMutationOptionsProps) => {
+      return pb.from("watchlist").update(itemId, {
+        ...payload,
+      });
+    },
+  });
+}
+
+
+export function toggleWatchedListItemMutationOptions() {
+  return mutationOptions({
+    mutationFn: ({ itemId, watched }: { itemId: string; watched: boolean }) => {
+      return pb.from("watchlist").update(itemId, {
+        watched_status: watched,
+      } as WatchlistUpdate);
     },
   });
 }
