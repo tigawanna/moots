@@ -9,11 +9,14 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
 import { Text, Surface, Searchbar, useTheme } from "react-native-paper";
+import { UserWatchListFlatList } from "./UserWatchListFlatList";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 export function UserWatchList() {
   // filters
   const userId = pb.authStore?.record?.id;
-  const { data, isLoading, error } = useQuery(useWatchListQueryOptions({ userId }));
+  const { data, isLoading, error,refetch } = useQuery(useWatchListQueryOptions({ userId }));
   const { colors } = useTheme();
 
   if (isLoading) {
@@ -46,11 +49,31 @@ export function UserWatchList() {
       </UserWatchListContainer>
     );
   }
+  if (!data) {
+    return (
+      <UserWatchListContainer>
+        <View style={styles.statesContainer}>
+          {__DEV__ ? (
+            <View>
+              <Text variant="titleMedium" style={{ color: colors.error }}>
+                No watchlist items found
+              </Text>
+            </View>
+          ) : (
+            <View style={{ alignItems: "center", justifyContent: "center", gap: 40 }}>
+              <EmptyRoadSVG />
+              <Text variant="titleLarge">No watchlist items found</Text>
+            </View>
+          )}
+        </View>
+      </UserWatchListContainer>
+    );
+  }
 
   return (
     <UserWatchListContainer>
       <View style={styles.statesContainer}>
-        <Text variant="titleLarge">UserWatchList</Text>
+        <UserWatchListFlatList watchList={data.items} refetch={refetch} />
       </View>
     </UserWatchListContainer>
   );
@@ -60,8 +83,9 @@ export function UserWatchListContainer({ children }: { children: React.ReactNode
   const { searchTerm, setSearchTerm, sort, setSort, filters, setFilters } =
     useUserWatchListFiltersStore();
   const { colors } = useTheme();
+    const { top } = useSafeAreaInsets();
   return (
-    <Surface style={{ ...styles.container }}>
+    <Surface style={{ ...styles.container, paddingTop: top }}>
       <Searchbar
         placeholder="Search Watchlist"
         onChangeText={(term) => setSearchTerm(term)}
