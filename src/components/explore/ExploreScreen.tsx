@@ -4,6 +4,7 @@ import React, { useCallback, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, View } from "react-native";
 import { Chip, Searchbar, Surface, Text, useTheme } from "react-native-paper";
 import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
+import { logger } from "@/utils/logger";
 
 const DISCOVER_CATEGORIES = [
   {
@@ -201,14 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // Tab styles
-  tabContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  segmentedButtons: {
-    backgroundColor: "transparent",
-  },
+
 
   // Content styles
   content: {
@@ -231,9 +225,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 8,
   },
-  selectedCategoryChip: {
-    backgroundColor: "#2196F3",
-  },
+
   selectedCategoryText: {
     color: "white",
   },

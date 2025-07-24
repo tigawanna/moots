@@ -5,19 +5,19 @@ import {
   useUserWatchListFiltersStore,
   watchListQueryOptions,
 } from "@/lib/tanstack/operations/watchlist/user-watchlist";
-
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
 import { Searchbar, Surface, Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserWatchListFlatList } from "./UserWatchListFlatList";
 
-
-
-export function UserWatchList({community}:{community?: boolean}) {
+export function UserWatchList({ community }: { community?: boolean }) {
   // filters
   const userId = pb.authStore?.record?.id;
-  const { data, isLoading, error,refetch } = useQuery(watchListQueryOptions({ userId:community ? undefined : userId }));
+  const { data, isLoading, error, refetch } = useQuery(
+    watchListQueryOptions({ userId: community ? undefined : userId })
+  );
+
   const { colors } = useTheme();
 
   if (isLoading) {
@@ -81,10 +81,9 @@ export function UserWatchList({community}:{community?: boolean}) {
 }
 
 export function UserWatchListContainer({ children }: { children: React.ReactNode }) {
-  const { searchTerm, setSearchTerm, sort, setSort, filters, setFilters } =
-    useUserWatchListFiltersStore();
+  const { searchTerm, setSearchTerm } = useUserWatchListFiltersStore();
   const { colors } = useTheme();
-    const { top } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   return (
     <Surface style={{ ...styles.container, paddingTop: top }}>
       <Searchbar

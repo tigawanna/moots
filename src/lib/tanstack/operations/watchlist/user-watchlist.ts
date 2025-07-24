@@ -48,23 +48,12 @@ export const useUserWatchListFiltersStore = create<WatchlistFiltersState>()(
 
 export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
   return queryOptions({
-    queryKey: ["user-watchlist", userId, page],
+    queryKey: userId ? ["user-watchlist", userId, page] : ["user-watchlist", "all", page],
     queryFn: () => {
       const { filters, searchTerm, sort } = useUserWatchListFiltersStore.getState();
-
-      if (!userId) {
-        return {
-          items: [],
-          page: 1,
-          perPage: 25,
-          totalItems: 0,
-          totalPages: 0,
-        };
-      }
-
       return pb.from("watchlist").getList(page, 25, {
         filter: and(
-          eq("user_id", [userId]),
+          userId ? eq("user_id", [userId]) : undefined,
           searchTerm ? like("title", `%${searchTerm}%`) : undefined,
           filters.watched !== undefined ? eq("watched_status", filters.watched) : undefined
         ),
@@ -129,7 +118,6 @@ export function updateWatchListItemMutationOptions() {
     },
   });
 }
-
 
 export function toggleWatchedListItemMutationOptions() {
   return mutationOptions({

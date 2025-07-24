@@ -693,15 +693,32 @@
         "type": "file"
       },
       {
-        "exceptDomains": null,
+        "autogeneratePattern": "",
         "hidden": false,
-        "id": "url742587758",
-        "name": "avatarUrl",
-        "onlyDomains": null,
+        "id": "text1317259462",
+        "max": 0,
+        "min": 0,
+        "name": "traktAccessToken",
+        "pattern": "",
         "presentable": false,
+        "primaryKey": false,
         "required": false,
         "system": false,
-        "type": "url"
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3463398231",
+        "max": 0,
+        "min": 0,
+        "name": "traktRefreshToken",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       },
       {
         "hidden": false,
@@ -729,7 +746,7 @@
       "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
     ],
     "created": "2025-07-18 18:39:45.902Z",
-    "updated": "2025-07-21 10:44:12.777Z",
+    "updated": "2025-07-19 19:20:37.438Z",
     "system": false,
     "authRule": "",
     "manageRule": null,
@@ -767,7 +784,7 @@
         "id": "",
         "name": "name",
         "username": "",
-        "avatarURL": "avatarUrl"
+        "avatarURL": "avatar"
       },
       "enabled": true
     },
@@ -818,6 +835,70 @@
       "subject": "Confirm your {APP_NAME} new email address",
       "body": "<p>Hello,</p>\n<p>Click on the button below to confirm your new email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-email-change/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Confirm new email</a>\n</p>\n<p><i>If you didn't ask to change your email address, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>"
     }
+  },
+  {
+    "id": "pbc_4028285301",
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "watchlists",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text724990059",
+        "max": 0,
+        "min": 0,
+        "name": "title",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [],
+    "created": "2025-07-22 14:52:02.275Z",
+    "updated": "2025-07-22 14:57:28.068Z",
+    "system": false
   },
   {
     "id": "pbc_1516307710",
@@ -893,410 +974,8 @@
       }
     ],
     "indexes": [],
-    "created": "2025-07-23 17:15:49.160Z",
-    "updated": "2025-07-24 06:07:55.578Z",
-    "system": false
-  },
-  {
-    "id": "pbc_1344826955",
-    "listRule": "user_id = @request.auth.id",
-    "viewRule": "user_id = @request.auth.id",
-    "createRule": "@request.auth.id != ''",
-    "updateRule": "user_id = @request.auth.id",
-    "deleteRule": "user_id = @request.auth.id",
-    "name": "watchlist",
-    "type": "base",
-    "fields": [
-      {
-        "autogeneratePattern": "[a-z0-9]{15}",
-        "hidden": false,
-        "id": "text3208210256",
-        "max": 15,
-        "min": 15,
-        "name": "id",
-        "pattern": "^[a-z0-9]+$",
-        "presentable": false,
-        "primaryKey": true,
-        "required": true,
-        "system": true,
-        "type": "text"
-      },
-      {
-        "hidden": false,
-        "id": "number1438434789",
-        "max": null,
-        "min": null,
-        "name": "tmdb_id",
-        "onlyInt": false,
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "number"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text724990059",
-        "max": 0,
-        "min": 0,
-        "name": "title",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": true,
-        "system": false,
-        "type": "text"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text3888370107",
-        "max": 0,
-        "min": 0,
-        "name": "overview",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": false,
-        "system": false,
-        "type": "text"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text1531584281",
-        "max": 0,
-        "min": 0,
-        "name": "poster_path",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": false,
-        "system": false,
-        "type": "text"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text996703695",
-        "max": 0,
-        "min": 0,
-        "name": "backdrop_path",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": false,
-        "system": false,
-        "type": "text"
-      },
-      {
-        "hidden": false,
-        "id": "date3882452845",
-        "max": "",
-        "min": "",
-        "name": "release_date",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "date"
-      },
-      {
-        "hidden": false,
-        "id": "number686911713",
-        "max": null,
-        "min": null,
-        "name": "vote_average",
-        "onlyInt": false,
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "number"
-      },
-      {
-        "hidden": false,
-        "id": "json2521060397",
-        "maxSize": 0,
-        "name": "genre_ids",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "json"
-      },
-      {
-        "hidden": false,
-        "id": "select1335462138",
-        "maxSelect": 0,
-        "name": "media_type",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "select",
-        "values": [
-          "movie",
-          "tv"
-        ]
-      },
-      {
-        "cascadeDelete": false,
-        "collectionId": "_pb_users_auth_",
-        "hidden": false,
-        "id": "relation2809058197",
-        "maxSelect": 0,
-        "minSelect": 0,
-        "name": "user_id",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "relation"
-      },
-      {
-        "hidden": false,
-        "id": "bool4231813860",
-        "name": "watched_status",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "bool"
-      },
-      {
-        "hidden": false,
-        "id": "number738576949",
-        "max": null,
-        "min": null,
-        "name": "personal_rating",
-        "onlyInt": false,
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "number"
-      },
-      {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text18589324",
-        "max": 0,
-        "min": 0,
-        "name": "notes",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": false,
-        "system": false,
-        "type": "text"
-      },
-      {
-        "hidden": false,
-        "id": "autodate_created",
-        "name": "created",
-        "onCreate": true,
-        "onUpdate": false,
-        "presentable": false,
-        "system": false,
-        "type": "autodate"
-      },
-      {
-        "hidden": false,
-        "id": "autodate_updated",
-        "name": "updated",
-        "onCreate": true,
-        "onUpdate": true,
-        "presentable": false,
-        "system": false,
-        "type": "autodate"
-      }
-    ],
-    "indexes": [],
-    "created": "2025-07-23 20:56:24.091Z",
-    "updated": "2025-07-23 20:56:24.091Z",
-    "system": false
-  },
-  {
-    "id": "pbc_2304063491",
-    "listRule": "user_id = @request.auth.id",
-    "viewRule": "user_id = @request.auth.id",
-    "createRule": "@request.auth.id != ''",
-    "updateRule": "user_id = @request.auth.id",
-    "deleteRule": "user_id = @request.auth.id",
-    "name": "watchlist_likes",
-    "type": "base",
-    "fields": [
-      {
-        "autogeneratePattern": "[a-z0-9]{15}",
-        "hidden": false,
-        "id": "text3208210256",
-        "max": 15,
-        "min": 15,
-        "name": "id",
-        "pattern": "^[a-z0-9]+$",
-        "presentable": false,
-        "primaryKey": true,
-        "required": true,
-        "system": true,
-        "type": "text"
-      },
-      {
-        "cascadeDelete": false,
-        "collectionId": "_pb_users_auth_",
-        "hidden": false,
-        "id": "relation2809058197",
-        "maxSelect": 0,
-        "minSelect": 0,
-        "name": "user_id",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "relation"
-      },
-      {
-        "cascadeDelete": false,
-        "collectionId": "pbc_1344826955",
-        "hidden": false,
-        "id": "relation2272856737",
-        "maxSelect": 0,
-        "minSelect": 0,
-        "name": "watchlist_item_id",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "relation"
-      },
-      {
-        "hidden": false,
-        "id": "autodate_created",
-        "name": "created",
-        "onCreate": true,
-        "onUpdate": false,
-        "presentable": false,
-        "system": false,
-        "type": "autodate"
-      },
-      {
-        "hidden": false,
-        "id": "autodate_updated",
-        "name": "updated",
-        "onCreate": true,
-        "onUpdate": true,
-        "presentable": false,
-        "system": false,
-        "type": "autodate"
-      }
-    ],
-    "indexes": [],
-    "created": "2025-07-23 20:56:48.162Z",
-    "updated": "2025-07-23 20:56:48.162Z",
-    "system": false
-  },
-  {
-    "id": "pbc_3975969204",
-    "listRule": "user_id = @request.auth.id",
-    "viewRule": "user_id = @request.auth.id",
-    "createRule": "@request.auth.id != ''",
-    "updateRule": "user_id = @request.auth.id",
-    "deleteRule": "user_id = @request.auth.id",
-    "name": "user_settings",
-    "type": "base",
-    "fields": [
-      {
-        "autogeneratePattern": "[a-z0-9]{15}",
-        "hidden": false,
-        "id": "text3208210256",
-        "max": 15,
-        "min": 15,
-        "name": "id",
-        "pattern": "^[a-z0-9]+$",
-        "presentable": false,
-        "primaryKey": true,
-        "required": true,
-        "system": true,
-        "type": "text"
-      },
-      {
-        "cascadeDelete": false,
-        "collectionId": "_pb_users_auth_",
-        "hidden": false,
-        "id": "relation2809058197",
-        "maxSelect": 0,
-        "minSelect": 0,
-        "name": "user_id",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "relation"
-      },
-      {
-        "hidden": false,
-        "id": "number3510989708",
-        "max": null,
-        "min": null,
-        "name": "watchlist_limit",
-        "onlyInt": false,
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "number"
-      },
-      {
-        "hidden": false,
-        "id": "select3138162824",
-        "maxSelect": 0,
-        "name": "default_view",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "select",
-        "values": [
-          "grid",
-          "list"
-        ]
-      },
-      {
-        "hidden": false,
-        "id": "bool358880235",
-        "name": "notifications_enabled",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "bool"
-      },
-      {
-        "hidden": false,
-        "id": "select3467545620",
-        "maxSelect": 0,
-        "name": "theme_preference",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "select",
-        "values": [
-          "light",
-          "dark",
-          "system"
-        ]
-      },
-      {
-        "hidden": false,
-        "id": "autodate_created",
-        "name": "created",
-        "onCreate": true,
-        "onUpdate": false,
-        "presentable": false,
-        "system": false,
-        "type": "autodate"
-      },
-      {
-        "hidden": false,
-        "id": "autodate_updated",
-        "name": "updated",
-        "onCreate": true,
-        "onUpdate": true,
-        "presentable": false,
-        "system": false,
-        "type": "autodate"
-      }
-    ],
-    "indexes": [],
-    "created": "2025-07-23 20:56:58.453Z",
-    "updated": "2025-07-23 20:56:58.453Z",
+    "created": "2025-07-23 19:14:34.486Z",
+    "updated": "2025-07-24 21:16:04.634Z",
     "system": false
   }
 ]
