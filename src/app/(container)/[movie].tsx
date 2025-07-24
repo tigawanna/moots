@@ -2,7 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
 import { Text, Surface } from "react-native-paper";
 
-export function MovieDetails() {
+export default function MovieDetails() {
   const { movie } = useLocalSearchParams() as { movie: string };
   return (
     <Surface style={{ ...styles.container }}>

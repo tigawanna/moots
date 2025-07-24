@@ -405,146 +405,162 @@ export interface UsersCollection {
 	create: UsersCreate;
 	update: UsersUpdate;
 	relations: {
-		watchlists_via_owner: WatchlistsCollection[];
-		userFollows_via_follower: UserFollowsCollection[];
-		userFollows_via_following: UserFollowsCollection[];
-		watchlistLikes_via_user: WatchlistLikesCollection[];
-		watchlistShares_via_user: WatchlistSharesCollection[];
-		watchlistComments_via_author: WatchlistCommentsCollection[];
+		watchlist_via_user_id: WatchlistCollection[];
+		watchlist_likes_via_user_id: WatchlistLikesCollection[];
+		user_settings_via_user_id: UserSettingsCollection[];
 	};
 }
 
-// ===== watchlists block =====
-// ===== watchlists =====
+// ===== _secrets block =====
+// ===== _secrets =====
 
-export interface WatchlistsResponse extends BaseCollectionResponse {
-	collectionName: 'watchlists';
+export interface SecretsResponse extends BaseCollectionResponse {
+	collectionName: '_secrets';
 	id: string;
-	title: string;
-	description: string;
-	owner: Array<string>;
-	isPublic: boolean;
-	category: Array<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
-	coverImage: MaybeArray<string>;
-	tags?: WatchlistsTags
-}
-
-export interface WatchlistsCreate extends BaseCollectionCreate {
-	id?: string;
-	title: string;
-	description?: string;
-	owner: MaybeArray<string>;
-	isPublic?: boolean;
-	category?: MaybeArray<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
-	coverImage?: MaybeArray<File>;
-	tags?: WatchlistsTags
-}
-
-export interface WatchlistsUpdate extends BaseCollectionUpdate {
-	id: string;
-	title: string;
-	description?: string;
-	owner: MaybeArray<string>;
-	'owner+'?: MaybeArray<string>;
-	'owner-'?: MaybeArray<string>;
-	isPublic?: boolean;
-	category?: MaybeArray<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
-	'category+'?: MaybeArray<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
-	'category-'?: MaybeArray<'movies' | 'tv_shows' | 'mixed' | 'documentaries' | 'anime' | 'comedy' | 'drama' | 'action' | 'horror' | 'sci_fi' | 'romance' | 'thriller' | 'other'>;
-	coverImage?: MaybeArray<File>;
-	'coverImage-'?: string;
-	tags?: WatchlistsTags
-}
-
-export interface WatchlistsCollection {
-	type: 'base';
-	collectionId: string;
-	collectionName: 'watchlists';
-	response: WatchlistsResponse;
-	create: WatchlistsCreate;
-	update: WatchlistsUpdate;
-	relations: {
-		owner: UsersCollection[];
-		watchlistLikes_via_watchlist: WatchlistLikesCollection[];
-		watchlistShares_via_watchlist: WatchlistSharesCollection[];
-		watchlistItems_via_watchlist: WatchlistItemsCollection[];
-		watchlistComments_via_watchlist: WatchlistCommentsCollection[];
-	};
-}
-
-// ===== userFollows block =====
-// ===== userFollows =====
-
-export interface UserFollowsResponse extends BaseCollectionResponse {
-	collectionName: 'userFollows';
-	id: string;
-	follower: Array<string>;
-	following: Array<string>;
+	name: string;
+	value: string;
 	created: string;
 	updated: string;
 }
 
-export interface UserFollowsCreate extends BaseCollectionCreate {
+export interface SecretsCreate extends BaseCollectionCreate {
 	id?: string;
-	follower: MaybeArray<string>;
-	following: MaybeArray<string>;
+	name?: string;
+	value?: string;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
-export interface UserFollowsUpdate extends BaseCollectionUpdate {
+export interface SecretsUpdate extends BaseCollectionUpdate {
 	id: string;
-	follower: MaybeArray<string>;
-	'follower+'?: MaybeArray<string>;
-	'follower-'?: MaybeArray<string>;
-	following: MaybeArray<string>;
-	'following+'?: MaybeArray<string>;
-	'following-'?: MaybeArray<string>;
+	name?: string;
+	value?: string;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
-export interface UserFollowsCollection {
+export interface SecretsCollection {
 	type: 'base';
 	collectionId: string;
-	collectionName: 'userFollows';
-	response: UserFollowsResponse;
-	create: UserFollowsCreate;
-	update: UserFollowsUpdate;
+	collectionName: '_secrets';
+	response: SecretsResponse;
+	create: SecretsCreate;
+	update: SecretsUpdate;
+	relations: Record<string, never>;
+}
+
+// ===== watchlist block =====
+// ===== watchlist =====
+
+export interface WatchlistResponse extends BaseCollectionResponse {
+	collectionName: 'watchlist';
+	id: string;
+	tmdb_id: number;
+	title: string;
+	overview: string;
+	poster_path: string;
+	backdrop_path: string;
+	release_date: string;
+	vote_average: number;
+	genre_ids: Record<string, any> | Array<any> | null;
+	media_type: Array<'movie' | 'tv'>;
+	user_id: Array<string>;
+	watched_status: boolean;
+	personal_rating: number;
+	notes: string;
+	created: string;
+	updated: string;
+}
+
+export interface WatchlistCreate extends BaseCollectionCreate {
+	id?: string;
+	tmdb_id: number;
+	title: string;
+	overview?: string;
+	poster_path?: string;
+	backdrop_path?: string;
+	release_date?: string | Date;
+	vote_average?: number;
+	genre_ids?: Record<string, any> | Array<any> | null;
+	media_type: MaybeArray<'movie' | 'tv'>;
+	user_id: MaybeArray<string>;
+	watched_status?: boolean;
+	personal_rating?: number;
+	notes?: string;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface WatchlistUpdate extends BaseCollectionUpdate {
+	id: string;
+	tmdb_id: number;
+	'tmdb_id+'?: number;
+	'tmdb_id-'?: number;
+	title: string;
+	overview?: string;
+	poster_path?: string;
+	backdrop_path?: string;
+	release_date?: string | Date;
+	vote_average?: number;
+	'vote_average+'?: number;
+	'vote_average-'?: number;
+	genre_ids?: Record<string, any> | Array<any> | null;
+	media_type: MaybeArray<'movie' | 'tv'>;
+	'media_type+'?: MaybeArray<'movie' | 'tv'>;
+	'media_type-'?: MaybeArray<'movie' | 'tv'>;
+	user_id: MaybeArray<string>;
+	'user_id+'?: MaybeArray<string>;
+	'user_id-'?: MaybeArray<string>;
+	watched_status?: boolean;
+	personal_rating?: number;
+	'personal_rating+'?: number;
+	'personal_rating-'?: number;
+	notes?: string;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface WatchlistCollection {
+	type: 'base';
+	collectionId: string;
+	collectionName: 'watchlist';
+	response: WatchlistResponse;
+	create: WatchlistCreate;
+	update: WatchlistUpdate;
 	relations: {
-		follower: UsersCollection[];
-		following: UsersCollection[];
+		user_id: UsersCollection[];
+		watchlist_likes_via_watchlist_item_id: WatchlistLikesCollection[];
 	};
 }
 
-// ===== watchlistLikes block =====
-// ===== watchlistLikes =====
+// ===== watchlist_likes block =====
+// ===== watchlist_likes =====
 
 export interface WatchlistLikesResponse extends BaseCollectionResponse {
-	collectionName: 'watchlistLikes';
+	collectionName: 'watchlist_likes';
 	id: string;
-	user: Array<string>;
-	watchlist: Array<string>;
+	user_id: Array<string>;
+	watchlist_item_id: Array<string>;
 	created: string;
 	updated: string;
 }
 
 export interface WatchlistLikesCreate extends BaseCollectionCreate {
 	id?: string;
-	user: MaybeArray<string>;
-	watchlist: MaybeArray<string>;
+	user_id: MaybeArray<string>;
+	watchlist_item_id: MaybeArray<string>;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
 export interface WatchlistLikesUpdate extends BaseCollectionUpdate {
 	id: string;
-	user: MaybeArray<string>;
-	'user+'?: MaybeArray<string>;
-	'user-'?: MaybeArray<string>;
-	watchlist: MaybeArray<string>;
-	'watchlist+'?: MaybeArray<string>;
-	'watchlist-'?: MaybeArray<string>;
+	user_id: MaybeArray<string>;
+	'user_id+'?: MaybeArray<string>;
+	'user_id-'?: MaybeArray<string>;
+	watchlist_item_id: MaybeArray<string>;
+	'watchlist_item_id+'?: MaybeArray<string>;
+	'watchlist_item_id-'?: MaybeArray<string>;
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -552,201 +568,70 @@ export interface WatchlistLikesUpdate extends BaseCollectionUpdate {
 export interface WatchlistLikesCollection {
 	type: 'base';
 	collectionId: string;
-	collectionName: 'watchlistLikes';
+	collectionName: 'watchlist_likes';
 	response: WatchlistLikesResponse;
 	create: WatchlistLikesCreate;
 	update: WatchlistLikesUpdate;
 	relations: {
-		user: UsersCollection[];
-		watchlist: WatchlistsCollection[];
+		user_id: UsersCollection[];
+		watchlist_item_id: WatchlistCollection[];
 	};
 }
 
-// ===== watchlistShares block =====
-// ===== watchlistShares =====
+// ===== user_settings block =====
+// ===== user_settings =====
 
-export interface WatchlistSharesResponse extends BaseCollectionResponse {
-	collectionName: 'watchlistShares';
+export interface UserSettingsResponse extends BaseCollectionResponse {
+	collectionName: 'user_settings';
 	id: string;
-	watchlist: Array<string>;
-	user: Array<string>;
-	permission: Array<'view' | 'edit'>;
+	user_id: Array<string>;
+	watchlist_limit: number;
+	default_view: Array<'grid' | 'list'>;
+	notifications_enabled: boolean;
+	theme_preference: Array<'light' | 'dark' | 'system'>;
 	created: string;
 	updated: string;
 }
 
-export interface WatchlistSharesCreate extends BaseCollectionCreate {
+export interface UserSettingsCreate extends BaseCollectionCreate {
 	id?: string;
-	watchlist: MaybeArray<string>;
-	user: MaybeArray<string>;
-	permission: MaybeArray<'view' | 'edit'>;
+	user_id: MaybeArray<string>;
+	watchlist_limit?: number;
+	default_view?: MaybeArray<'grid' | 'list'>;
+	notifications_enabled?: boolean;
+	theme_preference?: MaybeArray<'light' | 'dark' | 'system'>;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
-export interface WatchlistSharesUpdate extends BaseCollectionUpdate {
+export interface UserSettingsUpdate extends BaseCollectionUpdate {
 	id: string;
-	watchlist: MaybeArray<string>;
-	'watchlist+'?: MaybeArray<string>;
-	'watchlist-'?: MaybeArray<string>;
-	user: MaybeArray<string>;
-	'user+'?: MaybeArray<string>;
-	'user-'?: MaybeArray<string>;
-	permission: MaybeArray<'view' | 'edit'>;
-	'permission+'?: MaybeArray<'view' | 'edit'>;
-	'permission-'?: MaybeArray<'view' | 'edit'>;
+	user_id: MaybeArray<string>;
+	'user_id+'?: MaybeArray<string>;
+	'user_id-'?: MaybeArray<string>;
+	watchlist_limit?: number;
+	'watchlist_limit+'?: number;
+	'watchlist_limit-'?: number;
+	default_view?: MaybeArray<'grid' | 'list'>;
+	'default_view+'?: MaybeArray<'grid' | 'list'>;
+	'default_view-'?: MaybeArray<'grid' | 'list'>;
+	notifications_enabled?: boolean;
+	theme_preference?: MaybeArray<'light' | 'dark' | 'system'>;
+	'theme_preference+'?: MaybeArray<'light' | 'dark' | 'system'>;
+	'theme_preference-'?: MaybeArray<'light' | 'dark' | 'system'>;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
-export interface WatchlistSharesCollection {
+export interface UserSettingsCollection {
 	type: 'base';
 	collectionId: string;
-	collectionName: 'watchlistShares';
-	response: WatchlistSharesResponse;
-	create: WatchlistSharesCreate;
-	update: WatchlistSharesUpdate;
+	collectionName: 'user_settings';
+	response: UserSettingsResponse;
+	create: UserSettingsCreate;
+	update: UserSettingsUpdate;
 	relations: {
-		watchlist: WatchlistsCollection[];
-		user: UsersCollection[];
-	};
-}
-
-// ===== watchlistItems block =====
-// ===== watchlistItems =====
-
-export interface WatchlistItemsResponse extends BaseCollectionResponse {
-	collectionName: 'watchlistItems';
-	id: string;
-	watchlist: Array<string>;
-	mediaType: Array<'movie' | 'tv_show'>;
-	traktId: number;
-	tmdbId: number;
-	imdbId: string;
-	title: string;
-	year: number;
-	slug: string;
-	metadata?: WatchlistItemsMetadata
-	personalNote: string;
-	status: Array<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
-	rating: number;
-	order: number;
-	created: string;
-	updated: string;
-}
-
-export interface WatchlistItemsCreate extends BaseCollectionCreate {
-	id?: string;
-	watchlist: MaybeArray<string>;
-	mediaType: MaybeArray<'movie' | 'tv_show'>;
-	traktId: number;
-	tmdbId?: number;
-	imdbId?: string;
-	title: string;
-	year?: number;
-	slug?: string;
-	metadata?: WatchlistItemsMetadata
-	personalNote?: string;
-	status?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
-	rating?: number;
-	order?: number;
-	created?: string | Date;
-	updated?: string | Date;
-}
-
-export interface WatchlistItemsUpdate extends BaseCollectionUpdate {
-	id: string;
-	watchlist: MaybeArray<string>;
-	'watchlist+'?: MaybeArray<string>;
-	'watchlist-'?: MaybeArray<string>;
-	mediaType: MaybeArray<'movie' | 'tv_show'>;
-	'mediaType+'?: MaybeArray<'movie' | 'tv_show'>;
-	'mediaType-'?: MaybeArray<'movie' | 'tv_show'>;
-	traktId: number;
-	'traktId+'?: number;
-	'traktId-'?: number;
-	tmdbId?: number;
-	'tmdbId+'?: number;
-	'tmdbId-'?: number;
-	imdbId?: string;
-	title: string;
-	year?: number;
-	'year+'?: number;
-	'year-'?: number;
-	slug?: string;
-	metadata?: WatchlistItemsMetadata
-	personalNote?: string;
-	status?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
-	'status+'?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
-	'status-'?: MaybeArray<'plan_to_watch' | 'watching' | 'completed' | 'dropped' | 'on_hold'>;
-	rating?: number;
-	'rating+'?: number;
-	'rating-'?: number;
-	order?: number;
-	'order+'?: number;
-	'order-'?: number;
-	created?: string | Date;
-	updated?: string | Date;
-}
-
-export interface WatchlistItemsCollection {
-	type: 'base';
-	collectionId: string;
-	collectionName: 'watchlistItems';
-	response: WatchlistItemsResponse;
-	create: WatchlistItemsCreate;
-	update: WatchlistItemsUpdate;
-	relations: {
-		watchlist: WatchlistsCollection[];
-	};
-}
-
-// ===== watchlistComments block =====
-// ===== watchlistComments =====
-
-export interface WatchlistCommentsResponse extends BaseCollectionResponse {
-	collectionName: 'watchlistComments';
-	id: string;
-	watchlist: Array<string>;
-	author: Array<string>;
-	content: string;
-	parentComment: Array<string>;
-}
-
-export interface WatchlistCommentsCreate extends BaseCollectionCreate {
-	id?: string;
-	watchlist: MaybeArray<string>;
-	author: MaybeArray<string>;
-	content: string;
-	parentComment?: MaybeArray<string>;
-}
-
-export interface WatchlistCommentsUpdate extends BaseCollectionUpdate {
-	id: string;
-	watchlist: MaybeArray<string>;
-	'watchlist+'?: MaybeArray<string>;
-	'watchlist-'?: MaybeArray<string>;
-	author: MaybeArray<string>;
-	'author+'?: MaybeArray<string>;
-	'author-'?: MaybeArray<string>;
-	content: string;
-	parentComment?: MaybeArray<string>;
-	'parentComment+'?: MaybeArray<string>;
-	'parentComment-'?: MaybeArray<string>;
-}
-
-export interface WatchlistCommentsCollection {
-	type: 'base';
-	collectionId: string;
-	collectionName: 'watchlistComments';
-	response: WatchlistCommentsResponse;
-	create: WatchlistCommentsCreate;
-	update: WatchlistCommentsUpdate;
-	relations: {
-		watchlist: WatchlistsCollection[];
-		author: UsersCollection[];
-		parentComment: WatchlistCommentsCollection[];
-		watchlistComments_via_parentComment: WatchlistCommentsCollection[];
+		user_id: UsersCollection[];
 	};
 }
 
@@ -759,10 +644,8 @@ export type Schema = {
 	_authOrigins: AuthOriginsCollection;
 	_superusers: SuperusersCollection;
 	users: UsersCollection;
-	watchlists: WatchlistsCollection;
-	userFollows: UserFollowsCollection;
-	watchlistLikes: WatchlistLikesCollection;
-	watchlistShares: WatchlistSharesCollection;
-	watchlistItems: WatchlistItemsCollection;
-	watchlistComments: WatchlistCommentsCollection;
+	_secrets: SecretsCollection;
+	watchlist: WatchlistCollection;
+	watchlist_likes: WatchlistLikesCollection;
+	user_settings: UserSettingsCollection;
 }

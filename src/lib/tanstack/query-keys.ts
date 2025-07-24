@@ -10,7 +10,6 @@ export type QueryKeyBase =
   | 'viewer'
   | 'trakt_tokens_state'
   | 'trakt'
-  | 'watchlistItem'
   | 'tmdb'
   | 'testId';
 

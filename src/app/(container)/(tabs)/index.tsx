@@ -1,4 +1,5 @@
-import { HomeScreenComponent } from "@/components/screens/home/HomeScreenComponent";
+import { HomeScreenComponent } from "@/components/home/HomeScreenComponent";
+import { UserWatchList } from "@/components/home/user-watchlist/UserWatchList";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 
@@ -7,7 +8,8 @@ import { Surface } from "react-native-paper";
 export default function HomeScreen() {
   return (
     <Surface style={styles.container}>
-      <HomeScreenComponent />
+      {/* <HomeScreenComponent /> */}
+      <UserWatchList/>
     </Surface>
   );
 }

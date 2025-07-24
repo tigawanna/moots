@@ -2,7 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { StyleSheet } from "react-native";
 import { Text, Surface } from "react-native-paper";
 
-export function ShowDetails() {
+export default function ShowDetails() {
   const { show } = useLocalSearchParams() as { show: string };
   return (
     <Surface style={{ ...styles.container }}>

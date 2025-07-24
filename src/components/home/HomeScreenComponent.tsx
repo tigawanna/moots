@@ -23,7 +23,7 @@ import {
 
 export function HomeScreenComponent() {
   const router = useRouter();
-  const userId = pb.authStore.model?.id;
+  const userId = pb.authStore.record?.id;
   
   // UI State
   const { 
@@ -33,7 +33,7 @@ export function HomeScreenComponent() {
     setViewMode 
   } = useWatchlistUIStore();
   
-  const { filterString, sortString, hasActiveFilters } = useWatchlistFilters();
+  const { filterString, sortString } = useWatchlistFilters();
   
   // Local state
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -151,7 +151,7 @@ export function HomeScreenComponent() {
       </Surface>
     );
   }
-  
+  console.log('Watchlist items error :', error);
   // Render error state
   if (error) {
     return (
@@ -364,7 +364,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: 'white',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
   },
   headerTop: {
     flexDirection: 'row',
@@ -402,9 +401,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#E3F2FD',
     borderBottomWidth: 1,
-    borderBottomColor: '#BBDEFB',
   },
   selectionActions: {
     flexDirection: 'row',

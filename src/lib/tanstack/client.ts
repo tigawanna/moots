@@ -9,17 +9,22 @@ export const queryKeyPrefixes = {
   trakt_tokens_state: "trakt_tokens_state",
   trakt: "trakt",
   watchlist: "watchlist",
+  userWatchlist: "user-watchlist",
   watchlistItem: "watchlistItem",
   tmdb: "tmdb",
   user: "user",
   testId:"testId"
 } as const;
 
-type QueryKey = [keyof typeof queryKeyPrefixes, ...unknown[]] | unknown[];
+
+type QueryKey = [
+  (typeof queryKeyPrefixes)[keyof typeof queryKeyPrefixes],
+  ...(readonly unknown[])
+];
 
 interface MyMeta extends Record<string, unknown> {
-    invalidates?: [QueryKey[0], ...unknown[]][];
-    [key: string]: unknown;
+  invalidates?: [QueryKey[0], ...(readonly unknown[])][];
+  [key: string]: unknown;
 }
 
 declare module "@tanstack/react-query" {
@@ -30,7 +35,6 @@ declare module "@tanstack/react-query" {
     mutationMeta: MyMeta;
   }
 }
-
 export const asyncStoragePersister = createAsyncStoragePersister({
   storage: AsyncStorage,
 });

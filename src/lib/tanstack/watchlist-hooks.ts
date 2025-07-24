@@ -69,6 +69,7 @@ export const getWatchlistStatusOptions = (userId: string, tmdbId: number, mediaT
 // Get watchlist statistics
 export const getWatchlistStatsOptions = (userId: string) => queryOptions<WatchlistStats>({
   queryKey: watchlistKeys.stats(userId),
+  // queryFn: () => WatchlistAPI.getWatchlistStats(userId),
   queryFn: () => WatchlistAPI.getWatchlistStats(userId),
   staleTime: 10 * 60 * 1000, // 10 minutes
   enabled: !!userId,
