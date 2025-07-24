@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { UnifiedWatchlistItem } from "./types";
 import { WatchlistItemUtils } from "./WatchlistItemUtils";
+import { WatchlistItemActions } from "./WatchlistItemActions";
 
 interface WatchlistItemGridCardProps {
   item: UnifiedWatchlistItem;
@@ -27,7 +28,7 @@ export function WatchlistItemGridCard({
   isSelected = false,
   showActions = true,
 }: WatchlistItemGridCardProps) {
-  
+
   // console.log(JSON.stringify(item, null, 2));
 
   const { colors } = useTheme();
@@ -116,7 +117,7 @@ export function WatchlistItemGridCard({
           </Card.Content>
         </Pressable>
 
-        {/* {showActions && (
+        {showActions && (
           <Pressable onPress={(e) => e.stopPropagation()} style={styles.actionsContainer}>
             <WatchlistItemActions
               item={item}
@@ -127,7 +128,7 @@ export function WatchlistItemGridCard({
               layout="horizontal"
             />
           </Pressable>
-        )} */}
+        )}
       </View>
     </Card>
   );
