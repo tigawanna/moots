@@ -4,7 +4,6 @@ import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import { UnifiedWatchlistItem } from "./types";
-import { WatchlistItemActions } from "./WatchlistItemActions";
 import { WatchlistItemUtils } from "./WatchlistItemUtils";
 
 interface WatchlistItemGridCardProps {
@@ -28,6 +27,7 @@ export function WatchlistItemGridCard({
   isSelected = false,
   showActions = true,
 }: WatchlistItemGridCardProps) {
+  
   // console.log(JSON.stringify(item, null, 2));
 
   const { colors } = useTheme();
