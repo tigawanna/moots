@@ -40,10 +40,18 @@ export function UserWatchList({ community }: { community?: boolean }) {
               </Text>
             </View>
           ) : (
-            <View style={{ alignItems: "center", justifyContent: "center", gap: 40 }}>
-              <EmptyRoadSVG />
-              <Text variant="titleLarge">Something went wrong</Text>
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyIconContainer}>
+                <EmptyRoadSVG />
+              </View>
+              <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurface }]}>
+                Something went wrong
+              </Text>
+              <Text variant="bodyMedium" style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
+                Try adjusting your filters or search terms to discover more content
+              </Text>
             </View>
+        
           )}
         </View>
       </UserWatchListScafold>
@@ -60,9 +68,20 @@ export function UserWatchList({ community }: { community?: boolean }) {
               </Text>
             </View>
           ) : (
-            <View style={{ alignItems: "center", justifyContent: "center", gap: 40 }}>
-              <EmptyRoadSVG />
-              <Text variant="titleLarge">No watchlist items found</Text>
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyIconContainer}>
+                <EmptyRoadSVG />
+              </View>
+              <Text
+                variant="headlineSmall"
+                style={[styles.emptyTitle, { color: colors.onSurface }]}>
+                No watchlist items found
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
+                Try adjusting your filters or search terms to discover more content
+              </Text>
             </View>
           )}
         </View>
@@ -121,5 +140,27 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     fontSize: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+    gap: 16,
+  },
+  emptyIconContainer: {
+    opacity: 0.6,
+    marginBottom: 8,
+  },
+  emptyTitle: {
+    textAlign: "center",
+    marginTop: 8,
+    fontWeight: "600",
+  },
+  emptySubtitle: {
+    textAlign: "center",
+    opacity: 0.8,
+    maxWidth: 280,
+    lineHeight: 20,
   },
 });
