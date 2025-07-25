@@ -2,7 +2,7 @@ import { FlatList, StyleSheet, View } from "react-native";
 import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
 import { TMDBDiscoverResponse } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
-import { Button,IconButton, useTheme } from "react-native-paper";
+import { IconButton, useTheme } from "react-native-paper";
 
 interface DiscoverListProps {
   discoverResults: TMDBDiscoverResponse | undefined;

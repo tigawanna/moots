@@ -4,7 +4,7 @@ import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/disco
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { Searchbar, Surface, useTheme } from "react-native-paper";
+import { Searchbar, Surface, useTheme,Text } from "react-native-paper";
 import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LoadingIndicatorDots } from "../state-screens/LoadingIndicatorDots";
