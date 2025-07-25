@@ -1,11 +1,13 @@
 import { TMDBSearchResults } from "@/components/tmdb/TMDBSearchResults";
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
-import { FlatList, ScrollView, StyleSheet, View } from "react-native";
-import { Chip, Searchbar, Surface, Text, useTheme, Button } from "react-native-paper";
-import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
+import { StyleSheet, View } from "react-native";
+import { Searchbar, Surface, useTheme,} from "react-native-paper";
 import { DiscoverFeedFilters, FilterButton, useHasActiveFilters } from "./DiscoverFeedFilters";
 import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
+import { DiscoverList } from "./DiscoverList";
+import { LoadingIndicatorDots } from "../state-screens/LoadingIndicatorDots";
+import { useDiscoverFiltersStore } from "@/lib/tanstack/operations/discover/discover-fliters-store";
 
 const DISCOVER_CATEGORIES = [
   {
@@ -47,13 +49,20 @@ const DISCOVER_CATEGORIES = [
 ];
 
 export function DiscoverScreen() {
-  const { colors } = useTheme();
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("discover");
+ const [activeTab, setActiveTab] = useState("discover");
   const [selectedCategory, setSelectedCategory] = useState("popular_movies");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { query: searchQuery } = useDiscoverSearchQuery();
 
+    const {
+      filters,
+      setFilters,
+      resetFilters,
+      selectedGenres,
+      toggleGenre,
+      clearGenres,
+    } = useDiscoverFiltersStore();
+  
   // Search hook
   const {
     data: searchResults,
@@ -66,6 +75,7 @@ export function DiscoverScreen() {
 
   // Discover hook
   const currentCategory = DISCOVER_CATEGORIES.find((cat) => cat.key === selectedCategory);
+  
   const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
     type: (currentCategory?.type as "movie" | "tv") || "movie",
     params: {
@@ -74,90 +84,32 @@ export function DiscoverScreen() {
     },
   });
 
-  const renderDiscoverSection = () => (
-    <View style={styles.discoverContainer}>
-      {/* Category Selection */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoryScroll}
-        contentContainerStyle={styles.categoryContent}>
-        {DISCOVER_CATEGORIES.map((category) => (
-          <Chip
-            key={category.key}
-            selected={selectedCategory === category.key}
-            onPress={() => setSelectedCategory(category.key)}
-            style={[
-              styles.categoryChip,
-              selectedCategory === category.key
-                ? {
-                    backgroundColor: colors.tertiary,
-                    borderColor: colors.secondary,
-                  }
-                : {
-                    backgroundColor: colors.surfaceVariant,
-                  },
-            ]}
-            textStyle={selectedCategory === category.key ? styles.selectedCategoryText : undefined}>
-            <Text>{category.label}</Text>
-          </Chip>
-        ))}
-      </ScrollView>
-
-      {/* Results Grid */}
-      <FlatList
-        data={(discoverResults?.results as any[]) || []}
-        renderItem={({ item }) => (
-          <WatchlistItemCard
-            item={item}
-            viewMode="grid"
-            // onPress={(id)=>{
-            //   router.push(id)
-            // }}
-            showActions={true}
-          />
-        )}
-        keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
-        numColumns={2}
-        contentContainerStyle={styles.resultsGrid}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          discoverLoading ? (
-            <View style={styles.loadingContainer}>
-              <Text>Loading...</Text>
-            </View>
-          ) : (
-            <View style={styles.emptyContainer}>
-              <Text>No results found</Text>
-            </View>
-          )
-        }
-      />
-    </View>
-  );
-
-  const renderSearchSection = () => (
-    <TMDBSearchResults
-      query={searchQuery}
-      results={searchResults?.results}
-      isLoading={searchLoading}
-      error={searchError}
-    />
-  );
-
-  return (
-    <Surface style={styles.container}>
-      {/* Search Bar */}
-
-      {/* Content */}
+  if (discoverLoading) {
+    return (
       <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
-        <View style={styles.content}>
-          {(activeTab === "search" || isSearchFocused) && searchQuery.trim()
-            ? renderSearchSection()
-            : renderDiscoverSection()}
+        <View style={styles.loadingContainer}>
+          <LoadingIndicatorDots />
         </View>
       </DiscoverScreenScafold>
-    </Surface>
+    );
+  }
+
+  if (activeTab === "search" || isSearchFocused) {
+    return (
+      <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
+        <TMDBSearchResults
+          query={searchQuery}
+          results={searchResults?.results}
+          isLoading={searchLoading}
+          error={searchError}
+        />
+      </DiscoverScreenScafold>
+    );
+  }
+  return (
+    <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
+      <DiscoverList currentCategory={currentCategory} discoverResults={discoverResults} />
+    </DiscoverScreenScafold>
   );
 }
 
@@ -174,12 +126,17 @@ export function DiscoverScreenScafold({
   const hasActiveFilters = useHasActiveFilters();
   const { colors } = useTheme();
   const { query, setDiscoverKeyword } = useDiscoverSearchQuery();
-  const handleSearchChange = useCallback((query: string) => {
-    setDiscoverKeyword(query);
-    if (query.trim()) {
-      setActiveTab?.("search");
-    }
-  }, [setActiveTab, setDiscoverKeyword]);
+
+
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      setDiscoverKeyword(query);
+      if (query.trim()) {
+        setActiveTab?.("search");
+      }
+    },
+    [setActiveTab, setDiscoverKeyword]
+  );
   const handleSearchFocus = useCallback(() => {
     setIsSearchFocused?.(true);
   }, [setIsSearchFocused]);
@@ -187,6 +144,8 @@ export function DiscoverScreenScafold({
   const handleSearchBlur = useCallback(() => {
     setIsSearchFocused?.(false);
   }, [setIsSearchFocused]);
+
+
   return (
     <Surface style={{ ...styles.container }}>
       <View style={styles.searchContainer}>
@@ -204,7 +163,7 @@ export function DiscoverScreenScafold({
         <FilterButton onPress={() => setShowFilters(true)} hasActiveFilters={hasActiveFilters} />
         <DiscoverFeedFilters visible={showFilters} onDismiss={() => setShowFilters(false)} />
       </View>
-        {children}
+      {children}
     </Surface>
   );
 }
@@ -216,6 +175,9 @@ const styles = StyleSheet.create({
 
   // Search styles
   searchContainer: {
+    maxWidth: "98%",
+    flexDirection: "row",
+    gap: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
@@ -226,43 +188,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // Content styles
-  content: {
-    flex: 1,
-  },
-
-  // Discover styles
-  discoverContainer: {
-    flex: 1,
-  },
-  categoryScroll: {
-    maxHeight: 50,
-    marginBottom: 8,
-  },
-  categoryContent: {
-    paddingHorizontal: 16,
-    alignItems: "center",
-  },
-  categoryChip: {
-    marginRight: 8,
-    marginBottom: 8,
-  },
-
-  selectedCategoryText: {
-    color: "white",
-  },
-
-  // Results styles
-  resultsGrid: {
-    padding: 8,
-  },
   loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

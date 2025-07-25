@@ -1,38 +1,23 @@
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
-import { Text,Surface } from 'react-native-paper';
+import { FlatList, StyleSheet, View } from 'react-native'
+import { WatchlistItemCard } from '../shared/watchlist/WatchlistItemCard';
+import { TMDBDiscoverResponse } from '@/lib/tanstack/operations/discover/tmdb-hooks';
  
-export function DiscoverList(){
-return (
-  <View style={styles.discoverContainer}>
-    {/* Category Selection */}
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.categoryScroll}
-      contentContainerStyle={styles.categoryContent}>
-      {DISCOVER_CATEGORIES.map((category) => (
-        <Chip
-          key={category.key}
-          selected={selectedCategory === category.key}
-          onPress={() => setSelectedCategory(category.key)}
-          style={[
-            styles.categoryChip,
-            selectedCategory === category.key
-              ? {
-                  backgroundColor: colors.tertiary,
-                  borderColor: colors.secondary,
-                }
-              : {
-                  backgroundColor: colors.surfaceVariant,
-                },
-          ]}
-          textStyle={selectedCategory === category.key ? styles.selectedCategoryText : undefined}>
-          <Text>{category.label}</Text>
-        </Chip>
-      ))}
-    </ScrollView>
+interface DiscoverListProps {
+  discoverResults: TMDBDiscoverResponse | undefined;
+  currentCategory:
+    | {
+        key: string;
+        label: string;
+        type: string;
+        sort: string;
+      }
+    | undefined;
+}
 
-    {/* Results Grid */}
+export function DiscoverList({ currentCategory, discoverResults }: DiscoverListProps) {
+  return (
+    <View style={styles.discoverContainer}>
+    {/* Category Selection */}
     <FlatList
       data={(discoverResults?.results as any[]) || []}
       renderItem={({ item }) => (
@@ -49,17 +34,17 @@ return (
       numColumns={2}
       contentContainerStyle={styles.resultsGrid}
       showsVerticalScrollIndicator={false}
-      ListEmptyComponent={
-        discoverLoading ? (
-          <View style={styles.loadingContainer}>
-            <Text>Loading...</Text>
-          </View>
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Text>No results found</Text>
-          </View>
-        )
-      }
+      // ListEmptyComponent={
+      //   discoverLoading ? (
+      //     <View style={styles.loadingContainer}>
+      //       <Text>Loading...</Text>
+      //     </View>
+      //   ) : (
+      //     <View style={styles.emptyContainer}>
+      //       <Text>No results found</Text>
+      //     </View>
+      //   )
+      // }
     />
   </View>
 );
