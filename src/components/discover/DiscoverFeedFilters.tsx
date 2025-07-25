@@ -12,7 +12,6 @@ import {
     IconButton,
     Modal,
     Portal,
-    SegmentedButtons,
     Surface,
     Text,
     TextInput,
@@ -28,47 +27,83 @@ interface DiscoverFeedFiltersProps {
 export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersProps) {
   const theme = useTheme();
 
-  
   const {
-    filters,
-    setFilters,
-    resetFilters,
+    activeTab,
+    movieFilters,
+    tvFilters,
+    setMovieFilters,
+    setTVFilters,
+    resetMovieFilters,
+    resetTVFilters,
     selectedGenres,
     toggleGenre,
     clearGenres,
   } = useDiscoverFiltersStore();
 
-  const [localYear, setLocalYear] = useState(filters.year || '');
-  const [localMinRating, setLocalMinRating] = useState(filters['vote_average.gte'] || 0);
-  const [localMinVotes, setLocalMinVotes] = useState(filters['vote_count.gte'] || 0);
-  const [localMinRuntime, setLocalMinRuntime] = useState(filters['with_runtime.gte'] || 0);
-  const [localMaxRuntime, setLocalMaxRuntime] = useState(filters['with_runtime.lte'] || 300);
+  // Get current tab's filters
+  const currentFilters = activeTab === "movie" ? movieFilters : tvFilters;
 
-  const availableSortOptions = getAvailableSortOptions(filters.mediaType);
+  // Initialize local state with proper year handling
+  const getInitialYear = () => {
+    if (activeTab === "movie") {
+      return (movieFilters as any).year || (movieFilters as any).primary_release_year || '';
+    } else {
+      return (tvFilters as any).first_air_date_year || '';
+    }
+  };
+
+  const [localYear, setLocalYear] = useState(getInitialYear());
+  const [localMinRating, setLocalMinRating] = useState(currentFilters['vote_average.gte'] || 0);
+  const [localMinVotes, setLocalMinVotes] = useState(currentFilters['vote_count.gte'] || 0);
+  const [localMinRuntime, setLocalMinRuntime] = useState(currentFilters['with_runtime.gte'] || 0);
+  const [localMaxRuntime, setLocalMaxRuntime] = useState(currentFilters['with_runtime.lte'] || 300);
+
+  const availableSortOptions = getAvailableSortOptions(activeTab);
   const currentYear = getCurrentYear();
 
-  // Update local state when filters change
+  // Update local state when current tab's filters change
   useEffect(() => {
-    setLocalYear(filters.year || '');
-    setLocalMinRating(filters['vote_average.gte'] || 0);
-    setLocalMinVotes(filters['vote_count.gte'] || 0);
-    setLocalMinRuntime(filters['with_runtime.gte'] || 0);
-    setLocalMaxRuntime(filters['with_runtime.lte'] || 300);
-  }, [filters]);
+    let yearValue = '';
+    if (activeTab === "movie") {
+      yearValue = (movieFilters as any).year || (movieFilters as any).primary_release_year || '';
+    } else {
+      yearValue = (tvFilters as any).first_air_date_year || '';
+    }
+    setLocalYear(yearValue);
+    setLocalMinRating(currentFilters['vote_average.gte'] || 0);
+    setLocalMinVotes(currentFilters['vote_count.gte'] || 0);
+    setLocalMinRuntime(currentFilters['with_runtime.gte'] || 0);
+    setLocalMaxRuntime(currentFilters['with_runtime.lte'] || 300);
+  }, [currentFilters, activeTab, movieFilters, tvFilters]);
 
   const handleApplyFilters = () => {
-    setFilters({
-      year: localYear || undefined,
-      'vote_average.gte': localMinRating > 0 ? localMinRating : undefined,
-      'vote_count.gte': localMinVotes > 0 ? localMinVotes : undefined,
-      'with_runtime.gte': localMinRuntime > 0 ? localMinRuntime : undefined,
-      'with_runtime.lte': localMaxRuntime < 300 ? localMaxRuntime : undefined,
-    });
+    if (activeTab === "movie") {
+      setMovieFilters({
+        year: localYear || undefined,
+        primary_release_year: localYear || undefined,
+        'vote_average.gte': localMinRating > 0 ? localMinRating : undefined,
+        'vote_count.gte': localMinVotes > 0 ? localMinVotes : undefined,
+        'with_runtime.gte': localMinRuntime > 0 ? localMinRuntime : undefined,
+        'with_runtime.lte': localMaxRuntime < 300 ? localMaxRuntime : undefined,
+      });
+    } else {
+      setTVFilters({
+        first_air_date_year: localYear || undefined,
+        'vote_average.gte': localMinRating > 0 ? localMinRating : undefined,
+        'vote_count.gte': localMinVotes > 0 ? localMinVotes : undefined,
+        'with_runtime.gte': localMinRuntime > 0 ? localMinRuntime : undefined,
+        'with_runtime.lte': localMaxRuntime < 300 ? localMaxRuntime : undefined,
+      });
+    }
     onDismiss();
   };
 
   const handleReset = () => {
-    resetFilters();
+    if (activeTab === "movie") {
+      resetMovieFilters();
+    } else {
+      resetTVFilters();
+    }
     setLocalYear('');
     setLocalMinRating(0);
     setLocalMinVotes(0);
@@ -213,20 +248,11 @@ export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersP
 
           <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
-              {/* Media Type Selection */}
+              {/* Current Tab Indicator */}
               <View style={styles.section}>
                 <Text variant="titleMedium" style={styles.sectionTitle}>
-                  Content Type
+                  Filtering {activeTab === "movie" ? "Movies" : "TV Shows"}
                 </Text>
-                <SegmentedButtons
-                  value={filters.mediaType}
-                  onValueChange={(value) => setFilters({ mediaType: value as 'movie' | 'tv' | 'both' })}
-                  buttons={[
-                    { value: 'both', label: 'Both' },
-                    { value: 'movie', label: 'Movies' },
-                    { value: 'tv', label: 'TV Shows' },
-                  ]}
-                />
               </View>
 
               {/* Sort Options */}
@@ -239,9 +265,15 @@ export function DiscoverFeedFilters({ visible, onDismiss }: DiscoverFeedFiltersP
                     {availableSortOptions.map((option) => (
                       <Chip
                         key={option.value}
-                        selected={filters.sort_by === option.value}
-                        onPress={() => setFilters({ sort_by: option.value })}
-                        mode={filters.sort_by === option.value ? 'flat' : 'outlined'}
+                        selected={currentFilters.sort_by === option.value}
+                        onPress={() => {
+                          if (activeTab === "movie") {
+                            setMovieFilters({ sort_by: option.value });
+                          } else {
+                            setTVFilters({ sort_by: option.value });
+                          }
+                        }}
+                        mode={currentFilters.sort_by === option.value ? 'flat' : 'outlined'}
                       >
                         {option.label}
                       </Chip>
@@ -382,16 +414,20 @@ export function FilterButton({ onPress, hasActiveFilters = false }: FilterButton
 
 // Hook to check if filters are active
 export function useHasActiveFilters() {
-  const { filters, selectedGenres } = useDiscoverFiltersStore();
+  const { activeTab, movieFilters, tvFilters, selectedGenres } = useDiscoverFiltersStore();
+  
+  const currentFilters = activeTab === "movie" ? movieFilters : tvFilters;
+  const defaultSortBy = "popularity.desc";
   
   return (
-    filters.mediaType !== 'both' ||
-    filters.sort_by !== 'popularity.desc' ||
+    currentFilters.sort_by !== defaultSortBy ||
     selectedGenres.length > 0 ||
-    !!filters.year ||
-    !!filters['vote_average.gte'] ||
-    !!filters['vote_count.gte'] ||
-    !!filters['with_runtime.gte'] ||
-    !!filters['with_runtime.lte']
+    !!(currentFilters as any).year ||
+    !!(currentFilters as any).primary_release_year ||
+    !!(currentFilters as any).first_air_date_year ||
+    !!currentFilters['vote_average.gte'] ||
+    !!currentFilters['vote_count.gte'] ||
+    !!currentFilters['with_runtime.gte'] ||
+    !!currentFilters['with_runtime.lte']
   );
 }

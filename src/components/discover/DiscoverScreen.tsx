@@ -1,21 +1,94 @@
 import { TMDBSearchResults } from "@/components/tmdb/TMDBSearchResults";
-import { getCategoryLabel, getMediaTypeFromSort, useDiscoverFiltersStore } from "@/lib/tanstack/operations/discover/discover-fliters-store";
+import { getCategoryLabel, useDiscoverFiltersStore } from "@/lib/tanstack/operations/discover/discover-fliters-store";
 import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Searchbar, Surface, useTheme, } from "react-native-paper";
+import { Searchbar, Surface, useTheme } from "react-native-paper";
+import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LoadingIndicatorDots } from "../state-screens/LoadingIndicatorDots";
 import { DiscoverFeedFilters, FilterButton, useHasActiveFilters } from "./DiscoverFeedFilters";
 import { DiscoverList } from "./DiscoverList";
 
+// Individual tab components for Movies and TV
+function MovieDiscoverTab() {
+  const { movieFilters, setActiveTab } = useDiscoverFiltersStore();
+  
+  React.useEffect(() => {
+    setActiveTab("movie");
+  }, [setActiveTab]);
+
+  const categoryLabel = getCategoryLabel(movieFilters.sort_by);
+  
+  const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
+    type: "movie",
+    params: {
+      page: 1,
+      ...movieFilters,
+    },
+  });
+
+  const currentCategory = {
+    key: movieFilters.sort_by.replace('.', '_'),
+    label: categoryLabel,
+    type: "movie" as const,
+    sort: movieFilters.sort_by,
+  };
+
+  if (discoverLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <LoadingIndicatorDots />
+      </View>
+    );
+  }
+
+  return <DiscoverList currentCategory={currentCategory} discoverResults={discoverResults} />;
+}
+
+function TVDiscoverTab() {
+  const { tvFilters, setActiveTab } = useDiscoverFiltersStore();
+  
+  React.useEffect(() => {
+    setActiveTab("tv");
+  }, [setActiveTab]);
+
+  const categoryLabel = getCategoryLabel(tvFilters.sort_by);
+  
+  const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
+    type: "tv",
+    params: {
+      page: 1,
+      ...tvFilters,
+    },
+  });
+
+  const currentCategory = {
+    key: tvFilters.sort_by.replace('.', '_'),
+    label: categoryLabel,
+    type: "tv" as const,
+    sort: tvFilters.sort_by,
+  };
+
+  if (discoverLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <LoadingIndicatorDots />
+      </View>
+    );
+  }
+
+  return <DiscoverList currentCategory={currentCategory} discoverResults={discoverResults} />;
+}
+
 export function DiscoverScreen() {
- const [activeTab, setActiveTab] = useState("discover");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { query: searchQuery } = useDiscoverSearchQuery();
-const { filters } = useDiscoverFiltersStore();
+  const { colors } = useTheme();
+  const { top } = useSafeAreaInsets();
 
- // Search hook
+  // Search hook
   const {
     data: searchResults,
     isLoading: searchLoading,
@@ -23,62 +96,58 @@ const { filters } = useDiscoverFiltersStore();
   } = useTMDBSearch({
     query: searchQuery,
     page: 1,
-  });  // Discover hook - use filters from store
-  const mediaType = getMediaTypeFromSort(filters);
-  const categoryLabel = getCategoryLabel(filters.sort_by);
-  
-  const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
-    type: mediaType,
-    params: {
-      page: 1,
-      ...filters,
-    },
   });
 
-  // Create a current category object for compatibility
-  const currentCategory = {
-    key: filters.sort_by.replace('.', '_'),
-    label: categoryLabel,
-    type: mediaType,
-    sort: filters.sort_by,
-  };
-
-  if (discoverLoading) {
+  // If there's a search query or search is focused, show search results
+  if (searchQuery?.trim() || isSearchFocused) {
     return (
-      <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
-        <View style={styles.loadingContainer}>
-          <LoadingIndicatorDots />
-        </View>
-      </DiscoverScreenScafold>
+      <View style={{ flex: 1, paddingTop: top }}>
+        <DiscoverScreenScafold setIsSearchFocused={setIsSearchFocused}>
+          <TMDBSearchResults
+            query={searchQuery}
+            results={searchResults?.results}
+            isLoading={searchLoading}
+            error={searchError}
+          />
+        </DiscoverScreenScafold>
+      </View>
     );
   }
 
-  if (activeTab === "search" || isSearchFocused) {
-    return (
-      <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
-        <TMDBSearchResults
-          query={searchQuery}
-          results={searchResults?.results}
-          isLoading={searchLoading}
-          error={searchError}
-        />
-      </DiscoverScreenScafold>
-    );
-  }
   return (
-    <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
-      <DiscoverList currentCategory={currentCategory} discoverResults={discoverResults} />
-    </DiscoverScreenScafold>
+    <View style={{ flex: 1, paddingTop: top }}>
+      <DiscoverScreenScafold setIsSearchFocused={setIsSearchFocused}>
+        <TabsProvider defaultIndex={0}>
+          <Tabs
+            tabHeaderStyle={{
+              marginBottom: 12,
+            }}
+            theme={{
+              colors: {
+                primary: colors.primary,
+                background: colors.surface,
+              },
+            }}
+          >
+            <TabScreen label="Movies" icon="movie">
+              <MovieDiscoverTab />
+            </TabScreen>
+
+            <TabScreen label="TV Shows" icon="television">
+              <TVDiscoverTab />
+            </TabScreen>
+          </Tabs>
+        </TabsProvider>
+      </DiscoverScreenScafold>
+    </View>
   );
 }
 
 export function DiscoverScreenScafold({
   children,
-  setActiveTab,
   setIsSearchFocused,
 }: {
   children: React.ReactNode;
-  setActiveTab?: (tab: string) => void;
   setIsSearchFocused?: (focused: boolean) => void;
 }) {
   const [showFilters, setShowFilters] = useState(false);
@@ -86,16 +155,13 @@ export function DiscoverScreenScafold({
   const { colors } = useTheme();
   const { query, setDiscoverKeyword } = useDiscoverSearchQuery();
 
-
   const handleSearchChange = useCallback(
     (query: string) => {
       setDiscoverKeyword(query);
-      if (query.trim()) {
-        setActiveTab?.("search");
-      }
     },
-    [setActiveTab, setDiscoverKeyword]
+    [setDiscoverKeyword]
   );
+  
   const handleSearchFocus = useCallback(() => {
     setIsSearchFocused?.(true);
   }, [setIsSearchFocused]);
@@ -103,7 +169,6 @@ export function DiscoverScreenScafold({
   const handleSearchBlur = useCallback(() => {
     setIsSearchFocused?.(false);
   }, [setIsSearchFocused]);
-
 
   return (
     <Surface style={{ ...styles.container }}>

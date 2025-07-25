@@ -2,28 +2,39 @@ import { DiscoverMoviesParams, DiscoverTVParams } from "@/lib/tmdb/sdk-via-pb";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
-// Combined filter interface with the 6 most important overlapping filters
-export interface DiscoverFilters {
-  // Content type selection
-  mediaType: "movie" | "tv" | "both";
-
-  // Sorting options
+// Separate filter interfaces for movies and TV
+export interface MovieDiscoverFilters {
   sort_by: string;
-
-  // Genre filtering (most important for discovery)
   with_genres?: string;
-
-  // Quality filtering
   "vote_average.gte"?: number;
   "vote_count.gte"?: number;
-
-  // Year/Date filtering (using generic year for both movies and TV)
   year?: string;
-
-  // Language filtering
+  primary_release_year?: string;
   language?: string;
+  "with_runtime.gte"?: number;
+  "with_runtime.lte"?: number;
+}
 
-  // Runtime filtering
+export interface TVDiscoverFilters {
+  sort_by: string;
+  with_genres?: string;
+  "vote_average.gte"?: number;
+  "vote_count.gte"?: number;
+  first_air_date_year?: string;
+  language?: string;
+  "with_runtime.gte"?: number;
+  "with_runtime.lte"?: number;
+}
+
+// Combined interface for backwards compatibility
+export interface DiscoverFilters {
+  mediaType: "movie" | "tv" | "both";
+  sort_by: string;
+  with_genres?: string;
+  "vote_average.gte"?: number;
+  "vote_count.gte"?: number;
+  year?: string;
+  language?: string;
   "with_runtime.gte"?: number;
   "with_runtime.lte"?: number;
 }
@@ -68,23 +79,42 @@ export const COMMON_GENRES = [
 ] as const;
 
 interface DiscoverFiltersState {
+  // Separate filters for movies and TV
+  movieFilters: MovieDiscoverFilters;
+  tvFilters: TVDiscoverFilters;
+  
+  // Active tab
+  activeTab: "movie" | "tv";
+  setActiveTab: (tab: "movie" | "tv") => void;
+  
+  // Movie filter methods
+  setMovieFilters: (filters: Partial<MovieDiscoverFilters>) => void;
+  resetMovieFilters: () => void;
+  
+  // TV filter methods  
+  setTVFilters: (filters: Partial<TVDiscoverFilters>) => void;
+  resetTVFilters: () => void;
+  
+  // Legacy methods for backwards compatibility
   filters: DiscoverFilters;
   setFilters: (filters: Partial<DiscoverFilters>) => void;
   resetFilters: () => void;
-
-  // Helper methods
   getMovieParams: () => DiscoverMoviesParams;
   getTVParams: () => DiscoverTVParams;
 
-  // Genre helpers
+  // Genre helpers (now tab-aware)
   selectedGenres: number[];
   toggleGenre: (genreId: number) => void;
   clearGenres: () => void;
 }
 
-const DEFAULT_FILTERS: DiscoverFilters = {
-  mediaType: "both",
+const DEFAULT_MOVIE_FILTERS: MovieDiscoverFilters = {
   sort_by: "popularity.desc",
+  language: "en-US",
+};
+
+const DEFAULT_TV_FILTERS: TVDiscoverFilters = {
+  sort_by: "popularity.desc", 
   language: "en-US",
 };
 
@@ -92,76 +122,119 @@ export const useDiscoverFiltersStore = create<DiscoverFiltersState>()(
   devtools(
     persist(
       (set, get) => ({
-        filters: DEFAULT_FILTERS,
+        // New tab-specific filters
+        movieFilters: DEFAULT_MOVIE_FILTERS,
+        tvFilters: DEFAULT_TV_FILTERS,
+        activeTab: "movie",
         selectedGenres: [],
 
-        setFilters: (newFilters) =>
+        // Tab management
+        setActiveTab: (tab) => set({ activeTab: tab }),
+
+        // Movie filter methods
+        setMovieFilters: (newFilters) =>
           set((state) => ({
-            filters: { ...state.filters, ...newFilters },
+            movieFilters: { ...state.movieFilters, ...newFilters },
           })),
 
-        resetFilters: () =>
+        resetMovieFilters: () =>
           set({
-            filters: DEFAULT_FILTERS,
-            selectedGenres: [],
+            movieFilters: DEFAULT_MOVIE_FILTERS,
           }),
 
-        // Convert combined filters to movie-specific parameters
+        // TV filter methods
+        setTVFilters: (newFilters) =>
+          set((state) => ({
+            tvFilters: { ...state.tvFilters, ...newFilters },
+          })),
+
+        resetTVFilters: () =>
+          set({
+            tvFilters: DEFAULT_TV_FILTERS,
+          }),
+
+        // Legacy compatibility - returns current tab's filters
+        get filters() {
+          const state = get();
+          const activeFilters = state.activeTab === "movie" ? state.movieFilters : state.tvFilters;
+          return {
+            mediaType: state.activeTab,
+            ...activeFilters,
+          } as DiscoverFilters;
+        },
+
+        setFilters: (newFilters) => {
+          const state = get();
+          if (state.activeTab === "movie") {
+            state.setMovieFilters(newFilters);
+          } else {
+            state.setTVFilters(newFilters);
+          }
+        },
+
+        resetFilters: () => {
+          const state = get();
+          if (state.activeTab === "movie") {
+            state.resetMovieFilters();
+          } else {
+            state.resetTVFilters();
+          }
+        },
+
+        // Convert movie filters to TMDB parameters
         getMovieParams: (): DiscoverMoviesParams => {
-          const { filters } = get();
+          const { movieFilters } = get();
           const params: DiscoverMoviesParams = {
-            sort_by: filters.sort_by,
-            language: filters.language,
+            sort_by: movieFilters.sort_by,
+            language: movieFilters.language,
           };
 
-          // Map generic filters to movie-specific ones
-          if (filters.with_genres) params.with_genres = filters.with_genres;
-          if (filters["vote_average.gte"])
-            params["vote_average.gte"] = filters["vote_average.gte"];
-          if (filters["vote_count.gte"])
-            params["vote_count.gte"] = filters["vote_count.gte"];
-          if (filters["with_runtime.gte"])
-            params["with_runtime.gte"] = filters["with_runtime.gte"];
-          if (filters["with_runtime.lte"])
-            params["with_runtime.lte"] = filters["with_runtime.lte"];
+          // Map filters to movie-specific parameters
+          if (movieFilters.with_genres) params.with_genres = movieFilters.with_genres;
+          if (movieFilters["vote_average.gte"])
+            params["vote_average.gte"] = movieFilters["vote_average.gte"];
+          if (movieFilters["vote_count.gte"])
+            params["vote_count.gte"] = movieFilters["vote_count.gte"];
+          if (movieFilters["with_runtime.gte"])
+            params["with_runtime.gte"] = movieFilters["with_runtime.gte"];
+          if (movieFilters["with_runtime.lte"])
+            params["with_runtime.lte"] = movieFilters["with_runtime.lte"];
 
-          // Use year for both year and primary_release_year for movies
-          if (filters.year) {
-            params.year = filters.year;
-            params.primary_release_year = filters.year;
+          if (movieFilters.year) {
+            params.year = movieFilters.year;
+            params.primary_release_year = movieFilters.year;
           }
 
           return params;
         },
 
-        // Convert combined filters to TV-specific parameters
+        // Convert TV filters to TMDB parameters
         getTVParams: (): DiscoverTVParams => {
-          const { filters } = get();
+          const { tvFilters } = get();
           const params: DiscoverTVParams = {
-            sort_by: filters.sort_by,
-            language: filters.language,
+            sort_by: tvFilters.sort_by,
+            language: tvFilters.language,
           };
 
-          // Map generic filters to TV-specific ones
-          if (filters.with_genres) params.with_genres = filters.with_genres;
-          if (filters["vote_average.gte"])
-            params["vote_average.gte"] = filters["vote_average.gte"];
-          if (filters["vote_count.gte"])
-            params["vote_count.gte"] = filters["vote_count.gte"];
-          if (filters["with_runtime.gte"])
-            params["with_runtime.gte"] = filters["with_runtime.gte"];
-          if (filters["with_runtime.lte"])
-            params["with_runtime.lte"] = filters["with_runtime.lte"];
+          // Map filters to TV-specific parameters
+          if (tvFilters.with_genres) params.with_genres = tvFilters.with_genres;
+          if (tvFilters["vote_average.gte"])
+            params["vote_average.gte"] = tvFilters["vote_average.gte"];
+          if (tvFilters["vote_count.gte"])
+            params["vote_count.gte"] = tvFilters["vote_count.gte"];
+          if (tvFilters["with_runtime.gte"])
+            params["with_runtime.gte"] = tvFilters["with_runtime.gte"];
+          if (tvFilters["with_runtime.lte"])
+            params["with_runtime.lte"] = tvFilters["with_runtime.lte"];
 
-          // Use year for first_air_date_year for TV shows
-          if (filters.year) {
-            params.first_air_date_year = filters.year;
+          if (tvFilters.first_air_date_year) {
+            params.first_air_date_year = tvFilters.first_air_date_year;
           }
 
           return params;
         },
 
-        // Genre management helpers
+        // Genre management (now tab-aware)
         toggleGenre: (genreId) =>
           set((state) => {
             const isSelected = state.selectedGenres.includes(genreId);
@@ -174,28 +247,53 @@ export const useDiscoverFiltersStore = create<DiscoverFiltersState>()(
                 ? newSelectedGenres.join(",")
                 : undefined;
 
-            return {
-              selectedGenres: newSelectedGenres,
-              filters: {
-                ...state.filters,
-                with_genres: genreString,
-              },
-            };
+            // Update the appropriate filter set based on active tab
+            if (state.activeTab === "movie") {
+              return {
+                selectedGenres: newSelectedGenres,
+                movieFilters: {
+                  ...state.movieFilters,
+                  with_genres: genreString,
+                },
+              };
+            } else {
+              return {
+                selectedGenres: newSelectedGenres,
+                tvFilters: {
+                  ...state.tvFilters,
+                  with_genres: genreString,
+                },
+              };
+            }
           }),
 
         clearGenres: () =>
-          set((state) => ({
-            selectedGenres: [],
-            filters: {
-              ...state.filters,
-              with_genres: undefined,
-            },
-          })),
+          set((state) => {
+            if (state.activeTab === "movie") {
+              return {
+                selectedGenres: [],
+                movieFilters: {
+                  ...state.movieFilters,
+                  with_genres: undefined,
+                },
+              };
+            } else {
+              return {
+                selectedGenres: [],
+                tvFilters: {
+                  ...state.tvFilters,
+                  with_genres: undefined,
+                },
+              };
+            }
+          }),
       }),
       {
         name: "discover-filters-storage",
         partialize: (state) => ({
-          filters: state.filters,
+          movieFilters: state.movieFilters,
+          tvFilters: state.tvFilters,
+          activeTab: state.activeTab,
           selectedGenres: state.selectedGenres,
         }),
       }
