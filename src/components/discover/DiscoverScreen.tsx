@@ -86,7 +86,7 @@ export function DiscoverScreen() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { query: searchQuery } = useDiscoverSearchQuery();
   const { colors } = useTheme();
-  const { top } = useSafeAreaInsets();
+
 
   // Search hook
   const {
@@ -101,7 +101,7 @@ export function DiscoverScreen() {
   // If there's a search query or search is focused, show search results
   if (searchQuery?.trim() || isSearchFocused) {
     return (
-      <View style={{ flex: 1, paddingTop: top }}>
+      <View style={{ flex: 1 }}>
         <DiscoverScreenScafold setIsSearchFocused={setIsSearchFocused}>
           <TMDBSearchResults
             query={searchQuery}
@@ -115,7 +115,7 @@ export function DiscoverScreen() {
   }
 
   return (
-    <View style={{ flex: 1, paddingTop: top }}>
+    <View style={{ flex: 1 }}>
       <DiscoverScreenScafold setIsSearchFocused={setIsSearchFocused}>
         <TabsProvider defaultIndex={0}>
           <Tabs

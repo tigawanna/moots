@@ -8,9 +8,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function HomeScreen() {
   const { top } = useSafeAreaInsets();
   return (
-    <Surface style={[styles.container, { paddingTop: top }]}>
-      {/* <HomeScreenComponent /> */}
-      <UserWatchList/>
+    <Surface style={[styles.container, { paddingTop: top + 12 }]}>
+      <UserWatchList />
     </Surface>
   );
 }
@@ -21,5 +20,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
 });
