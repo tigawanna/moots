@@ -1,7 +1,9 @@
-import { FlatList, StyleSheet, View } from 'react-native'
-import { WatchlistItemCard } from '../shared/watchlist/WatchlistItemCard';
-import { TMDBDiscoverResponse } from '@/lib/tanstack/operations/discover/tmdb-hooks';
- 
+import { FlatList, StyleSheet, View } from "react-native";
+import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
+import { TMDBDiscoverResponse } from "@/lib/tanstack/operations/discover/tmdb-hooks";
+import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
+import { Button,IconButton, useTheme } from "react-native-paper";
+
 interface DiscoverListProps {
   discoverResults: TMDBDiscoverResponse | undefined;
   currentCategory:
@@ -15,97 +17,46 @@ interface DiscoverListProps {
 }
 
 export function DiscoverList({ currentCategory, discoverResults }: DiscoverListProps) {
+  const { colors } = useTheme();
+  const { columns, orientation, setOrientation } = useResponsiveListView();
   return (
     <View style={styles.discoverContainer}>
-    {/* Category Selection */}
-    <FlatList
-      data={(discoverResults?.results as any[]) || []}
-      renderItem={({ item }) => (
-        <WatchlistItemCard
-          item={item}
-          viewMode="grid"
-          // onPress={(id)=>{
-          //   router.push(id)
-          // }}
-          showActions={true}
-        />
-      )}
-      keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
-      numColumns={2}
-      contentContainerStyle={styles.resultsGrid}
-      showsVerticalScrollIndicator={false}
-      // ListEmptyComponent={
-      //   discoverLoading ? (
-      //     <View style={styles.loadingContainer}>
-      //       <Text>Loading...</Text>
-      //     </View>
-      //   ) : (
-      //     <View style={styles.emptyContainer}>
-      //       <Text>No results found</Text>
-      //     </View>
-      //   )
-      // }
-    />
-  </View>
-);
+      <IconButton
+        style={[styles.toggleOrientationButton, { backgroundColor: colors.onPrimary }]}
+        icon={orientation === "grid" ? "view-list" : "view-grid"}
+        onPress={() => setOrientation((prev) => (prev === "grid" ? "list" : "grid"))}
+      />
+      {/* Category Selection */}
+      <FlatList
+        data={(discoverResults?.results as any[]) || []}
+        key={columns}
+        renderItem={({ item }) => (
+          <WatchlistItemCard item={item} viewMode={orientation} showActions={true} />
+        )}
+        keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
+        numColumns={columns}
+        contentContainerStyle={styles.resultsGrid}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
-  // Search styles
-  searchContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  searchBar: {
-    elevation: 2,
-  },
-  searchInput: {
-    fontSize: 16,
-  },
-
-  // Content styles
-  content: {
-    flex: 1,
-  },
-
   // Discover styles
   discoverContainer: {
     flex: 1,
-  },
-  categoryScroll: {
-    maxHeight: 50,
-    marginBottom: 8,
-  },
-  categoryContent: {
-    paddingHorizontal: 16,
-    alignItems: "center",
-  },
-  categoryChip: {
-    marginRight: 8,
-    marginBottom: 8,
-  },
-
-  selectedCategoryText: {
-    color: "white",
   },
 
   // Results styles
   resultsGrid: {
     padding: 8,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
+  toggleOrientationButton: {
+    position: "absolute",
+    top: -30,
+    right: 8,
+    zIndex: 10,
+    padding: 8,
+    borderRadius: 50,
   },
 });

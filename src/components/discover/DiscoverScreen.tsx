@@ -3,7 +3,7 @@ import { getCategoryLabel, useDiscoverFiltersStore } from "@/lib/tanstack/operat
 import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Searchbar, Surface, useTheme } from "react-native-paper";
 import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +14,7 @@ import { DiscoverList } from "./DiscoverList";
 // Individual tab components for Movies and TV
 function MovieDiscoverTab() {
   const { movieFilters, setActiveTab } = useDiscoverFiltersStore();
-  
+
   React.useEffect(() => {
     setActiveTab("movie");
   }, [setActiveTab]);
@@ -154,6 +154,7 @@ export function DiscoverScreenScafold({
   const hasActiveFilters = useHasActiveFilters();
   const { colors } = useTheme();
   const { query, setDiscoverKeyword } = useDiscoverSearchQuery();
+  const { width } = useWindowDimensions();
 
   const handleSearchChange = useCallback(
     (query: string) => {
@@ -172,14 +173,14 @@ export function DiscoverScreenScafold({
 
   return (
     <Surface style={{ ...styles.container }}>
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer,{width: width * 0.95}]}>
         <Searchbar
           placeholder="Search movies, TV shows, people..."
           value={query || ""}
           onChangeText={handleSearchChange}
           onFocus={handleSearchFocus}
           onBlur={handleSearchBlur}
-          style={styles.searchBar}
+          style={[styles.searchBar, { width: width * 0.7 }]}
           inputStyle={styles.searchInput}
           iconColor={colors.onSurfaceVariant}
           placeholderTextColor={colors.onSurfaceVariant}
@@ -199,16 +200,15 @@ const styles = StyleSheet.create({
 
   // Search styles
   searchContainer: {
-    width: "100%",
-    maxWidth: "95%",
+
     flexDirection: "row",
     gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 8,
+    paddingTop: 12,
   },
   searchBar: {
     elevation: 2,
-    width: "100%",
   },
   searchInput: {
     fontSize: 16,

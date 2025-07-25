@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   gridCard: {
     flex: 1,
     margin: 4,
-    maxWidth: "48%",
+    // maxWidth: "48%",
   },
   gridContent: {
     flex: 1,
