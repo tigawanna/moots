@@ -20,9 +20,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
         <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
           <Card.Content>
             <View style={styles.contentContainer}>
-              {posterUrl && (
+              {posterUrl ? (
                 <Image source={{ uri: posterUrl }} style={styles.poster} />
-              )}
+              ) : null}
               <View style={styles.textContent}>
                 <View style={styles.header}>
                   <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
@@ -39,7 +39,7 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
                   </Text>
                 </View>
                 
-                {item.overview && (
+                {item.overview ? (
                   <Text 
                     variant="bodySmall" 
                     numberOfLines={3} 
@@ -47,8 +47,8 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
                   >
                     {item.overview}
                   </Text>
-                )}
-                
+                ) : null}
+
                 <View style={styles.statsContainer}>
                   <Text variant="labelSmall" style={{ color: colors.primary }}>
                     ⭐ {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
@@ -70,9 +70,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
         <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
           <Card.Content>
             <View style={styles.contentContainer}>
-              {posterUrl && (
+              {posterUrl ? (
                 <Image source={{ uri: posterUrl }} style={styles.poster} />
-              )}
+              ) : null}
               <View style={styles.textContent}>
                 <View style={styles.header}>
                   <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
@@ -88,17 +88,17 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
                     {item.first_air_date ? new Date(item.first_air_date).getFullYear() : 'N/A'}
                   </Text>
                 </View>
-                
-                {item.overview && (
-                  <Text 
-                    variant="bodySmall" 
-                    numberOfLines={3} 
+
+                {item.overview ? (
+                  <Text
+                    variant="bodySmall"
+                    numberOfLines={3}
                     style={[styles.overview, { color: colors.onSurfaceVariant }]}
                   >
                     {item.overview}
                   </Text>
-                )}
-                
+                ) : null}
+
                 <View style={styles.statsContainer}>
                   <Text variant="labelSmall" style={{ color: colors.primary }}>
                     ⭐ {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
@@ -120,9 +120,9 @@ function SearchResultItem({ item, onPress }: SearchResultItemProps) {
         <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
           <Card.Content>
             <View style={styles.contentContainer}>
-              {profileUrl && (
+              {profileUrl ? (
                 <Image source={{ uri: profileUrl }} style={styles.profileImage} />
-              )}
+              ) : null}
               <View style={styles.textContent}>
                 <View style={styles.header}>
                   <Text variant="titleMedium" numberOfLines={2} style={styles.title}>

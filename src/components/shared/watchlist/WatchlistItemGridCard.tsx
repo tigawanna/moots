@@ -193,18 +193,11 @@ const styles = StyleSheet.create({
   gridYear: {
     marginBottom: 4,
   },
-  statusRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   actionsContainer: {
     paddingHorizontal: 12,
     paddingBottom: 8,
     borderTopWidth: 1,
     borderTopColor: "rgba(0,0,0,0.1)",
   },
-  statusText: {
-    fontSize: 10,
-    fontWeight: "500",
-  },
+
 });

@@ -1,18 +1,18 @@
-import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { Card, Text, useTheme } from 'react-native-paper';
-import { UnifiedWatchlistItem } from './types';
-import { WatchlistItemActions } from './WatchlistItemActions';
-import { WatchlistItemGridCard } from './WatchlistItemGridCard';
-import { WatchlistItemRating, WatchlistItemStatus } from './WatchlistItemStatus';
-import { WatchlistItemUtils } from './WatchlistItemUtils';
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Card, Text, useTheme } from "react-native-paper";
+import { UnifiedWatchlistItem } from "./types";
+import { WatchlistItemActions } from "./WatchlistItemActions";
+import { WatchlistItemGridCard } from "./WatchlistItemGridCard";
+import { WatchlistItemRating, WatchlistItemStatus } from "./WatchlistItemStatus";
+import { WatchlistItemUtils } from "./WatchlistItemUtils";
 
 interface WatchlistItemCardProps {
   item: UnifiedWatchlistItem;
-  viewMode?: 'grid' | 'list';
-  onPress?: (id:string|number) => void;
+  viewMode?: "grid" | "list";
+  onPress?: (id: string | number) => void;
   onLongPress?: () => void;
   onToggleWatched?: (item: UnifiedWatchlistItem) => void;
   onRemove?: (item: UnifiedWatchlistItem) => void;
@@ -21,20 +21,20 @@ interface WatchlistItemCardProps {
   showActions?: boolean;
 }
 
-export function WatchlistItemCard({ 
-  item, 
-  viewMode = 'grid',
+export function WatchlistItemCard({
+  item,
+  viewMode = "grid",
   onPress,
   onLongPress,
   onToggleWatched,
   onRemove,
   onAdd,
   isSelected = false,
-  showActions = true
+  showActions = true,
 }: WatchlistItemCardProps) {
   const { colors } = useTheme();
   const router = useRouter();
-  
+
   const posterUrl = WatchlistItemUtils.getPosterUrl(item);
   const releaseYear = WatchlistItemUtils.getReleaseYear(item);
   const addedDate = WatchlistItemUtils.getFormattedAddedDate(item);
@@ -44,7 +44,7 @@ export function WatchlistItemCard({
     if (onPress) {
       onPress(item?.id);
     } else {
-      const route = WatchlistItemUtils.getNavigationRoute(item)
+      const route = WatchlistItemUtils.getNavigationRoute(item);
       router.push(route);
     }
   };
@@ -56,69 +56,75 @@ export function WatchlistItemCard({
   };
 
   const cardStyle = [
-    viewMode === 'grid' ? styles.gridCard : styles.listCard,
-    isSelected && { 
-      borderColor: colors.primary, 
-      borderWidth: 2 
+    viewMode === "grid" ? styles.gridCard : styles.listCard,
+    isSelected && {
+      borderColor: colors.primary,
+      borderWidth: 2,
     },
-    { backgroundColor: colors.surface }
+    { backgroundColor: colors.surface },
   ];
 
-  if (viewMode === 'list') {
+  if (viewMode === "list") {
     return (
       <Card style={cardStyle} mode="outlined">
-        <Pressable
-          onPress={handlePress}
-          onLongPress={handleLongPress}
-          style={styles.listContent}
-        >
+        <Pressable onPress={handlePress} onLongPress={handleLongPress} style={styles.listContent}>
           <Image
-            source={posterUrl ? { uri: posterUrl } : require('@/assets/images/poster-placeholder.jpeg')}
+            source={
+              posterUrl ? { uri: posterUrl } : require("@/assets/images/poster-placeholder.jpeg")
+            }
             style={styles.listPoster}
             contentFit="cover"
-            placeholder={require('@/assets/images/poster-placeholder.jpeg')}
+            placeholder={require("@/assets/images/poster-placeholder.jpeg")}
           />
-          
+
           <View style={styles.listInfo}>
             <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
               {item.title}
             </Text>
-            
+
             <View style={styles.listMetadata}>
               <Text variant="bodySmall" style={[styles.year, { color: colors.onSurfaceVariant }]}>
                 {releaseYear} • {WatchlistItemUtils.getMediaTypeText(item)}
               </Text>
-              
+
               <View style={styles.statusRow}>
                 <WatchlistItemStatus item={item} size="medium" />
                 <WatchlistItemRating item={item} type="personal" size="small" />
               </View>
-              
+
               {item.vote_average && item.vote_average > 0 && (
                 <WatchlistItemRating item={item} type="tmdb" size="small" />
               )}
             </View>
-            
-            {addedDate && (
-              <Text variant="bodySmall" style={[styles.addedDate, { color: colors.onSurfaceVariant }]}>
+
+            {addedDate ? (
+              <Text
+                variant="bodySmall"
+                style={[styles.addedDate, { color: colors.onSurfaceVariant }]}>
                 Added {addedDate}
               </Text>
-            )}
-            
-            {notes && (
-              <Text variant="bodySmall" numberOfLines={2} style={[styles.notes, { color: colors.onSurfaceVariant }]}>
+            ) : null}
+
+            {notes ? (
+              <Text
+                variant="bodySmall"
+                numberOfLines={2}
+                style={[styles.notes, { color: colors.onSurfaceVariant }]}>
                 {notes}
               </Text>
-            )}
-            
-            {item.overview && (
-              <Text variant="bodySmall" numberOfLines={3} style={[styles.overview, { color: colors.onSurfaceVariant }]}>
+            ) : null}
+
+            {item.overview  ? (
+              <Text
+                variant="bodySmall"
+                numberOfLines={3}
+                style={[styles.overview, { color: colors.onSurfaceVariant }]}>
                 {item.overview}
               </Text>
-            )}
+            ):null}
           </View>
-          
-          {showActions && (
+
+          {showActions ? (
             <WatchlistItemActions
               item={item}
               onToggleWatched={onToggleWatched}
@@ -127,7 +133,7 @@ export function WatchlistItemCard({
               size="medium"
               layout="vertical"
             />
-          )}
+          ): null}
         </Pressable>
       </Card>
     );
@@ -155,7 +161,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   listContent: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 12,
   },
   listPoster: {
@@ -166,10 +172,10 @@ const styles = StyleSheet.create({
   },
   listInfo: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   title: {
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 4,
   },
   listMetadata: {
@@ -179,8 +185,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 4,
   },
@@ -188,17 +194,17 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   notes: {
-    fontStyle: 'italic',
+    fontStyle: "italic",
     marginBottom: 4,
   },
   overview: {
     lineHeight: 16,
   },
-  
+
   // Grid styles (placeholder)
   gridCard: {
     flex: 1,
     margin: 4,
-    maxWidth: '48%',
+    maxWidth: "48%",
   },
 });
