@@ -11,8 +11,7 @@ import { Alert, StyleSheet, View } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
 import { UnifiedWatchlistItem } from "./types";
 import { WatchlistItemUtils } from "./WatchlistItemUtils";
-import { logger } from "@/utils/logger";
-import { parse } from "dotenv";
+
 
 interface WatchlistItemActionsProps {
   item: UnifiedWatchlistItem & { mediaType: string };

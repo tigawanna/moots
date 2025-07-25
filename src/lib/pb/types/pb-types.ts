@@ -407,7 +407,13 @@ export interface UsersCollection {
 	relations: {
 		watchlist_via_user_id: WatchlistCollection[];
 		watchlist_likes_via_user_id: WatchlistLikesCollection[];
-		user_settings_via_user_id: UserSettingsCollection[];
+		watchlist_items_via_added_by: WatchlistItemsCollection[];
+		watched_list_via_user_id: WatchedListCollection[];
+		follows_via_follower_id: FollowsCollection[];
+		follows_via_following_id: FollowsCollection[];
+		user_profiles_via_user_id: UserProfilesCollection[];
+		notifications_via_recipient_id: NotificationsCollection[];
+		notifications_via_sender_id: NotificationsCollection[];
 	};
 }
 
@@ -455,69 +461,38 @@ export interface SecretsCollection {
 export interface WatchlistResponse extends BaseCollectionResponse {
 	collectionName: 'watchlist';
 	id: string;
-	tmdb_id: number;
 	title: string;
 	overview: string;
-	poster_path: string;
-	backdrop_path: string;
-	release_date: string;
-	vote_average: number;
-	genre_ids: Record<string, any> | any[] | null;
-	media_type: ('movie' | 'tv')[];
-	user_id: string[];
-	watched_status: boolean;
-	personal_rating: number;
-	notes: string;
-	created: string;
-	updated: string;
+	user_id: Array<string>;
+	iiitems: Array<string>;
+	visibility: Array<'public' | 'private' | 'followers_only'>;
+	is_collaborative: boolean;
 }
 
 export interface WatchlistCreate extends BaseCollectionCreate {
 	id?: string;
-	tmdb_id: number;
-	title: string;
+	title?: string;
 	overview?: string;
-	poster_path?: string;
-	backdrop_path?: string;
-	release_date?: string | Date;
-	vote_average?: number;
-	genre_ids?: Record<string, any> | any[] | null;
-	media_type: MaybeArray<'movie' | 'tv'>;
 	user_id: MaybeArray<string>;
-	watched_status?: boolean;
-	personal_rating?: number;
-	notes?: string;
-	created?: string | Date;
-	updated?: string | Date;
+	iiitems?: MaybeArray<string>;
+	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
+	is_collaborative?: boolean;
 }
 
 export interface WatchlistUpdate extends BaseCollectionUpdate {
 	id: string;
-	tmdb_id: number;
-	'tmdb_id+'?: number;
-	'tmdb_id-'?: number;
-	title: string;
+	title?: string;
 	overview?: string;
-	poster_path?: string;
-	backdrop_path?: string;
-	release_date?: string | Date;
-	vote_average?: number;
-	'vote_average+'?: number;
-	'vote_average-'?: number;
-	genre_ids?: Record<string, any> | any[] | null;
-	media_type: MaybeArray<'movie' | 'tv'>;
-	'media_type+'?: MaybeArray<'movie' | 'tv'>;
-	'media_type-'?: MaybeArray<'movie' | 'tv'>;
 	user_id: MaybeArray<string>;
 	'user_id+'?: MaybeArray<string>;
 	'user_id-'?: MaybeArray<string>;
-	watched_status?: boolean;
-	personal_rating?: number;
-	'personal_rating+'?: number;
-	'personal_rating-'?: number;
-	notes?: string;
-	created?: string | Date;
-	updated?: string | Date;
+	iiitems?: MaybeArray<string>;
+	'iiitems+'?: MaybeArray<string>;
+	'iiitems-'?: MaybeArray<string>;
+	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
+	'visibility+'?: MaybeArray<'public' | 'private' | 'followers_only'>;
+	'visibility-'?: MaybeArray<'public' | 'private' | 'followers_only'>;
+	is_collaborative?: boolean;
 }
 
 export interface WatchlistCollection {
@@ -529,7 +504,7 @@ export interface WatchlistCollection {
 	update: WatchlistUpdate;
 	relations: {
 		user_id: UsersCollection[];
-		watchlist_likes_via_watchlist_item_id: WatchlistLikesCollection[];
+		iiitems: WatchlistItemsCollection[];
 	};
 }
 
@@ -539,8 +514,8 @@ export interface WatchlistCollection {
 export interface WatchlistLikesResponse extends BaseCollectionResponse {
 	collectionName: 'watchlist_likes';
 	id: string;
-	user_id: string[];
-	watchlist_item_id: string[];
+	user_id: Array<string>;
+	watchlist_item_id: string;
 	created: string;
 	updated: string;
 }
@@ -548,7 +523,7 @@ export interface WatchlistLikesResponse extends BaseCollectionResponse {
 export interface WatchlistLikesCreate extends BaseCollectionCreate {
 	id?: string;
 	user_id: MaybeArray<string>;
-	watchlist_item_id: MaybeArray<string>;
+	watchlist_item_id: string;
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -558,9 +533,7 @@ export interface WatchlistLikesUpdate extends BaseCollectionUpdate {
 	user_id: MaybeArray<string>;
 	'user_id+'?: MaybeArray<string>;
 	'user_id-'?: MaybeArray<string>;
-	watchlist_item_id: MaybeArray<string>;
-	'watchlist_item_id+'?: MaybeArray<string>;
-	'watchlist_item_id-'?: MaybeArray<string>;
+	watchlist_item_id: string;
 	created?: string | Date;
 	updated?: string | Date;
 }
@@ -574,64 +547,313 @@ export interface WatchlistLikesCollection {
 	update: WatchlistLikesUpdate;
 	relations: {
 		user_id: UsersCollection[];
-		watchlist_item_id: WatchlistCollection[];
+		watchlist_item_id: WatchlistItemsCollection;
 	};
 }
 
-// ===== user_settings block =====
-// ===== user_settings =====
+// ===== watchlist_items block =====
+// ===== watchlist_items =====
 
-export interface UserSettingsResponse extends BaseCollectionResponse {
-	collectionName: 'user_settings';
+export interface WatchlistItemsResponse extends BaseCollectionResponse {
+	collectionName: 'watchlist_items';
 	id: string;
-	user_id: string[];
-	watchlist_limit: number;
-	default_view: ('grid' | 'list')[];
-	notifications_enabled: boolean;
-	theme_preference: ('light' | 'dark' | 'system')[];
+	tmdb_id: number;
+	title: string;
+	overview: string;
+	poster_path: string;
+	backdrop_path: string;
+	release_date: string;
+	vote_average: number;
+	genre_ids: Record<string, any> | Array<any> | null;
+	media_type: Array<'movie' | 'tv'>;
+	added_by: Array<string>;
+	watched_status: boolean;
+	personal_rating: number;
+	notes: string;
 	created: string;
 	updated: string;
 }
 
-export interface UserSettingsCreate extends BaseCollectionCreate {
+export interface WatchlistItemsCreate extends BaseCollectionCreate {
 	id?: string;
-	user_id: MaybeArray<string>;
-	watchlist_limit?: number;
-	default_view?: MaybeArray<'grid' | 'list'>;
-	notifications_enabled?: boolean;
-	theme_preference?: MaybeArray<'light' | 'dark' | 'system'>;
+	tmdb_id: number;
+	title: string;
+	overview?: string;
+	poster_path?: string;
+	backdrop_path?: string;
+	release_date?: string | Date;
+	vote_average?: number;
+	genre_ids?: Record<string, any> | Array<any> | null;
+	media_type: MaybeArray<'movie' | 'tv'>;
+	added_by: MaybeArray<string>;
+	watched_status?: boolean;
+	personal_rating?: number;
+	notes?: string;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
-export interface UserSettingsUpdate extends BaseCollectionUpdate {
+export interface WatchlistItemsUpdate extends BaseCollectionUpdate {
+	id: string;
+	tmdb_id: number;
+	'tmdb_id+'?: number;
+	'tmdb_id-'?: number;
+	title: string;
+	overview?: string;
+	poster_path?: string;
+	backdrop_path?: string;
+	release_date?: string | Date;
+	vote_average?: number;
+	'vote_average+'?: number;
+	'vote_average-'?: number;
+	genre_ids?: Record<string, any> | Array<any> | null;
+	media_type: MaybeArray<'movie' | 'tv'>;
+	'media_type+'?: MaybeArray<'movie' | 'tv'>;
+	'media_type-'?: MaybeArray<'movie' | 'tv'>;
+	added_by: MaybeArray<string>;
+	'added_by+'?: MaybeArray<string>;
+	'added_by-'?: MaybeArray<string>;
+	watched_status?: boolean;
+	personal_rating?: number;
+	'personal_rating+'?: number;
+	'personal_rating-'?: number;
+	notes?: string;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface WatchlistItemsCollection {
+	type: 'base';
+	collectionId: string;
+	collectionName: 'watchlist_items';
+	response: WatchlistItemsResponse;
+	create: WatchlistItemsCreate;
+	update: WatchlistItemsUpdate;
+	relations: {
+		watchlist_via_iiitems: WatchlistCollection[];
+		watchlist_likes_via_watchlist_item_id: WatchlistLikesCollection[];
+		added_by: UsersCollection[];
+		watched_list_via_items: WatchedListCollection[];
+	};
+}
+
+// ===== watched_list block =====
+// ===== watched_list =====
+
+export interface WatchedListResponse extends BaseCollectionResponse {
+	collectionName: 'watched_list';
+	id: string;
+	user_id: Array<string>;
+	items: Array<string>;
+	created: string;
+	updated: string;
+}
+
+export interface WatchedListCreate extends BaseCollectionCreate {
+	id?: string;
+	user_id: MaybeArray<string>;
+	items?: MaybeArray<string>;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface WatchedListUpdate extends BaseCollectionUpdate {
 	id: string;
 	user_id: MaybeArray<string>;
 	'user_id+'?: MaybeArray<string>;
 	'user_id-'?: MaybeArray<string>;
-	watchlist_limit?: number;
-	'watchlist_limit+'?: number;
-	'watchlist_limit-'?: number;
-	default_view?: MaybeArray<'grid' | 'list'>;
-	'default_view+'?: MaybeArray<'grid' | 'list'>;
-	'default_view-'?: MaybeArray<'grid' | 'list'>;
-	notifications_enabled?: boolean;
-	theme_preference?: MaybeArray<'light' | 'dark' | 'system'>;
-	'theme_preference+'?: MaybeArray<'light' | 'dark' | 'system'>;
-	'theme_preference-'?: MaybeArray<'light' | 'dark' | 'system'>;
+	items?: MaybeArray<string>;
+	'items+'?: MaybeArray<string>;
+	'items-'?: MaybeArray<string>;
 	created?: string | Date;
 	updated?: string | Date;
 }
 
-export interface UserSettingsCollection {
+export interface WatchedListCollection {
 	type: 'base';
 	collectionId: string;
-	collectionName: 'user_settings';
-	response: UserSettingsResponse;
-	create: UserSettingsCreate;
-	update: UserSettingsUpdate;
+	collectionName: 'watched_list';
+	response: WatchedListResponse;
+	create: WatchedListCreate;
+	update: WatchedListUpdate;
 	relations: {
 		user_id: UsersCollection[];
+		items: WatchlistItemsCollection[];
+	};
+}
+
+// ===== follows block =====
+// ===== follows =====
+
+export interface FollowsResponse extends BaseCollectionResponse {
+	collectionName: 'follows';
+	id: string;
+	follower_id: Array<string>;
+	following_id: Array<string>;
+	status: Array<'pending' | 'accepted' | 'blocked'>;
+	created: string;
+	updated: string;
+}
+
+export interface FollowsCreate extends BaseCollectionCreate {
+	id?: string;
+	follower_id: MaybeArray<string>;
+	following_id: MaybeArray<string>;
+	status?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface FollowsUpdate extends BaseCollectionUpdate {
+	id: string;
+	follower_id: MaybeArray<string>;
+	'follower_id+'?: MaybeArray<string>;
+	'follower_id-'?: MaybeArray<string>;
+	following_id: MaybeArray<string>;
+	'following_id+'?: MaybeArray<string>;
+	'following_id-'?: MaybeArray<string>;
+	status?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
+	'status+'?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
+	'status-'?: MaybeArray<'pending' | 'accepted' | 'blocked'>;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface FollowsCollection {
+	type: 'base';
+	collectionId: string;
+	collectionName: 'follows';
+	response: FollowsResponse;
+	create: FollowsCreate;
+	update: FollowsUpdate;
+	relations: {
+		follower_id: UsersCollection[];
+		following_id: UsersCollection[];
+	};
+}
+
+// ===== user_profiles block =====
+// ===== user_profiles =====
+
+export interface UserProfilesResponse extends BaseCollectionResponse {
+	collectionName: 'user_profiles';
+	id: string;
+	user_id: Array<string>;
+	bio: string;
+	location: string;
+	website: string;
+	is_private: boolean;
+	follower_count: number;
+	following_count: number;
+	watchlist_count: number;
+	created: string;
+	updated: string;
+}
+
+export interface UserProfilesCreate extends BaseCollectionCreate {
+	id?: string;
+	user_id: MaybeArray<string>;
+	bio?: string;
+	location?: string;
+	website?: string | URL;
+	is_private?: boolean;
+	follower_count?: number;
+	following_count?: number;
+	watchlist_count?: number;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface UserProfilesUpdate extends BaseCollectionUpdate {
+	id: string;
+	user_id: MaybeArray<string>;
+	'user_id+'?: MaybeArray<string>;
+	'user_id-'?: MaybeArray<string>;
+	bio?: string;
+	location?: string;
+	website?: string | URL;
+	is_private?: boolean;
+	follower_count?: number;
+	'follower_count+'?: number;
+	'follower_count-'?: number;
+	following_count?: number;
+	'following_count+'?: number;
+	'following_count-'?: number;
+	watchlist_count?: number;
+	'watchlist_count+'?: number;
+	'watchlist_count-'?: number;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface UserProfilesCollection {
+	type: 'base';
+	collectionId: string;
+	collectionName: 'user_profiles';
+	response: UserProfilesResponse;
+	create: UserProfilesCreate;
+	update: UserProfilesUpdate;
+	relations: {
+		user_id: UsersCollection[];
+	};
+}
+
+// ===== notifications block =====
+// ===== notifications =====
+
+export interface NotificationsResponse extends BaseCollectionResponse {
+	collectionName: 'notifications';
+	id: string;
+	recipient_id: Array<string>;
+	sender_id: Array<string>;
+	type: Array<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	message: string;
+	is_read: boolean;
+	related_id: string;
+	created: string;
+	updated: string;
+}
+
+export interface NotificationsCreate extends BaseCollectionCreate {
+	id?: string;
+	recipient_id: MaybeArray<string>;
+	sender_id?: MaybeArray<string>;
+	type: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	message?: string;
+	is_read?: boolean;
+	related_id?: string;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface NotificationsUpdate extends BaseCollectionUpdate {
+	id: string;
+	recipient_id: MaybeArray<string>;
+	'recipient_id+'?: MaybeArray<string>;
+	'recipient_id-'?: MaybeArray<string>;
+	sender_id?: MaybeArray<string>;
+	'sender_id+'?: MaybeArray<string>;
+	'sender_id-'?: MaybeArray<string>;
+	type: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	'type+'?: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	'type-'?: MaybeArray<'follow_request' | 'follow_accepted' | 'watchlist_shared' | 'watchlist_liked'>;
+	message?: string;
+	is_read?: boolean;
+	related_id?: string;
+	created?: string | Date;
+	updated?: string | Date;
+}
+
+export interface NotificationsCollection {
+	type: 'base';
+	collectionId: string;
+	collectionName: 'notifications';
+	response: NotificationsResponse;
+	create: NotificationsCreate;
+	update: NotificationsUpdate;
+	relations: {
+		recipient_id: UsersCollection[];
+		sender_id: UsersCollection[];
 	};
 }
 
@@ -647,5 +869,9 @@ export type Schema = {
 	_secrets: SecretsCollection;
 	watchlist: WatchlistCollection;
 	watchlist_likes: WatchlistLikesCollection;
-	user_settings: UserSettingsCollection;
+	watchlist_items: WatchlistItemsCollection;
+	watched_list: WatchedListCollection;
+	follows: FollowsCollection;
+	user_profiles: UserProfilesCollection;
+	notifications: NotificationsCollection;
 }
