@@ -74,8 +74,7 @@ interface AddToWatchListMutationOptionsProps {
 export function addToWatchListMutationOptions() {
   return mutationOptions({
     mutationFn: ({ userId, payload }: AddToWatchListMutationOptionsProps) => {
-      // console.log("Adding to watchlist:", payload);
-      logger.log(payload, "Add to Watchlist Payload");
+      console.log("Adding to watchlist:", payload);
       return pb.from("watchlist").create({
         user_id: userId,
         media_type: payload.media_type,

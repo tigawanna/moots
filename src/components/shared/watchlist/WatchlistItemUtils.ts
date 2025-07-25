@@ -3,11 +3,11 @@ import { UnifiedWatchlistItem, isPocketBaseItem } from './types';
 
 export class WatchlistItemUtils {
   // Get normalized media type
-  static getMediaType(item: UnifiedWatchlistItem): 'movie' | 'tv' {
+  static getMediaType(item: UnifiedWatchlistItem, mediaTypeTab?: "movie" | "tv"): "movie" | "tv" {
     if (isPocketBaseItem(item)) {
-      return item.media_type?.[0] || 'movie';
+      return item.media_type?.[0] || "movie";
     }
-    return item.media_type || 'movie';
+    return item?.media_type || mediaTypeTab || "movie";
   }
 
   // Get display ID for navigation
@@ -17,9 +17,7 @@ export class WatchlistItemUtils {
 
   // Get poster URL
   static getPosterUrl(item: UnifiedWatchlistItem): string | null {
-    return item.poster_path 
-      ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-      : null;
+    return item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null;
   }
 
   // Get release year
@@ -30,12 +28,12 @@ export class WatchlistItemUtils {
   // Get formatted added date (for PocketBase items)
   static getFormattedAddedDate(item: UnifiedWatchlistItem): string | null {
     if (!isPocketBaseItem(item) || !item.created) return null;
-    
+
     const addedDate = new Date(item.created);
-    return addedDate.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: addedDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+    return addedDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: addedDate.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
     });
   }
 
@@ -74,20 +72,20 @@ export class WatchlistItemUtils {
   // Get navigation route
   static getNavigationRoute(item: UnifiedWatchlistItem): Href {
     const mediaType = this.getMediaType(item);
-    const route = mediaType === 'movie' ? '/movie' : '/show';
+    const route = mediaType === "movie" ? "/movie" : "/show";
     return `${route}/${item.tmdb_id}`;
   }
 
   // Get short media type text
   static getShortMediaTypeText(item: UnifiedWatchlistItem): string {
     const mediaType = this.getMediaType(item);
-    return mediaType === 'movie' ? 'Movie' : 'TV';
+    return mediaType === "movie" ? "Movie" : "TV";
   }
 
   // Get media type display text
   static getMediaTypeText(item: UnifiedWatchlistItem): string {
     const mediaType = this.getMediaType(item);
-    return mediaType === 'movie' ? 'Movie' : 'TV Show';
+    return mediaType === "movie" ? "Movie" : "TV Show";
   }
 }
 

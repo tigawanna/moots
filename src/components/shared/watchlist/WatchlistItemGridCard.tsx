@@ -16,6 +16,7 @@ interface WatchlistItemGridCardProps {
   onAdd?: (item: UnifiedWatchlistItem) => void;
   isSelected?: boolean;
   showActions?: boolean;
+  mediaTypeTab: "movie" | "tv";
 }
 
 export function WatchlistItemGridCard({
@@ -26,6 +27,7 @@ export function WatchlistItemGridCard({
   onRemove,
   onAdd,
   isSelected = false,
+  mediaTypeTab,
   showActions = true,
 }: WatchlistItemGridCardProps) {
 
@@ -36,6 +38,7 @@ export function WatchlistItemGridCard({
   const posterUrl = WatchlistItemUtils.getPosterUrl(item);
   const releaseYear = WatchlistItemUtils.getReleaseYear(item);
   const isWatched = WatchlistItemUtils.getWatchedStatus(item);
+  const mediaType = WatchlistItemUtils.getMediaType(item,mediaTypeTab);
 
   const getStatusColor = () => {
     const isInWatchlist = WatchlistItemUtils.isInWatchlist(item);
@@ -75,14 +78,12 @@ export function WatchlistItemGridCard({
             {/* Status indicator overlay */}
             <Pressable
               onPress={(e) => {
-                e.stopPropagation()
-                 console.log("Status pressed", item.id);
+                e.stopPropagation();
+                console.log("Status pressed", item.id);
               }}
-              style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]}
-            >
+              style={[styles.statusIndicator, { backgroundColor: getStatusColor() }]}>
               <MaterialIcons name={getStatusIcon()} size={16} color={colors.onPrimary} />
             </Pressable>
-
 
             {/* TMDB rating overlay */}
             {item?.vote_average && item?.vote_average > 0 ? (
@@ -102,7 +103,7 @@ export function WatchlistItemGridCard({
 
             <Text variant="bodySmall" style={[styles.gridYear, { color: colors.onSurfaceVariant }]}>
               {releaseYear ? `${releaseYear} • ` : ""}
-              {WatchlistItemUtils.getShortMediaTypeText(item)}
+              {mediaType}
             </Text>
 
             {/* <View style={styles.statusRow}>
@@ -120,7 +121,7 @@ export function WatchlistItemGridCard({
         {showActions && (
           <Pressable onPress={(e) => e.stopPropagation()} style={styles.actionsContainer}>
             <WatchlistItemActions
-              item={item}
+              item={{ ...item, mediaType }}
               onToggleWatched={onToggleWatched}
               onRemove={onRemove}
               onAdd={onAdd}

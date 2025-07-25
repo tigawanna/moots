@@ -19,11 +19,13 @@ interface WatchlistItemCardProps {
   onAdd?: (item: UnifiedWatchlistItem) => void;
   isSelected?: boolean;
   showActions?: boolean;
+  mediaTypeTab: "movie" | "tv";
 }
 
 export function WatchlistItemCard({
   item,
   viewMode = "grid",
+  mediaTypeTab,
   onPress,
   onLongPress,
   onToggleWatched,
@@ -39,6 +41,7 @@ export function WatchlistItemCard({
   const releaseYear = WatchlistItemUtils.getReleaseYear(item);
   const addedDate = WatchlistItemUtils.getFormattedAddedDate(item);
   const notes = WatchlistItemUtils.getNotes(item);
+  const mediaType = WatchlistItemUtils.getMediaType(item, mediaTypeTab);
 
   const handlePress = () => {
     if (onPress) {
@@ -114,26 +117,26 @@ export function WatchlistItemCard({
               </Text>
             ) : null}
 
-            {item.overview  ? (
+            {item.overview ? (
               <Text
                 variant="bodySmall"
                 numberOfLines={3}
                 style={[styles.overview, { color: colors.onSurfaceVariant }]}>
                 {item.overview}
               </Text>
-            ):null}
+            ) : null}
           </View>
 
           {showActions ? (
             <WatchlistItemActions
-              item={item}
+              item={{ ...item, mediaType }}
               onToggleWatched={onToggleWatched}
               onRemove={onRemove}
               onAdd={onAdd}
               size="medium"
               layout="vertical"
             />
-          ): null}
+          ) : null}
         </Pressable>
       </Card>
     );
@@ -142,6 +145,7 @@ export function WatchlistItemCard({
   // Grid view
   return (
     <WatchlistItemGridCard
+     mediaTypeTab={mediaTypeTab}
       item={item}
       onPress={handlePress}
       onLongPress={handleLongPress}

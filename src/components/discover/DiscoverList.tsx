@@ -18,6 +18,7 @@ interface DiscoverListProps {
 }
 
 export function DiscoverList({ currentCategory, discoverResults }: DiscoverListProps) {
+  const mediaTypetab = (currentCategory?.type || "movie") as "movie" | "tv";
   const { colors } = useTheme();
   const { columns, orientation, setOrientation } = useResponsiveListView();
   return (
@@ -32,7 +33,7 @@ export function DiscoverList({ currentCategory, discoverResults }: DiscoverListP
         data={(discoverResults?.results as any[]) || []}
         key={columns}
         renderItem={({ item }) => (
-          <WatchlistItemCard item={item} viewMode={orientation} showActions={true} />
+          <WatchlistItemCard item={item} viewMode={orientation} showActions={true} mediaTypeTab={mediaTypetab} />
         )}
         keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
         numColumns={columns}
@@ -46,7 +47,9 @@ export function DiscoverList({ currentCategory, discoverResults }: DiscoverListP
             <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurface }]}>
               No {currentCategory?.type === "movie" ? "movies" : "shows"} found
             </Text>
-            <Text variant="bodyMedium" style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
+            <Text
+              variant="bodyMedium"
+              style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
               Try adjusting your filters or search terms to discover more content
             </Text>
           </View>

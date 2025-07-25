@@ -11,9 +11,11 @@ import { Alert, StyleSheet, View } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
 import { UnifiedWatchlistItem } from "./types";
 import { WatchlistItemUtils } from "./WatchlistItemUtils";
+import { logger } from "@/utils/logger";
+import { parse } from "dotenv";
 
 interface WatchlistItemActionsProps {
-  item: UnifiedWatchlistItem;
+  item: UnifiedWatchlistItem & { mediaType: string };
   onToggleWatched?: (item: UnifiedWatchlistItem) => void;
   onRemove?: (item: UnifiedWatchlistItem) => void;
   onAdd?: (item: UnifiedWatchlistItem) => void;
@@ -124,6 +126,7 @@ export function WatchlistItemActions({
 
   const handleAdd = async (event: any) => {
     event.stopPropagation();
+    console.log("Add pressed", item);
     if (onAdd) {
       onAdd(item);
       return;
@@ -133,7 +136,7 @@ export function WatchlistItemActions({
       showSnackbar("Please sign in to add to watchlist");
       return;
     }
-
+  const imdbId = typeof item.id === "string" ? parseInt(item.id) : item.id
     try {
       
       await quickAddMutation.mutateAsync({
@@ -141,8 +144,8 @@ export function WatchlistItemActions({
 
         payload: {
           user_id: user.id,
-          media_type: item.media_type,
-          tmdb_id: item.tmdb_id,
+          media_type: item.mediaType as any,
+          tmdb_id: imdbId,
           title: item.title,
           backdrop_path: item.backdrop_path || undefined,
           poster_path: item.poster_path || undefined,
