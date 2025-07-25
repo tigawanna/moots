@@ -1,69 +1,21 @@
 import { TMDBSearchResults } from "@/components/tmdb/TMDBSearchResults";
+import { getCategoryLabel, getMediaTypeFromSort, useDiscoverFiltersStore } from "@/lib/tanstack/operations/discover/discover-fliters-store";
+import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Searchbar, Surface, useTheme,} from "react-native-paper";
-import { DiscoverFeedFilters, FilterButton, useHasActiveFilters } from "./DiscoverFeedFilters";
-import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
-import { DiscoverList } from "./DiscoverList";
+import { Searchbar, Surface, useTheme, } from "react-native-paper";
 import { LoadingIndicatorDots } from "../state-screens/LoadingIndicatorDots";
-import { useDiscoverFiltersStore } from "@/lib/tanstack/operations/discover/discover-fliters-store";
-
-const DISCOVER_CATEGORIES = [
-  {
-    key: "popular_movies",
-    label: "Popular Movies",
-    type: "movie",
-    sort: "popularity.desc",
-  },
-  {
-    key: "top_rated_movies",
-    label: "Top Rated Movies",
-    type: "movie",
-    sort: "vote_average.desc",
-  },
-  {
-    key: "upcoming_movies",
-    label: "Upcoming Movies",
-    type: "movie",
-    sort: "release_date.desc",
-  },
-  {
-    key: "popular_tv",
-    label: "Popular TV",
-    type: "tv",
-    sort: "popularity.desc",
-  },
-  {
-    key: "top_rated_tv",
-    label: "Top Rated TV",
-    type: "tv",
-    sort: "vote_average.desc",
-  },
-  {
-    key: "airing_today",
-    label: "Airing Today",
-    type: "tv",
-    sort: "first_air_date.desc",
-  },
-];
+import { DiscoverFeedFilters, FilterButton, useHasActiveFilters } from "./DiscoverFeedFilters";
+import { DiscoverList } from "./DiscoverList";
 
 export function DiscoverScreen() {
  const [activeTab, setActiveTab] = useState("discover");
-  const [selectedCategory, setSelectedCategory] = useState("popular_movies");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { query: searchQuery } = useDiscoverSearchQuery();
+const { filters } = useDiscoverFiltersStore();
 
-    const {
-      filters,
-      setFilters,
-      resetFilters,
-      selectedGenres,
-      toggleGenre,
-      clearGenres,
-    } = useDiscoverFiltersStore();
-  
-  // Search hook
+ // Search hook
   const {
     data: searchResults,
     isLoading: searchLoading,
@@ -71,18 +23,25 @@ export function DiscoverScreen() {
   } = useTMDBSearch({
     query: searchQuery,
     page: 1,
-  });
-
-  // Discover hook
-  const currentCategory = DISCOVER_CATEGORIES.find((cat) => cat.key === selectedCategory);
+  });  // Discover hook - use filters from store
+  const mediaType = getMediaTypeFromSort(filters);
+  const categoryLabel = getCategoryLabel(filters.sort_by);
   
   const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
-    type: (currentCategory?.type as "movie" | "tv") || "movie",
+    type: mediaType,
     params: {
-      sort_by: currentCategory?.sort || "popularity.desc",
       page: 1,
+      ...filters,
     },
   });
+
+  // Create a current category object for compatibility
+  const currentCategory = {
+    key: filters.sort_by.replace('.', '_'),
+    label: categoryLabel,
+    type: mediaType,
+    sort: filters.sort_by,
+  };
 
   if (discoverLoading) {
     return (
@@ -175,14 +134,16 @@ const styles = StyleSheet.create({
 
   // Search styles
   searchContainer: {
-    maxWidth: "98%",
+    width: "100%",
+    maxWidth: "95%",
     flexDirection: "row",
-    gap: 8,
+    gap: 12,
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   searchBar: {
     elevation: 2,
+    width: "100%",
   },
   searchInput: {
     fontSize: 16,

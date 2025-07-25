@@ -8,7 +8,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
 import { Searchbar, Surface, Text, useTheme } from "react-native-paper";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { UserWatchListFlatList } from "./UserWatchListFlatList";
 
 export function UserWatchList({ community }: { community?: boolean }) {
@@ -22,14 +21,14 @@ export function UserWatchList({ community }: { community?: boolean }) {
 
   if (isLoading) {
     return (
-      <UserWatchListContainer>
+      <UserWatchListScafold>
         <LoadingIndicatorDots />
-      </UserWatchListContainer>
+      </UserWatchListScafold>
     );
   }
   if (error) {
     return (
-      <UserWatchListContainer>
+      <UserWatchListScafold>
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
@@ -47,12 +46,12 @@ export function UserWatchList({ community }: { community?: boolean }) {
             </View>
           )}
         </View>
-      </UserWatchListContainer>
+      </UserWatchListScafold>
     );
   }
   if (!data) {
     return (
-      <UserWatchListContainer>
+      <UserWatchListScafold>
         <View style={styles.statesContainer}>
           {__DEV__ ? (
             <View>
@@ -67,20 +66,20 @@ export function UserWatchList({ community }: { community?: boolean }) {
             </View>
           )}
         </View>
-      </UserWatchListContainer>
+      </UserWatchListScafold>
     );
   }
 
   return (
-    <UserWatchListContainer>
+    <UserWatchListScafold>
       <View style={styles.statesContainer}>
         <UserWatchListFlatList watchList={data.items} refetch={refetch} />
       </View>
-    </UserWatchListContainer>
+    </UserWatchListScafold>
   );
 }
 
-export function UserWatchListContainer({ children }: { children: React.ReactNode }) {
+export function UserWatchListScafold({ children }: { children: React.ReactNode }) {
   const { searchTerm, setSearchTerm } = useUserWatchListFiltersStore();
   const { colors } = useTheme();
 

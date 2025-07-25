@@ -7,7 +7,7 @@ export default function ExploreRoute() {
   const { top } = useSafeAreaInsets();
 
   return (
-    <View style={{ flex: 1, paddingTop: top }}>
+    <View style={{ flex: 1, paddingTop: top + 10 }}>
       <DiscoverScreen />
     </View>
   );

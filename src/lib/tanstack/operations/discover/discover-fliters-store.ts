@@ -237,3 +237,20 @@ export function getYearRange(startYear: number = 1900): number[] {
   }
   return years;
 }
+
+
+  export const getCategoryLabel = (sortBy: string): string => {
+    return sortBy
+      .split('.')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  // Helper function to determine media type from sort_by
+  export const getMediaTypeFromSort = (filters: DiscoverFilters): "movie" | "tv" => {
+    if (filters.sort_by.includes("release_date")) return "movie";
+    if (filters.sort_by.includes("first_air_date")) return "tv";
+    // Default to movie for generic sorts like popularity, vote_average
+    return filters.mediaType === "tv" ? "tv" : "movie";
+  };
+  
