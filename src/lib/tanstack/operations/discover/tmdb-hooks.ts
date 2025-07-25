@@ -1,7 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { pb } from '../pb/client';
-import { createTMDBSDK, DiscoverMoviesParams, DiscoverTVParams, SearchParams, TMDBDiscoverMoviesResponse, TMDBDiscoverTVResponse } from './sdk-via-pb';
+import { pb } from '@/lib/pb/client';
+import { createTMDBSDK, DiscoverMoviesParams, DiscoverTVParams, SearchParams, TMDBDiscoverMoviesResponse, TMDBDiscoverTVResponse } from '@/lib/tmdb/sdk-via-pb';
 
 // Create TMDB SDK instance
 const tmdb = createTMDBSDK(pb);

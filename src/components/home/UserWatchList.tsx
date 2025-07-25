@@ -83,9 +83,9 @@ export function UserWatchList({ community }: { community?: boolean }) {
 export function UserWatchListContainer({ children }: { children: React.ReactNode }) {
   const { searchTerm, setSearchTerm } = useUserWatchListFiltersStore();
   const { colors } = useTheme();
-  const { top } = useSafeAreaInsets();
+
   return (
-    <Surface style={{ ...styles.container, paddingTop: top }}>
+    <Surface style={{ ...styles.container }}>
       <Searchbar
         placeholder="Search Watchlist"
         onChangeText={(term) => setSearchTerm(term)}

@@ -51,8 +51,8 @@ interface WatchlistCacheState {
   pendingUpdates: Map<string, Partial<WatchlistItem>>;
   
   // Temporary data
-  recentlyAdded: Array<{ tmdbId: number; mediaType: 'movie' | 'tv'; timestamp: number }>;
-  recentlyRemoved: Array<{ tmdbId: number; mediaType: 'movie' | 'tv'; timestamp: number }>;
+  recentlyAdded: { tmdbId: number; mediaType: 'movie' | 'tv'; timestamp: number }[];
+  recentlyRemoved: { tmdbId: number; mediaType: 'movie' | 'tv'; timestamp: number }[];
   
   // Actions
   addPendingAdd: (key: string, data: { tmdbId: number; mediaType: 'movie' | 'tv' }) => void;

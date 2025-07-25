@@ -1,10 +1,11 @@
 import { TMDBSearchResults } from "@/components/tmdb/TMDBSearchResults";
-import { useTMDBDiscover, useTMDBSearch } from "@/lib/tmdb/tmdb-hooks";
+import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, View } from "react-native";
-import { Chip, Searchbar, Surface, Text, useTheme } from "react-native-paper";
+import { Chip, Searchbar, Surface, Text, useTheme, Button } from "react-native-paper";
 import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
-import { logger } from "@/utils/logger";
+import { DiscoverFeedFilters, FilterButton, useHasActiveFilters } from "./DiscoverFeedFilters";
+import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
 
 const DISCOVER_CATEGORIES = [
   {
@@ -45,7 +46,7 @@ const DISCOVER_CATEGORIES = [
   },
 ];
 
-export function ExploreScreen() {
+export function DiscoverScreen() {
   const { colors } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,21 +73,6 @@ export function ExploreScreen() {
       page: 1,
     },
   });
-
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
-    if (query.trim()) {
-      setActiveTab("search");
-    }
-  }, []);
-
-  const handleSearchFocus = useCallback(() => {
-    setIsSearchFocused(true);
-  }, []);
-
-  const handleSearchBlur = useCallback(() => {
-    setIsSearchFocused(false);
-  }, []);
 
   const renderDiscoverSection = () => (
     <View style={styles.discoverContainer}>
@@ -162,10 +148,51 @@ export function ExploreScreen() {
   return (
     <Surface style={styles.container}>
       {/* Search Bar */}
+
+      {/* Content */}
+      <DiscoverScreenScafold setActiveTab={setActiveTab} setIsSearchFocused={setIsSearchFocused}>
+        <View style={styles.content}>
+          {(activeTab === "search" || isSearchFocused) && searchQuery.trim()
+            ? renderSearchSection()
+            : renderDiscoverSection()}
+        </View>
+      </DiscoverScreenScafold>
+    </Surface>
+  );
+}
+
+export function DiscoverScreenScafold({
+  children,
+  setActiveTab,
+  setIsSearchFocused,
+}: {
+  children: React.ReactNode;
+  setActiveTab?: (tab: string) => void;
+  setIsSearchFocused?: (focused: boolean) => void;
+}) {
+  const [showFilters, setShowFilters] = useState(false);
+  const hasActiveFilters = useHasActiveFilters();
+  const { colors } = useTheme();
+  const { query, setDiscoverKeyword } = useDiscoverSearchQuery();
+  const handleSearchChange = useCallback((query: string) => {
+    setDiscoverKeyword(query);
+    if (query.trim()) {
+      setActiveTab?.("search");
+    }
+  }, [setActiveTab, setDiscoverKeyword]);
+  const handleSearchFocus = useCallback(() => {
+    setIsSearchFocused?.(true);
+  }, [setIsSearchFocused]);
+
+  const handleSearchBlur = useCallback(() => {
+    setIsSearchFocused?.(false);
+  }, [setIsSearchFocused]);
+  return (
+    <Surface style={{ ...styles.container }}>
       <View style={styles.searchContainer}>
         <Searchbar
           placeholder="Search movies, TV shows, people..."
-          value={searchQuery}
+          value={query || ""}
           onChangeText={handleSearchChange}
           onFocus={handleSearchFocus}
           onBlur={handleSearchBlur}
@@ -174,17 +201,14 @@ export function ExploreScreen() {
           iconColor={colors.onSurfaceVariant}
           placeholderTextColor={colors.onSurfaceVariant}
         />
+        <FilterButton onPress={() => setShowFilters(true)} hasActiveFilters={hasActiveFilters} />
+        <DiscoverFeedFilters visible={showFilters} onDismiss={() => setShowFilters(false)} />
       </View>
-
-      {/* Content */}
-      <View style={styles.content}>
-        {(activeTab === "search" || isSearchFocused) && searchQuery.trim()
-          ? renderSearchSection()
-          : renderDiscoverSection()}
-      </View>
+        {children}
     </Surface>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -201,8 +225,6 @@ const styles = StyleSheet.create({
   searchInput: {
     fontSize: 16,
   },
-
-
 
   // Content styles
   content: {

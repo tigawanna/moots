@@ -9,8 +9,8 @@ export interface BaseWatchlistItem {
   backdrop_path?: string;
   release_date?: string;
   vote_average?: number;
-  genre_ids?: Record<string, any> | Array<any> | null;
-  media_type: "movie" | "tv" | Array<"movie" | "tv">;
+  genre_ids?: Record<string, any> | any[] | null;
+  media_type: "movie" | "tv" | ("movie" | "tv")[];
   original_language?: string;
 
   origin_country?: string[];
@@ -21,14 +21,14 @@ export interface BaseWatchlistItem {
   notes?: string;
   created?: string;
   updated?: string;
-  user_id?: string | Array<string>;
+  user_id?: string | string[];
 }
 
 // PocketBase watchlist item (extends base with required user fields)
 export interface PocketBaseWatchlistItem extends BaseWatchlistItem {
   id: string;
-  media_type: Array<"movie" | "tv">;
-  user_id: Array<string>;
+  media_type: ("movie" | "tv")[];
+  user_id: string[];
   watched_status: boolean;
   personal_rating: number;
   notes: string;

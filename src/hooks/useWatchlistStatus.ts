@@ -47,7 +47,7 @@ export function useWatchlistStatus(tmdbId: number, mediaType: 'movie' | 'tv') {
  * Hook for batch checking multiple items' watchlist status
  * Useful for TMDB lists/grids
  */
-export function useBatchWatchlistStatus(items: Array<{ id: number; media_type: 'movie' | 'tv' }>) {
+export function useBatchWatchlistStatus(items: { id: number; media_type: 'movie' | 'tv' }[]) {
   const userId = pb.authStore.model?.id;
   
   // Create individual queries for each item

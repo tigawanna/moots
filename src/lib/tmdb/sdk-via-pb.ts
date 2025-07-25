@@ -105,26 +105,26 @@ export interface TMDBMovieDetails extends Omit<TMDBMovie, 'genre_ids'> {
     backdrop_path: string | null;
   } | null;
   budget: number;
-  genres: Array<{ id: number; name: string }>;
+  genres: { id: number; name: string }[];
   homepage: string | null;
   imdb_id: string | null;
-  production_companies: Array<{
+  production_companies: {
     id: number;
     logo_path: string | null;
     name: string;
     origin_country: string;
-  }>;
-  production_countries: Array<{
+  }[];
+  production_countries: {
     iso_3166_1: string;
     name: string;
-  }>;
+  }[];
   revenue: number;
   runtime: number | null;
-  spoken_languages: Array<{
+  spoken_languages: {
     english_name: string;
     iso_639_1: string;
     name: string;
-  }>;
+  }[];
   status: string;
   tagline: string | null;
 }
@@ -133,15 +133,15 @@ export interface TMDBMovieDetails extends Omit<TMDBMovie, 'genre_ids'> {
  * TV Show Details Response
  */
 export interface TMDBTVDetails extends Omit<TMDBTVShow, 'genre_ids'> {
-  created_by: Array<{
+  created_by: {
     id: number;
     credit_id: string;
     name: string;
     gender: number;
     profile_path: string | null;
-  }>;
+  }[];
   episode_run_time: number[];
-  genres: Array<{ id: number; name: string }>;
+  genres: { id: number; name: string }[];
   homepage: string;
   in_production: boolean;
   languages: string[];
@@ -158,25 +158,25 @@ export interface TMDBTVDetails extends Omit<TMDBTVShow, 'genre_ids'> {
     vote_average: number;
     vote_count: number;
   } | null;
-  networks: Array<{
+  networks: {
     id: number;
     name: string;
     logo_path: string | null;
     origin_country: string;
-  }>;
+  }[];
   number_of_episodes: number;
   number_of_seasons: number;
-  production_companies: Array<{
+  production_companies: {
     id: number;
     logo_path: string | null;
     name: string;
     origin_country: string;
-  }>;
-  production_countries: Array<{
+  }[];
+  production_countries: {
     iso_3166_1: string;
     name: string;
-  }>;
-  seasons: Array<{
+  }[];
+  seasons: {
     air_date: string;
     episode_count: number;
     id: number;
@@ -184,12 +184,12 @@ export interface TMDBTVDetails extends Omit<TMDBTVShow, 'genre_ids'> {
     overview: string;
     poster_path: string | null;
     season_number: number;
-  }>;
-  spoken_languages: Array<{
+  }[];
+  spoken_languages: {
     english_name: string;
     iso_639_1: string;
     name: string;
-  }>;
+  }[];
   status: string;
   tagline: string;
   type: string;
@@ -264,6 +264,8 @@ export interface DiscoverTVParams {
   with_status?: string;
   with_type?: string;
 }
+
+
 
 /**
  * Search Parameters

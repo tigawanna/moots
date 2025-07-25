@@ -1,14 +1,14 @@
 // === start of custom type ===
   // Watchlists.WatchlistsTags.tags
-  export type WatchlistsTags = Array<{
+  export type WatchlistsTags = {
  
-  }>;
+  }[];
   // === end of custom type ===
 // === start of custom type ===
   // WatchlistItems.WatchlistItemsMetadata.metadata
-  export type WatchlistItemsMetadata = Array<{
+  export type WatchlistItemsMetadata = {
  
-  }>;
+  }[];
   // === end of custom type ===
 
 /**
@@ -462,9 +462,9 @@ export interface WatchlistResponse extends BaseCollectionResponse {
 	backdrop_path: string;
 	release_date: string;
 	vote_average: number;
-	genre_ids: Record<string, any> | Array<any> | null;
-	media_type: Array<'movie' | 'tv'>;
-	user_id: Array<string>;
+	genre_ids: Record<string, any> | any[] | null;
+	media_type: ('movie' | 'tv')[];
+	user_id: string[];
 	watched_status: boolean;
 	personal_rating: number;
 	notes: string;
@@ -481,7 +481,7 @@ export interface WatchlistCreate extends BaseCollectionCreate {
 	backdrop_path?: string;
 	release_date?: string | Date;
 	vote_average?: number;
-	genre_ids?: Record<string, any> | Array<any> | null;
+	genre_ids?: Record<string, any> | any[] | null;
 	media_type: MaybeArray<'movie' | 'tv'>;
 	user_id: MaybeArray<string>;
 	watched_status?: boolean;
@@ -504,7 +504,7 @@ export interface WatchlistUpdate extends BaseCollectionUpdate {
 	vote_average?: number;
 	'vote_average+'?: number;
 	'vote_average-'?: number;
-	genre_ids?: Record<string, any> | Array<any> | null;
+	genre_ids?: Record<string, any> | any[] | null;
 	media_type: MaybeArray<'movie' | 'tv'>;
 	'media_type+'?: MaybeArray<'movie' | 'tv'>;
 	'media_type-'?: MaybeArray<'movie' | 'tv'>;
@@ -539,8 +539,8 @@ export interface WatchlistCollection {
 export interface WatchlistLikesResponse extends BaseCollectionResponse {
 	collectionName: 'watchlist_likes';
 	id: string;
-	user_id: Array<string>;
-	watchlist_item_id: Array<string>;
+	user_id: string[];
+	watchlist_item_id: string[];
 	created: string;
 	updated: string;
 }
@@ -584,11 +584,11 @@ export interface WatchlistLikesCollection {
 export interface UserSettingsResponse extends BaseCollectionResponse {
 	collectionName: 'user_settings';
 	id: string;
-	user_id: Array<string>;
+	user_id: string[];
 	watchlist_limit: number;
-	default_view: Array<'grid' | 'list'>;
+	default_view: ('grid' | 'list')[];
 	notifications_enabled: boolean;
-	theme_preference: Array<'light' | 'dark' | 'system'>;
+	theme_preference: ('light' | 'dark' | 'system')[];
 	created: string;
 	updated: string;
 }

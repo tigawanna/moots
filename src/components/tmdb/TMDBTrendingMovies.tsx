@@ -1,6 +1,6 @@
 import { LoadingIndicatorDots } from '@/components/state-screens/LoadingIndicatorDots';
+import { useTMDBTrendingMovies } from '@/lib/tanstack/operations/discover/tmdb-hooks';
 import { TMDBMovie, buildTMDBImageUrl } from '@/lib/tmdb/sdk-via-pb';
-import { useTMDBTrendingMovies } from '@/lib/tmdb/tmdb-hooks';
 import { FlatList, Image, StyleSheet, View } from 'react-native';
 import { Card, Surface, Text, useTheme } from 'react-native-paper';
 import { EmptyRoadSVG } from '../shared/svg/empty';
