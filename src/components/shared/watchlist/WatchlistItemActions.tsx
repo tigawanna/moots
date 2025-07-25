@@ -126,7 +126,7 @@ export function WatchlistItemActions({
 
   const handleAdd = async (event: any) => {
     event.stopPropagation();
-    console.log("Add pressed", item);
+    // console.log("Add pressed", item);
     if (onAdd) {
       onAdd(item);
       return;
@@ -136,16 +136,15 @@ export function WatchlistItemActions({
       showSnackbar("Please sign in to add to watchlist");
       return;
     }
-  const imdbId = typeof item.id === "string" ? parseInt(item.id) : item.id
+  const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id)
     try {
       
       await quickAddMutation.mutateAsync({
         userId: user.id,
-
         payload: {
           user_id: user.id,
           media_type: item.mediaType as any,
-          tmdb_id: imdbId,
+          tmdb_id: tmdbId,
           title: item.title,
           backdrop_path: item.backdrop_path || undefined,
           poster_path: item.poster_path || undefined,

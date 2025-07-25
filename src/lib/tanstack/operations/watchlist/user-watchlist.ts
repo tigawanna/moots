@@ -52,11 +52,11 @@ export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFun
     queryFn: () => {
       const { filters, searchTerm, sort } = useUserWatchListFiltersStore.getState();
       return pb.from("watchlist").getList(page, 25, {
-        filter: and(
-          userId ? eq("user_id", [userId]) : undefined,
-          searchTerm ? like("title", `%${searchTerm}%`) : undefined,
-          filters.watched !== undefined ? eq("watched_status", filters.watched) : undefined
-        ),
+        // filter: and(
+        //   userId ? eq("user_id", [userId]) : undefined,
+        //   searchTerm ? like("title", `%${searchTerm}%`) : undefined,
+        //   filters.watched !== undefined ? eq("watched_status", filters.watched) : undefined
+        // ),
         sort: `${sort.direction === "desc" ? "-" : ""}${sort.field}` as any,
       });
     },
