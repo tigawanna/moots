@@ -7,6 +7,18 @@ import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { pb } from "@/lib/pb/client";
 
+
+// this type comes from @/lib/pb/types/pb-types.ts do not overwrite or make a copy of it use it for refrence of the inputs required buy the mutation below
+// export interface WatchlistResponse extends BaseCollectionResponse {
+//   id: string;
+//   title: string;
+//   overview: string;
+//   user_id: Array<string>;
+//   iiitems: Array<string>;
+//   visibility: Array<'public' | 'private' | 'followers_only'>;
+//   is_collaborative: boolean;
+// }
+
 export function Watchlist() {
   const userId = pb.authStore?.record?.id;
   const { searchQuery } = useWatchlistSearch();
