@@ -8,7 +8,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
 import { Searchbar, Surface, Text, useTheme } from "react-native-paper";
-import { UserWatchListFlatList } from "./UserWatchListFlatList";
+import { UserWatchListFlatList } from "./UserWatchListItemsFlatList";
 
 export function UserWatchList({ community }: { community?: boolean }) {
   // filters

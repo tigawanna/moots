@@ -1,4 +1,4 @@
-import { UserWatchList } from "@/components/home/UserWatchList";
+import { UserWatchList } from "@/components/home/UserWatchListItems";
 import React from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

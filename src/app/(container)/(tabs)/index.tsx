@@ -1,4 +1,4 @@
-import { UserWatchList } from "@/components/home/UserWatchList";
+import { UserWatchList } from "@/components/home/UserWatchListItems";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
