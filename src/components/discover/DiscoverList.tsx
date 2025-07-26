@@ -15,14 +15,15 @@ interface DiscoverListProps {
         sort: string;
       }
     | undefined;
+  columns: number;
+  orientation: "grid" | "list";
+  setOrientation: (newOrientation: "grid" | "list") => void;
 }
 
-export function DiscoverList({ currentCategory, discoverResults }: DiscoverListProps) {
+export function DiscoverList({ currentCategory, discoverResults, columns, orientation, setOrientation  }: DiscoverListProps) {
   const mediaTypetab = (currentCategory?.type || "movie") as "movie" | "tv";
   const { colors } = useTheme();
-  const { columns, orientation, setOrientation } = useResponsiveListView({
-    key: "discover-list"
-  });
+
   return (
     <View style={styles.discoverContainer}>
       <IconButton

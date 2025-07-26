@@ -4,22 +4,27 @@ import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
-import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
+
 
 interface WatchlistGridProps {
   watchListResult: ListResult<WatchlistResponse>;
   refetch: () => Promise<any>;
   isRefetching: boolean;
+  columns: number;
+  orientation: "grid" | "list";
+  setOrientation: (newOrientation: "grid" | "list") => void;
 }
 
-export function WatchlistGrid({ watchListResult, isRefetching, refetch }: WatchlistGridProps) {
+export function WatchlistGrid({
+  watchListResult,
+  isRefetching,
+  refetch,
+  columns,
+  orientation,
+  setOrientation,
+}: WatchlistGridProps) {
   const { colors } = useTheme();
-  const { columns, orientation, setOrientation } = useResponsiveListView({
-    key: "user-watchlist",
-    minItemWidth: 280, // Wider cards for watchlist info
-    maxColumns: 6, // Max 3 columns for readability
-    padding: 32,
-  });
+
   const watchList = watchListResult.items;
 
   const renderWatchlistItem = ({ item }: { item: WatchlistResponse }) => {
@@ -33,17 +38,8 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
                   {item.title}
                 </Text>
                 <View style={styles.chipContainer}>
-                  <Chip
-                    mode="outlined"
-                    >
-                    {item.visibility || "private"}
-                  </Chip>
-                  {item.is_collaborative && (
-                    <Chip
-                      mode="outlined">
-                      Collaborative
-                    </Chip>
-                  )}
+                  <Chip mode="outlined">{item.visibility || "private"}</Chip>
+                  {item.is_collaborative && <Chip mode="outlined">Collaborative</Chip>}
                 </View>
               </View>
               <IconButton
@@ -66,7 +62,9 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
             ) : null}
 
             <View style={styles.footer}>
-              <Text variant="bodySmall" style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
+              <Text
+                variant="bodySmall"
+                style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
                 {item.items?.length || 0} items
               </Text>
               <Text
@@ -86,21 +84,15 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
         <Card.Content>
           <View style={styles.cardHeader}>
             <View style={styles.titleContainer}>
-              <Text variant="titleMedium" style={[styles.title, { color: colors.onSurface }]} numberOfLines={2}>
+              <Text
+                variant="titleMedium"
+                style={[styles.title, { color: colors.onSurface }]}
+                numberOfLines={2}>
                 {item.title}
               </Text>
               <View style={styles.chipContainer}>
-                <Chip
-                  mode="outlined"
-                  >
-                  {item.visibility[0] || "private"}
-                </Chip>
-                {item.is_collaborative && (
-                  <Chip
-                    mode="outlined">
-                    Collaborative
-                  </Chip>
-                )}
+                <Chip mode="outlined">{item.visibility[0] || "private"}</Chip>
+                {item.is_collaborative && <Chip mode="outlined">Collaborative</Chip>}
               </View>
             </View>
             <IconButton
@@ -123,10 +115,14 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
           ) : null}
 
           <View style={styles.footer}>
-            <Text variant="bodySmall" style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
+            <Text
+              variant="bodySmall"
+              style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
               {item.items?.length || 0} items
             </Text>
-            <Text variant="bodySmall" style={[styles.updatedDate, { color: colors.onSurfaceVariant }]}>
+            <Text
+              variant="bodySmall"
+              style={[styles.updatedDate, { color: colors.onSurfaceVariant }]}>
               {new Date(item.updated).toLocaleDateString()}
             </Text>
           </View>
@@ -191,7 +187,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 50,
   },
-  
+
   // Grid card styles
   gridCard: {
     flex: 1,
@@ -199,7 +195,7 @@ const styles = StyleSheet.create({
     elevation: 1,
     minHeight: 160,
   },
-  
+
   // List card styles
   listCard: {
     marginVertical: 4,
@@ -209,7 +205,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingVertical: 12,
   },
-  
+
   // Shared card styles
   cardHeader: {
     flexDirection: "row",
@@ -253,7 +249,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     fontSize: 11,
   },
-  
+
   // Empty state styles
   emptyContainer: {
     flex: 1,

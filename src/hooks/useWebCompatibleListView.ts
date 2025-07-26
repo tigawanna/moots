@@ -17,7 +17,7 @@ interface PersistedListViewState {
 export function useResponsiveListView(options: UseResponsiveListViewOptions) {
   const {
     key,
-    minItemWidth = 160, // Default minimum width for movie/show cards
+    minItemWidth = 190, // Default minimum width for movie/show cards
     maxColumns = 6, // Reasonable max for readability
     padding = 32, // Default padding (16px on each side)
   } = options;

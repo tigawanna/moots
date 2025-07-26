@@ -1,14 +1,18 @@
 import { TMDBSearchResults } from "@/components/tmdb/TMDBSearchResults";
-import { getCategoryLabel, useDiscoverFiltersStore } from "@/lib/tanstack/operations/discover/discover-fliters-store";
+import {
+  getCategoryLabel,
+  useDiscoverFiltersStore,
+} from "@/lib/tanstack/operations/discover/discover-fliters-store";
 import { useDiscoverSearchQuery } from "@/lib/tanstack/operations/discover/discover-search";
 import { useTMDBDiscover, useTMDBSearch } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { Searchbar, Surface, useTheme} from "react-native-paper";
+import { Searchbar, Surface, useTheme } from "react-native-paper";
 import { TabScreen, Tabs, TabsProvider } from "react-native-paper-tabs";
 import { LoadingIndicatorDots } from "../state-screens/LoadingIndicatorDots";
 import { DiscoverFeedFilters, FilterButton, useHasActiveFilters } from "./DiscoverFeedFilters";
 import { DiscoverList } from "./DiscoverList";
+import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 
 // Individual tab components for Movies and TV
 function MovieDiscoverTab() {
@@ -19,7 +23,9 @@ function MovieDiscoverTab() {
   }, [setActiveTab]);
 
   const categoryLabel = getCategoryLabel(movieFilters.sort_by);
-  
+  const { columns, orientation, setOrientation, isLoaded } = useResponsiveListView({
+    key: "discover-list",
+  });
   const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
     type: "movie",
     params: {
@@ -29,13 +35,13 @@ function MovieDiscoverTab() {
   });
 
   const currentCategory = {
-    key: movieFilters.sort_by.replace('.', '_'),
+    key: movieFilters.sort_by.replace(".", "_"),
     label: categoryLabel,
     type: "movie" as const,
     sort: movieFilters.sort_by,
   };
 
-  if (discoverLoading) {
+  if (discoverLoading || !isLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <LoadingIndicatorDots />
@@ -43,18 +49,28 @@ function MovieDiscoverTab() {
     );
   }
 
-  return <DiscoverList currentCategory={currentCategory} discoverResults={discoverResults} />;
+  return (
+    <DiscoverList
+      currentCategory={currentCategory}
+      discoverResults={discoverResults}
+      columns={columns}
+      orientation={orientation}
+      setOrientation={setOrientation}
+    />
+  );
 }
 
 function TVDiscoverTab() {
   const { tvFilters, setActiveTab } = useDiscoverFiltersStore();
-  
+
   React.useEffect(() => {
     setActiveTab("tv");
   }, [setActiveTab]);
 
   const categoryLabel = getCategoryLabel(tvFilters.sort_by);
-  
+  const { columns, orientation, setOrientation, isLoaded } = useResponsiveListView({
+    key: "discover-list",
+  });
   const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
     type: "tv",
     params: {
@@ -64,13 +80,13 @@ function TVDiscoverTab() {
   });
 
   const currentCategory = {
-    key: tvFilters.sort_by.replace('.', '_'),
+    key: tvFilters.sort_by.replace(".", "_"),
     label: categoryLabel,
     type: "tv" as const,
     sort: tvFilters.sort_by,
   };
 
-  if (discoverLoading) {
+  if (discoverLoading || !isLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <LoadingIndicatorDots />
@@ -78,14 +94,21 @@ function TVDiscoverTab() {
     );
   }
 
-  return <DiscoverList currentCategory={currentCategory} discoverResults={discoverResults} />;
+  return (
+    <DiscoverList
+      currentCategory={currentCategory}
+      discoverResults={discoverResults}
+      columns={columns}
+      orientation={orientation}
+      setOrientation={setOrientation}
+    />
+  ) ;
 }
 
 export function DiscoverScreen() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { query: searchQuery } = useDiscoverSearchQuery();
   const { colors } = useTheme();
-
 
   // Search hook
   const {
@@ -126,8 +149,7 @@ export function DiscoverScreen() {
                 primary: colors.primary,
                 background: colors.surface,
               },
-            }}
-          >
+            }}>
             <TabScreen label="Movies" icon="movie">
               <MovieDiscoverTab />
             </TabScreen>
@@ -161,7 +183,7 @@ export function DiscoverScreenScafold({
     },
     [setDiscoverKeyword]
   );
-  
+
   const handleSearchFocus = useCallback(() => {
     setIsSearchFocused?.(true);
   }, [setIsSearchFocused]);
@@ -172,7 +194,7 @@ export function DiscoverScreenScafold({
 
   return (
     <Surface style={{ ...styles.container }}>
-      <View style={[styles.searchContainer,{width: width * 0.95}]}>
+      <View style={[styles.searchContainer, { width: width * 0.95 }]}>
         <Searchbar
           placeholder="Search movies, TV shows, people..."
           value={query || ""}
@@ -199,7 +221,6 @@ const styles = StyleSheet.create({
 
   // Search styles
   searchContainer: {
-
     flexDirection: "row",
     gap: 12,
     paddingHorizontal: 16,
