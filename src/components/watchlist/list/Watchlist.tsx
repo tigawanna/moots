@@ -18,82 +18,104 @@ export function Watchlist({ community }: WatchlistProps) {
   const { data, isLoading, error, isRefetching, refetch } = useQuery(
     getUserWatchlistQueryOptions({ keyword: searchQuery, userId })
   );
-    const { colors } = useTheme();
-  
-    if (isLoading) {
-      return (
-        <WatchlistlistScaffold>
-          <View style={styles.statesContainer}>
-            <LoadingIndicatorDots />
-          </View>
-        </WatchlistlistScaffold>
-      );
-    }
-    if (error) {
-      return (
-        <WatchlistlistScaffold>
-          <View style={styles.statesContainer}>
-            {__DEV__ ? (
-              <View>
-                <Text variant="titleMedium" style={{ color: colors.error }}>
-                  Failed to load
-                </Text>
-                <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-                  {error instanceof Error ? error.message : "Unknown error"}
-                </Text>
+  const { colors } = useTheme();
+
+  if (isLoading) {
+    return (
+      <WatchlistlistScaffold>
+        <View style={styles.statesContainer}>
+          <LoadingIndicatorDots />
+        </View>
+      </WatchlistlistScaffold>
+    );
+  }
+  if (error) {
+    return (
+      <WatchlistlistScaffold>
+        <View style={styles.statesContainer}>
+          {__DEV__ ? (
+            <View>
+              <Text variant="titleMedium" style={{ color: colors.error }}>
+                Failed to load
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{ color: colors.onSurfaceVariant, marginTop: 8 }}
+              >
+                {error instanceof Error ? error.message : "Unknown error"}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyIconContainer}>
+                <EmptyRoadSVG />
               </View>
-            ) : (
-              <View style={styles.emptyContainer}>
-                <View style={styles.emptyIconContainer}>
-                  <EmptyRoadSVG />
-                </View>
-                <Text variant="headlineSmall" style={[styles.emptyTitle, { color: colors.onSurface }]}>
-                  Something went wrong
-                </Text>
-                <Text variant="bodyMedium" style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
-                  Try adjusting your filters or search terms to discover more content
-                </Text>
+              <Text
+                variant="headlineSmall"
+                style={[styles.emptyTitle, { color: colors.onSurface }]}
+              >
+                Something went wrong
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[
+                  styles.emptySubtitle,
+                  { color: colors.onSurfaceVariant },
+                ]}
+              >
+                Try adjusting your filters or search terms to discover more
+                content
+              </Text>
+            </View>
+          )}
+        </View>
+      </WatchlistlistScaffold>
+    );
+  }
+  if (!data) {
+    return (
+      <WatchlistlistScaffold>
+        <View style={styles.statesContainer}>
+          {__DEV__ ? (
+            <View>
+              <Text variant="titleMedium" style={{ color: colors.error }}>
+                No watchlist found
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <View style={styles.emptyIconContainer}>
+                <EmptyRoadSVG />
               </View>
-          
-            )}
-          </View>
-        </WatchlistlistScaffold>
-      );
-    }
-    if (!data) {
-      return (
-        <WatchlistlistScaffold>
-          <View style={styles.statesContainer}>
-            {__DEV__ ? (
-              <View>
-                <Text variant="titleMedium" style={{ color: colors.error }}>
-                  No watchlist found
-                </Text>
-              </View>
-            ) : (
-              <View style={styles.emptyContainer}>
-                <View style={styles.emptyIconContainer}>
-                  <EmptyRoadSVG />
-                </View>
-                <Text
-                  variant="headlineSmall"
-                  style={[styles.emptyTitle, { color: colors.onSurface }]}>
-                  No watchlist found
-                </Text>
-                <Text
-                  variant="bodyMedium"
-                  style={[styles.emptySubtitle, { color: colors.onSurfaceVariant }]}>
-                  Try adjusting your filters or search terms to discover more content
-                </Text>
-              </View>
-            )}
-          </View>
-        </WatchlistlistScaffold>
-      );
-    }
+              <Text
+                variant="headlineSmall"
+                style={[styles.emptyTitle, { color: colors.onSurface }]}
+              >
+                No watchlist found
+              </Text>
+              <Text
+                variant="bodyMedium"
+                style={[
+                  styles.emptySubtitle,
+                  { color: colors.onSurfaceVariant },
+                ]}
+              >
+                Try adjusting your filters or search terms to discover more
+                content
+              </Text>
+            </View>
+          )}
+        </View>
+      </WatchlistlistScaffold>
+    );
+  }
   return (
     <WatchlistlistScaffold>
-      <WatchlistGrid watchListResult={data} refetch={refetch} isRefetching={isRefetching} />
+      <WatchlistGrid
+        watchListResult={data}
+        refetch={refetch}
+        isRefetching={isRefetching}
+      />
     </WatchlistlistScaffold>
   );
 }
@@ -103,10 +125,12 @@ interface WatchlistlistScaffoldProps {
 }
 
 // this should wrap the list loading and error states to ensure the search bar and/or filters totte is displayed at all times
-export function WatchlistlistScaffold({ children }: WatchlistlistScaffoldProps) {
+export function WatchlistlistScaffold({
+  children,
+}: WatchlistlistScaffoldProps) {
   const { colors } = useTheme();
   const { searchQuery, setSearchQuery } = useWatchlistSearch();
-    const { width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   return (
     <View style={{ ...styles.scaffoldContainer }}>
       <Searchbar

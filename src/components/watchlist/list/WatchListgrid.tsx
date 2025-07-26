@@ -3,8 +3,8 @@ import { ListResult } from "pocketbase";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
 
-import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
+import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 
 interface WatchlistGridProps {
   watchListResult: ListResult<WatchlistResponse>;
@@ -15,69 +15,125 @@ interface WatchlistGridProps {
 export function WatchlistGrid({ watchListResult, isRefetching, refetch }: WatchlistGridProps) {
   const { colors } = useTheme();
   const { columns, orientation, setOrientation } = useResponsiveListView({
-    key: "user-watchlist"
+    key: "user-watchlist",
+    minItemWidth: 280, // Wider cards for watchlist info
+    maxColumns: 6, // Max 3 columns for readability
+    padding: 32,
   });
   const watchList = watchListResult.items;
 
-  const renderWatchlistItem = ({ item }: { item: WatchlistResponse }) => (
-    <Card style={[styles.card, { backgroundColor: colors.surface }]} mode="outlined">
-      <Card.Content>
-        <View style={styles.cardHeader}>
-          <View style={styles.titleContainer}>
-            <Text variant="titleMedium" style={[styles.title, { color: colors.onSurface }]}>
-              {item.title}
-            </Text>
-            <View style={styles.chipContainer}>
-              <Chip
-                mode="outlined"
-                compact
-                style={[styles.visibilityChip, { borderColor: colors.outline }]}
-                textStyle={{ color: colors.onSurfaceVariant }}>
-                {item.visibility[0] || "private"}
-              </Chip>
-              {item.is_collaborative && (
+  const renderWatchlistItem = ({ item }: { item: WatchlistResponse }) => {
+    if (orientation === "list") {
+      return (
+        <Card style={[styles.listCard, { backgroundColor: colors.surface }]} mode="outlined">
+          <Card.Content style={styles.listContent}>
+            <View style={styles.cardHeader}>
+              <View style={styles.titleContainer}>
+                <Text variant="titleMedium" style={[styles.title, { color: colors.onSurface }]}>
+                  {item.title}
+                </Text>
+                <View style={styles.chipContainer}>
+                  <Chip
+                    mode="outlined"
+                    >
+                    {item.visibility || "private"}
+                  </Chip>
+                  {item.is_collaborative && (
+                    <Chip
+                      mode="outlined">
+                      Collaborative
+                    </Chip>
+                  )}
+                </View>
+              </View>
+              <IconButton
+                icon="dots-vertical"
+                size={20}
+                iconColor={colors.onSurfaceVariant}
+                onPress={() => {
+                  // TODO: Add menu actions (edit, delete, share, etc.)
+                }}
+              />
+            </View>
+
+            {item.overview ? (
+              <Text
+                variant="bodyMedium"
+                style={[styles.overview, { color: colors.onSurfaceVariant }]}
+                numberOfLines={2}>
+                {item.overview}
+              </Text>
+            ) : null}
+
+            <View style={styles.footer}>
+              <Text variant="bodySmall" style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
+                {item.items?.length || 0} items
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={[styles.updatedDate, { color: colors.onSurfaceVariant }]}>
+                Updated {new Date(item.updated).toLocaleDateString()}
+              </Text>
+            </View>
+          </Card.Content>
+        </Card>
+      );
+    }
+
+    // Grid view
+    return (
+      <Card style={[styles.gridCard, { backgroundColor: colors.surface }]} mode="outlined">
+        <Card.Content>
+          <View style={styles.cardHeader}>
+            <View style={styles.titleContainer}>
+              <Text variant="titleMedium" style={[styles.title, { color: colors.onSurface }]} numberOfLines={2}>
+                {item.title}
+              </Text>
+              <View style={styles.chipContainer}>
                 <Chip
                   mode="outlined"
-                  compact
-                  style={[styles.collaborativeChip, { borderColor: colors.primary }]}
-                  textStyle={{ color: colors.primary }}>
-                  Collaborative
+                  >
+                  {item.visibility[0] || "private"}
                 </Chip>
-              )}
+                {item.is_collaborative && (
+                  <Chip
+                    mode="outlined">
+                    Collaborative
+                  </Chip>
+                )}
+              </View>
             </View>
+            <IconButton
+              icon="dots-vertical"
+              size={18}
+              iconColor={colors.onSurfaceVariant}
+              onPress={() => {
+                // TODO: Add menu actions (edit, delete, share, etc.)
+              }}
+            />
           </View>
-          <IconButton
-            icon="dots-vertical"
-            size={20}
-            iconColor={colors.onSurfaceVariant}
-            onPress={() => {
-              // TODO: Add menu actions (edit, delete, share, etc.)
-            }}
-          />
-        </View>
 
-        {item.overview && (
-          <Text
-            variant="bodyMedium"
-            style={[styles.overview, { color: colors.onSurfaceVariant }]}
-            numberOfLines={2}>
-            {item.overview}
-          </Text>
-        )}
+          {item.overview ? (
+            <Text
+              variant="bodySmall"
+              style={[styles.overview, { color: colors.onSurfaceVariant }]}
+              numberOfLines={3}>
+              {item.overview}
+            </Text>
+          ) : null}
 
-        <View style={styles.footer}>
-          <Text variant="bodySmall" style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
-            {item.items?.length || 0} items
-          </Text>
-          <Text
-            variant="bodySmall"
-            style={[styles.updatedDate, { color: colors.onSurfaceVariant }]}>
-            Updated {new Date(item.updated).toLocaleDateString()}
-          </Text>
-        </View>
-      </Card.Content>
-    </Card>
-  );
+          <View style={styles.footer}>
+            <Text variant="bodySmall" style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
+              {item.items?.length || 0} items
+            </Text>
+            <Text variant="bodySmall" style={[styles.updatedDate, { color: colors.onSurfaceVariant }]}>
+              {new Date(item.updated).toLocaleDateString()}
+            </Text>
+          </View>
+        </Card.Content>
+      </Card>
+    );
+  };
 
   return (
     <View>
@@ -87,8 +143,8 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
         onPress={() => setOrientation(orientation === "grid" ? "list" : "grid")}
       />
       <FlatList
-        key={columns}
-        numColumns={columns}
+        key={orientation === "grid" ? columns : 1}
+        numColumns={orientation === "grid" ? columns : 1}
         data={watchList}
         renderItem={renderWatchlistItem}
         keyExtractor={(item) => item.id}
@@ -124,21 +180,37 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
 
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 16,
-    paddingTop: 8,
+    padding: 8,
+    paddingTop: 16,
   },
   toggleOrientationButton: {
     position: "absolute",
-    top: -30,
+    top: -10,
     right: 8,
     zIndex: 10,
     padding: 8,
     borderRadius: 50,
   },
-  card: {
-    marginBottom: 12,
+  
+  // Grid card styles
+  gridCard: {
+    flex: 1,
+    margin: 4,
+    elevation: 1,
+    minHeight: 160,
+  },
+  
+  // List card styles
+  listCard: {
+    marginVertical: 4,
+    marginHorizontal: 4,
     elevation: 1,
   },
+  listContent: {
+    paddingVertical: 12,
+  },
+  
+  // Shared card styles
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -155,35 +227,41 @@ const styles = StyleSheet.create({
   },
   chipContainer: {
     flexDirection: "row",
-    gap: 6,
+    gap: 4,
+    flexWrap: "wrap",
   },
   visibilityChip: {
-    height: 24,
+    height: 22,
   },
   collaborativeChip: {
-    height: 24,
+    height: 22,
   },
   overview: {
     marginBottom: 12,
-    lineHeight: 20,
+    lineHeight: 18,
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: "auto",
   },
   itemCount: {
     fontWeight: "500",
   },
   updatedDate: {
     opacity: 0.8,
+    fontSize: 11,
   },
+  
+  // Empty state styles
   emptyContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: 32,
     gap: 16,
+    minHeight: 300,
   },
   emptyIconContainer: {
     opacity: 0.6,
