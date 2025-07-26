@@ -1,4 +1,3 @@
-import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 import { TMDBDiscoverResponse } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import { FlatList, StyleSheet, View } from "react-native";
 import { IconButton, Text, useTheme } from "react-native-paper";

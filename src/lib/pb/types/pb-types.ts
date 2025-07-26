@@ -467,6 +467,8 @@ export interface WatchlistResponse extends BaseCollectionResponse {
 	items: Array<string>;
 	visibility: Array<'public' | 'private' | 'followers_only'>;
 	is_collaborative: boolean;
+	created: string;
+	updated: string;
 }
 
 export interface WatchlistCreate extends BaseCollectionCreate {
@@ -477,6 +479,8 @@ export interface WatchlistCreate extends BaseCollectionCreate {
 	items?: MaybeArray<string>;
 	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
 	is_collaborative?: boolean;
+	created?: string | Date;
+	updated?: string | Date;
 }
 
 export interface WatchlistUpdate extends BaseCollectionUpdate {
@@ -493,6 +497,8 @@ export interface WatchlistUpdate extends BaseCollectionUpdate {
 	'visibility+'?: MaybeArray<'public' | 'private' | 'followers_only'>;
 	'visibility-'?: MaybeArray<'public' | 'private' | 'followers_only'>;
 	is_collaborative?: boolean;
+	created?: string | Date;
+	updated?: string | Date;
 }
 
 export interface WatchlistCollection {
