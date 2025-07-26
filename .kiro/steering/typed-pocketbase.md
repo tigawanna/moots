@@ -95,7 +95,7 @@ const filter = and(
 import { and, eq, gt, like } from "@tigawanna/typed-pocketbase";
 
 // Basic user watchlist
-export function useWatchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
+export function usewatchListItemsQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
   return queryOptions({
     queryKey: ["watchlist", userId],
     queryFn: () =>

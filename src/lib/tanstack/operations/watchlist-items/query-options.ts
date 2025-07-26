@@ -48,7 +48,7 @@ export const useUserWatchListFiltersStore = create<WatchlistFiltersState>()(
   )
 );
 
-export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
+export function watchListItemsQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
   return queryOptions({
     queryKey: userId ? ["watchlist-items", userId, page] : ["watchlist-items", "all", page],
     queryFn: () => {
@@ -68,14 +68,14 @@ export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFun
   });
 }
 
-interface AddToWatchListMutationOptionsProps {
+interface addToWatchListItemsMutationOptionsProps {
   userId: string;
   payload: WatchlistItemsCreate;
 }
 
-export function addToWatchListMutationOptions() {
+export function addToWatchListItemsMutationOptions() {
   return mutationOptions({
-    mutationFn: ({ userId, payload }: AddToWatchListMutationOptionsProps) => {
+    mutationFn: ({ userId, payload }: addToWatchListItemsMutationOptionsProps) => {
       return pb.from("watchlist_items").create({
         id: String(payload.tmdb_id),
         added_by: userId,
@@ -93,13 +93,13 @@ export function addToWatchListMutationOptions() {
   });
 }
 
-interface RemoveFromWatchListMutationOptionsProps {
+interface removeFromWatchListItemsMutationOptionsProps {
   itemId: string;
 }
 
-export function removeFromWatchListMutationOptions() {
+export function removeFromWatchListItemsMutationOptions() {
   return mutationOptions({
-    mutationFn: ({ itemId }: RemoveFromWatchListMutationOptionsProps) => {
+    mutationFn: ({ itemId }: removeFromWatchListItemsMutationOptionsProps) => {
       return pb.from("watchlist").delete(itemId);
     },
   });

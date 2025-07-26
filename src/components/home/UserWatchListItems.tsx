@@ -3,7 +3,7 @@ import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicato
 import { pb } from "@/lib/pb/client";
 import {
   useUserWatchListFiltersStore,
-  watchListQueryOptions,
+  watchListItemsQueryOptions,
 } from "@/lib/tanstack/operations/watchlist-items/query-options";
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
@@ -14,7 +14,7 @@ export function UserWatchList({ community }: { community?: boolean }) {
   // filters
   const userId = pb.authStore?.record?.id;
   const { data, isLoading, error, refetch } = useQuery(
-    watchListQueryOptions({ userId: community ? undefined : userId })
+    watchListItemsQueryOptions({ userId: community ? undefined : userId })
   );
 
   const { colors } = useTheme();

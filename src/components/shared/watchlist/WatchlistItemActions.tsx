@@ -1,8 +1,8 @@
 import { useSnackbar } from "@/components/react-native-paper/snackbar/global-snackbar-store";
 import { pb } from "@/lib/pb/client";
 import {
-  addToWatchListMutationOptions,
-  removeFromWatchListMutationOptions,
+  addToWatchListItemsMutationOptions,
+  removeFromWatchListItemsMutationOptions,
   toggleWatchedListItemMutationOptions,
 } from "@/lib/tanstack/operations/watchlist-items/query-options";
 import { useMutation } from "@tanstack/react-query";
@@ -34,8 +34,8 @@ export function WatchlistItemActions({
   const { showSnackbar } = useSnackbar();
 
   const user = pb.authStore.record;
-  const quickAddMutation = useMutation(addToWatchListMutationOptions());
-  const removeFromWatchlist = useMutation(removeFromWatchListMutationOptions());
+  const quickAddMutation = useMutation(addToWatchListItemsMutationOptions());
+  const removeFromWatchlist = useMutation(removeFromWatchListItemsMutationOptions());
   const toggleWatchedStatus = useMutation(
     toggleWatchedListItemMutationOptions()
   );
