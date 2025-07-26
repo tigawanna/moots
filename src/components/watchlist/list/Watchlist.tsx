@@ -3,7 +3,7 @@ import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicato
 import { pb } from "@/lib/pb/client";
 import { getUserWatchlistQueryOptions } from "@/lib/tanstack/operations/watchlist/operations-options";
 import { useQuery } from "@tanstack/react-query";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
 import { useWatchlistSearch } from "./hooks";
 import { WatchlistGrid } from "./WatchListgrid";
@@ -13,6 +13,7 @@ interface WatchlistProps {
 }
 export function Watchlist({ community }: WatchlistProps) {
   const userId = community ? undefined : pb.authStore?.record?.id;
+  console.log("user id ", userId);
   const { searchQuery } = useWatchlistSearch();
   const { data, isLoading, error, isRefetching, refetch } = useQuery(
     getUserWatchlistQueryOptions({ keyword: searchQuery, userId })
@@ -22,7 +23,9 @@ export function Watchlist({ community }: WatchlistProps) {
     if (isLoading) {
       return (
         <WatchlistlistScaffold>
-          <LoadingIndicatorDots />
+          <View style={styles.statesContainer}>
+            <LoadingIndicatorDots />
+          </View>
         </WatchlistlistScaffold>
       );
     }
@@ -103,13 +106,14 @@ interface WatchlistlistScaffoldProps {
 export function WatchlistlistScaffold({ children }: WatchlistlistScaffoldProps) {
   const { colors } = useTheme();
   const { searchQuery, setSearchQuery } = useWatchlistSearch();
+    const { width } = useWindowDimensions();
   return (
     <View style={{ ...styles.scaffoldContainer }}>
       <Searchbar
         placeholder="Search Watchlist"
         onChangeText={(term) => setSearchQuery(term)}
         value={searchQuery}
-        style={styles.searchBar}
+        style={[styles.searchBar, { width: width * 0.95 }]}
         inputStyle={styles.searchInput}
         iconColor={colors.onSurfaceVariant}
         placeholderTextColor={colors.onSurfaceVariant}
@@ -122,6 +126,7 @@ export function WatchlistlistScaffold({ children }: WatchlistlistScaffoldProps) 
 const styles = StyleSheet.create({
   scaffoldContainer: {
     flex: 1,
+    width: "100%",
   },
   statesContainer: {
     flex: 1,
@@ -132,10 +137,10 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     elevation: 0,
-    shadowOpacity: 0,
   },
   searchInput: {
     fontSize: 16,
+    width: "100%",
   },
 
   emptyContainer: {

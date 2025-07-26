@@ -50,7 +50,7 @@ export function OauthLogin() {
     <View style={styles.container}>
       <View style={styles.content}>
         {/* Header Section */}
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Text variant="displaySmall" style={[styles.title, { color: colors.onSurface }]}>
             Welcome to Moots
           </Text>
@@ -58,55 +58,41 @@ export function OauthLogin() {
             Your movie social network
           </Text>
           <AppLogoSvg />
-        </View>
+        </View> */}
 
         {/* Login Card */}
 
-        <Card style={styles.loginCard}>
-          <Card.Content style={styles.cardContent}>
-            <Text variant="titleLarge" style={[styles.cardTitle, { color: colors.onSurface }]}>
-              Connect with Trakt
-            </Text>
-            <Text
-              variant="bodyMedium"
-              style={[styles.cardSubtitle, { color: colors.onSurfaceVariant }]}>
-              Sync your watchlists and discover new movies and shows with your friends.
-            </Text>
 
-            <Pressable
-              onPress={() => mutate()}
-              disabled={isPending}
-              style={({ pressed }) => [
-                styles.loginButton,
-                {
-                  backgroundColor: pressed ? colors.primaryContainer : colors.surface,
-                  borderColor: colors.primary,
-                  opacity: isPending ? 0.4 : 1,
-                },
-              ]}>
-              {isPending ? (
-                <View style={{}}>
-                  <LoadingIndicatorDots />
-                </View>
-              ) : (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 12,
-                  }}>
-                  {/* <TraktSvg width={24} height={24} /> */}
-                  <GoogleSvg width={24} height={24} />
-                  <Text
-                    variant="titleMedium"
-                    style={[styles.buttonText, { color: colors.primary }]}>
-                    Continue with Trakt
-                  </Text>
-                </View>
-              )}
-            </Pressable>
-          </Card.Content>
-        </Card>
+        <Pressable
+          onPress={() => mutate()}
+          disabled={isPending}
+          style={({ pressed }) => [
+            styles.loginButton,
+            {
+              backgroundColor: pressed ? colors.primaryContainer : colors.surface,
+              borderColor: colors.primary,
+              opacity: isPending ? 0.4 : 1,
+            },
+          ]}>
+          {isPending ? (
+            <View style={{}}>
+              <LoadingIndicatorDots />
+            </View>
+          ) : (
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+              }}>
+              {/* <TraktSvg width={24} height={24} /> */}
+              <GoogleSvg width={24} height={24} />
+              <Text variant="titleMedium" style={[styles.buttonText, { color: colors.primary }]}>
+                Continue with Google
+              </Text>
+            </View>
+          )}
+        </Pressable>
         <View style={styles.footer}>
           <Text variant="bodySmall" style={[styles.footerText, { color: colors.onSurfaceVariant }]}>
             By signing in, you agree to our Terms of Service and Privacy Policy
@@ -130,42 +116,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
-    paddingTop: 60,
     gap: 16,
   },
-  header: {
-    alignItems: "center",
-    marginBottom: 48,
-    gap: 8,
-  },
-  title: {
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    textAlign: "center",
-    opacity: 0.8,
-  },
-  loginCard: {
-    maxWidth: 400,
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  cardContent: {
-    padding: 32,
-  },
-  cardTitle: {
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  cardSubtitle: {
-    textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 20,
-  },
+
   loginButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -175,7 +128,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 16,
     gap: 12,
-    marginBottom: 24,
     elevation: 4,
   },
   buttonText: {

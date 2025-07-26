@@ -464,7 +464,7 @@ export interface WatchlistResponse extends BaseCollectionResponse {
 	title: string;
 	overview: string;
 	user_id: Array<string>;
-	iiitems: Array<string>;
+	items: Array<string>;
 	visibility: Array<'public' | 'private' | 'followers_only'>;
 	is_collaborative: boolean;
 }
@@ -474,7 +474,7 @@ export interface WatchlistCreate extends BaseCollectionCreate {
 	title?: string;
 	overview?: string;
 	user_id: MaybeArray<string>;
-	iiitems?: MaybeArray<string>;
+	items?: MaybeArray<string>;
 	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
 	is_collaborative?: boolean;
 }
@@ -486,9 +486,9 @@ export interface WatchlistUpdate extends BaseCollectionUpdate {
 	user_id: MaybeArray<string>;
 	'user_id+'?: MaybeArray<string>;
 	'user_id-'?: MaybeArray<string>;
-	iiitems?: MaybeArray<string>;
-	'iiitems+'?: MaybeArray<string>;
-	'iiitems-'?: MaybeArray<string>;
+	items?: MaybeArray<string>;
+	'items+'?: MaybeArray<string>;
+	'items-'?: MaybeArray<string>;
 	visibility?: MaybeArray<'public' | 'private' | 'followers_only'>;
 	'visibility+'?: MaybeArray<'public' | 'private' | 'followers_only'>;
 	'visibility-'?: MaybeArray<'public' | 'private' | 'followers_only'>;
@@ -504,7 +504,7 @@ export interface WatchlistCollection {
 	update: WatchlistUpdate;
 	relations: {
 		user_id: UsersCollection[];
-		iiitems: WatchlistItemsCollection[];
+		items: WatchlistItemsCollection[];
 	};
 }
 
@@ -630,7 +630,7 @@ export interface WatchlistItemsCollection {
 	create: WatchlistItemsCreate;
 	update: WatchlistItemsUpdate;
 	relations: {
-		watchlist_via_iiitems: WatchlistCollection[];
+		watchlist_via_items: WatchlistCollection[];
 		watchlist_likes_via_watchlist_item_id: WatchlistLikesCollection[];
 		added_by: UsersCollection[];
 		watched_list_via_items: WatchedListCollection[];

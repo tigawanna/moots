@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
 
   searchBar: {
     elevation: 0,
-    shadowOpacity: 0,
   },
   searchInput: {
     fontSize: 16,

@@ -38,15 +38,15 @@ export function getUserWatchlistQueryOptions({
   return queryOptions({
     queryKey: userId ? ["watchlist", userId, keyword] : ["watchlist", "community", keyword],
     queryFn: () => {
-      if (!userId) {
-        throw new Error("User not authenticated");
-      }
+      // if (!userId) {
+      //   throw new Error("User not authenticated");
+      // }
       // Fetch user watchlist items
       return pb.from("watchlist").getList(1, 25, {
-        filter: eq("user_id", [userId]),
-        sort: "-created",
+        // filter: eq("user_id", [userId]),
+        // sort: "-created",
       });
     },
-    enabled: !!userId, // Only run if user is authenticated
+    // enabled: !!userId, // Only run if user is authenticated
   });
 }

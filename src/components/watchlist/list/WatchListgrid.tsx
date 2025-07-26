@@ -67,7 +67,7 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
 
         <View style={styles.footer}>
           <Text variant="bodySmall" style={[styles.itemCount, { color: colors.onSurfaceVariant }]}>
-            {item.iiitems?.length || 0} items
+            {item.items?.length || 0} items
           </Text>
           <Text
             variant="bodySmall"

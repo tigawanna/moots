@@ -159,7 +159,7 @@ export function LoginForm({ onForgotPassword, onSwitchToSignup }: LoginFormProps
             mode="text"
             onPress={onSwitchToSignup}
             compact
-            labelStyle={{ color: colors.primary }}
+            labelStyle={{ color: colors.onPrimary }}
           >
             Sign Up
           </Button>

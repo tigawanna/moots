@@ -899,12 +899,198 @@
   },
   {
     "id": "pbc_1344826955",
-    "listRule": "user_id = @request.auth.id",
-    "viewRule": "user_id = @request.auth.id",
+    "listRule": "",
+    "viewRule": "user_id = @request.auth.id || (visibility = \"public\" && @request.auth.id != \"\")",
     "createRule": "",
     "updateRule": "user_id = @request.auth.id",
     "deleteRule": "user_id = @request.auth.id",
     "name": "watchlist",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text724990059",
+        "max": 0,
+        "min": 0,
+        "name": "title",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3888370107",
+        "max": 0,
+        "min": 0,
+        "name": "overview",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation2809058197",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "user_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "pbc_562143027",
+        "hidden": false,
+        "id": "relation2340787850",
+        "maxSelect": 20,
+        "minSelect": 0,
+        "name": "items",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "select1368277760",
+        "maxSelect": 0,
+        "name": "visibility",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "public",
+          "private",
+          "followers_only"
+        ]
+      },
+      {
+        "hidden": false,
+        "id": "bool3080966787",
+        "name": "is_collaborative",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_KhVX0w7YBd` ON `watchlist` (`title`)"
+    ],
+    "created": "2025-07-23 20:56:24.091Z",
+    "updated": "2025-07-26 21:52:03.786Z",
+    "system": false
+  },
+  {
+    "id": "pbc_2304063491",
+    "listRule": "user_id = @request.auth.id",
+    "viewRule": "user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "user_id = @request.auth.id",
+    "deleteRule": "user_id = @request.auth.id",
+    "name": "watchlist_likes",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation2809058197",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "user_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "pbc_562143027",
+        "hidden": false,
+        "id": "relation2272856737",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "watchlist_item_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "autodate_created",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate_updated",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [],
+    "created": "2025-07-23 20:56:48.162Z",
+    "updated": "2025-07-25 21:39:15.487Z",
+    "system": false
+  },
+  {
+    "id": "pbc_562143027",
+    "listRule": "@request.auth.id !=\"\"",
+    "viewRule": "@request.auth.id !=\"\"",
+    "createRule": "@request.auth.id !=\"\"",
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "watchlist_items",
     "type": "base",
     "fields": [
       {
@@ -1040,10 +1226,10 @@
         "cascadeDelete": false,
         "collectionId": "_pb_users_auth_",
         "hidden": false,
-        "id": "relation2809058197",
+        "id": "relation1771793327",
         "maxSelect": 0,
         "minSelect": 0,
-        "name": "user_id",
+        "name": "added_by",
         "presentable": false,
         "required": true,
         "system": false,
@@ -1086,7 +1272,7 @@
       },
       {
         "hidden": false,
-        "id": "autodate_created",
+        "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -1096,7 +1282,7 @@
       },
       {
         "hidden": false,
-        "id": "autodate_updated",
+        "id": "autodate3332085495",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,
@@ -1105,19 +1291,21 @@
         "type": "autodate"
       }
     ],
-    "indexes": [],
-    "created": "2025-07-23 20:56:24.091Z",
-    "updated": "2025-07-24 20:14:02.767Z",
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_ug5F4Oim6O` ON `watchlist_items` (`tmdb_id`)"
+    ],
+    "created": "2025-07-25 21:36:38.759Z",
+    "updated": "2025-07-25 21:36:38.759Z",
     "system": false
   },
   {
-    "id": "pbc_2304063491",
+    "id": "pbc_3785609591",
     "listRule": "user_id = @request.auth.id",
     "viewRule": "user_id = @request.auth.id",
-    "createRule": "@request.auth.id != ''",
+    "createRule": "",
     "updateRule": "user_id = @request.auth.id",
     "deleteRule": "user_id = @request.auth.id",
-    "name": "watchlist_likes",
+    "name": "watched_list",
     "type": "base",
     "fields": [
       {
@@ -1149,16 +1337,107 @@
       },
       {
         "cascadeDelete": false,
-        "collectionId": "pbc_1344826955",
+        "collectionId": "pbc_562143027",
         "hidden": false,
-        "id": "relation2272856737",
+        "id": "relation3776899405",
+        "maxSelect": 999,
+        "minSelect": 0,
+        "name": "items",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [],
+    "created": "2025-07-25 22:02:02.471Z",
+    "updated": "2025-07-25 22:02:02.471Z",
+    "system": false
+  },
+  {
+    "id": "pbc_3660641689",
+    "listRule": "follower_id = @request.auth.id || following_id = @request.auth.id",
+    "viewRule": "follower_id = @request.auth.id || following_id = @request.auth.id",
+    "createRule": "@request.auth.id != '' && follower_id = @request.auth.id",
+    "updateRule": "follower_id = @request.auth.id",
+    "deleteRule": "follower_id = @request.auth.id",
+    "name": "follows",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation2888104019",
         "maxSelect": 0,
         "minSelect": 0,
-        "name": "watchlist_item_id",
+        "name": "follower_id",
         "presentable": false,
         "required": true,
         "system": false,
         "type": "relation"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation404153251",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "following_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "select2063623452",
+        "maxSelect": 0,
+        "name": "status",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "pending",
+          "accepted",
+          "blocked"
+        ]
       },
       {
         "hidden": false,
@@ -1182,18 +1461,18 @@
       }
     ],
     "indexes": [],
-    "created": "2025-07-23 20:56:48.162Z",
-    "updated": "2025-07-23 20:56:48.162Z",
+    "created": "2025-07-25 22:08:58.063Z",
+    "updated": "2025-07-25 22:08:58.063Z",
     "system": false
   },
   {
-    "id": "pbc_3975969204",
-    "listRule": "user_id = @request.auth.id",
-    "viewRule": "user_id = @request.auth.id",
-    "createRule": "@request.auth.id != ''",
+    "id": "pbc_2190040129",
+    "listRule": "@request.auth.id != ''",
+    "viewRule": "@request.auth.id != ''",
+    "createRule": "@request.auth.id != '' && user_id = @request.auth.id",
     "updateRule": "user_id = @request.auth.id",
     "deleteRule": "user_id = @request.auth.id",
-    "name": "user_settings",
+    "name": "user_profiles",
     "type": "base",
     "fields": [
       {
@@ -1224,11 +1503,59 @@
         "type": "relation"
       },
       {
+        "autogeneratePattern": "",
         "hidden": false,
-        "id": "number3510989708",
+        "id": "text3709889147",
+        "max": 0,
+        "min": 0,
+        "name": "bio",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1587448267",
+        "max": 0,
+        "min": 0,
+        "name": "location",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "exceptDomains": null,
+        "hidden": false,
+        "id": "url1198480871",
+        "name": "website",
+        "onlyDomains": null,
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "url"
+      },
+      {
+        "hidden": false,
+        "id": "bool3292153625",
+        "name": "is_private",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "number306184228",
         "max": null,
         "min": null,
-        "name": "watchlist_limit",
+        "name": "follower_count",
         "onlyInt": false,
         "presentable": false,
         "required": false,
@@ -1237,41 +1564,27 @@
       },
       {
         "hidden": false,
-        "id": "select3138162824",
-        "maxSelect": 0,
-        "name": "default_view",
+        "id": "number3328567642",
+        "max": null,
+        "min": null,
+        "name": "following_count",
+        "onlyInt": false,
         "presentable": false,
         "required": false,
         "system": false,
-        "type": "select",
-        "values": [
-          "grid",
-          "list"
-        ]
+        "type": "number"
       },
       {
         "hidden": false,
-        "id": "bool358880235",
-        "name": "notifications_enabled",
+        "id": "number722132878",
+        "max": null,
+        "min": null,
+        "name": "watchlist_count",
+        "onlyInt": false,
         "presentable": false,
         "required": false,
         "system": false,
-        "type": "bool"
-      },
-      {
-        "hidden": false,
-        "id": "select3467545620",
-        "maxSelect": 0,
-        "name": "theme_preference",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "select",
-        "values": [
-          "light",
-          "dark",
-          "system"
-        ]
+        "type": "number"
       },
       {
         "hidden": false,
@@ -1295,8 +1608,137 @@
       }
     ],
     "indexes": [],
-    "created": "2025-07-23 20:56:58.453Z",
-    "updated": "2025-07-23 20:56:58.453Z",
+    "created": "2025-07-25 22:09:11.333Z",
+    "updated": "2025-07-25 22:09:11.333Z",
+    "system": false
+  },
+  {
+    "id": "pbc_2301922722",
+    "listRule": "recipient_id = @request.auth.id",
+    "viewRule": "recipient_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": "recipient_id = @request.auth.id",
+    "deleteRule": "recipient_id = @request.auth.id",
+    "name": "notifications",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation3912208248",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "recipient_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation4129600413",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "sender_id",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "select2363381545",
+        "maxSelect": 0,
+        "name": "type",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": [
+          "follow_request",
+          "follow_accepted",
+          "watchlist_shared",
+          "watchlist_liked"
+        ]
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text3065852031",
+        "max": 0,
+        "min": 0,
+        "name": "message",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "bool228880198",
+        "name": "is_read",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1096990721",
+        "max": 0,
+        "min": 0,
+        "name": "related_id",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "autodate_created",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate_updated",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [],
+    "created": "2025-07-25 22:09:34.309Z",
+    "updated": "2025-07-25 22:09:34.309Z",
     "system": false
   }
 ]
