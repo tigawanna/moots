@@ -13,7 +13,8 @@ export const queryKeyPrefixes = {
   watchlistItem: "watchlistItem",
   tmdb: "tmdb",
   user: "user",
-  testId:"testId"
+  testId: "testId",
+  watchListItems: "watchlist-items",
 } as const;
 
 

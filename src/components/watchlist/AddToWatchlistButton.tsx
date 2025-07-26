@@ -1,4 +1,3 @@
-import { useWatchlistLimit } from "@/hooks/useWatchlistLimit";
 import { useWatchlistStatus } from "@/hooks/useWatchlistStatus";
 import { pb } from "@/lib/pb/client";
 
@@ -56,7 +55,7 @@ export function AddToWatchlistButton({
     tmdbData.id,
     mediaType
   );
-  const { canAdd, currentCount, limit, warningMessage } = useWatchlistLimit();
+  // const { canAdd, currentCount, limit, warningMessage } = useWatchlistLimit();
   // const addToWatchlist = useAddToWatchlist();
   // const removeFromWatchlist = useRemoveFromWatchlist();
 
@@ -67,14 +66,14 @@ export function AddToWatchlistButton({
 
   // Handle quick add (no details)
   const handleQuickAdd = async () => {
-    if (!canAdd) {
-      Alert.alert(
-        "Watchlist Full",
-        `Your watchlist is full (${currentCount}/${limit} items). Remove some items to add new ones.`,
-        [{ text: "OK" }]
-      );
-      return;
-    }
+    // if (!canAdd) {
+    //   Alert.alert(
+    //     "Watchlist Full",
+    //     `Your watchlist is full (${currentCount}/${limit} items). Remove some items to add new ones.`,
+    //     [{ text: "OK" }]
+    //   );
+    //   return;
+    // }
 
     try {
       const watchlistItemData = WatchlistUtils.tmdbToWatchlistItem(tmdbData, userId, mediaType);
@@ -93,14 +92,14 @@ export function AddToWatchlistButton({
 
   // Handle detailed add (with modal)
   const handleDetailedAdd = async () => {
-    if (!canAdd) {
-      Alert.alert(
-        "Watchlist Full",
-        `Your watchlist is full (${currentCount}/${limit} items). Remove some items to add new ones.`,
-        [{ text: "OK" }]
-      );
-      return;
-    }
+    // if (!canAdd) {
+    //   Alert.alert(
+    //     "Watchlist Full",
+    //     `Your watchlist is full (${currentCount}/${limit} items). Remove some items to add new ones.`,
+    //     [{ text: "OK" }]
+    //   );
+    //   return;
+    // }
 
     try {
       const watchlistItemData = WatchlistUtils.tmdbToWatchlistItem(tmdbData, userId, mediaType);
@@ -243,11 +242,11 @@ export function AddToWatchlistButton({
       {renderButton()}
 
       {/* Limit warning */}
-      {!canAdd && warningMessage && (
+      {/* {!canAdd && warningMessage && (
         <Text variant="bodySmall" style={styles.warningText}>
           {warningMessage}
         </Text>
-      )}
+      )} */}
 
       {/* Detailed Add Modal */}
       <Portal>

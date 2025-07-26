@@ -136,12 +136,11 @@ export function WatchlistItemActions({
       return;
     }
   const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id)
-    try {
-      
+    try { 
       await quickAddMutation.mutateAsync({
         userId: user.id,
         payload: {
-          user_id: user.id,
+          added_by: user.id,
           media_type: item.mediaType as any,
           tmdb_id: tmdbId,
           title: item.title,

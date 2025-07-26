@@ -98,7 +98,7 @@ export function WatchlistItemGridCard({
 
           <Card.Content style={styles.gridInfo}>
             <Text variant="titleSmall" numberOfLines={1} style={styles.gridTitle}>
-              {item.title || item?.name || "Untitled"}
+              {item.title || "Untitled"}
             </Text>
 
             <Text variant="bodySmall" style={[styles.gridYear, { color: colors.onSurfaceVariant }]}>

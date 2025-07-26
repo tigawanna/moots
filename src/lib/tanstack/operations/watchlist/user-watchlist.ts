@@ -1,5 +1,9 @@
 import { pb } from "@/lib/pb/client";
-import { WatchlistItemCreate, WatchlistItemResponse, WatchlistUpdate } from "@/lib/pb/types/pb-types";
+import {
+  WatchlistItemsCreate,
+  WatchlistItemsResponse,
+  WatchlistItemsUpdate
+} from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 
 import { create } from "zustand";
@@ -10,7 +14,7 @@ interface UseWatchListQueryFunctionProps {
   page?: number;
 }
 
-type WatchTimeKeys = keyof WatchlistItemResponse;
+type WatchTimeKeys = keyof WatchlistItemsResponse;
 
 interface WatchlistFiltersState {
   searchTerm: string;
@@ -46,16 +50,16 @@ export const useUserWatchListFiltersStore = create<WatchlistFiltersState>()(
 
 export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFunctionProps) {
   return queryOptions({
-    queryKey: userId ? ["user-watchlist", userId, page] : ["user-watchlist", "all", page],
+    queryKey: userId ? ["watchlist-items", userId, page] : ["watchlist-items", "all", page],
     queryFn: () => {
       const { filters, searchTerm, sort } = useUserWatchListFiltersStore.getState();
-      return pb.from("watchlist").getList(page, 25, {
+      return pb.from("watchlist_items").getList(page, 25, {
         // filter: and(
         //   userId ? eq("user_id", [userId]) : undefined,
         //   searchTerm ? like("title", `%${searchTerm}%`) : undefined,
         //   filters.watched !== undefined ? eq("watched_status", filters.watched) : undefined
         // ),
-        sort: `${sort.direction === "desc" ? "-" : ""}${sort.field}` as any,
+        // sort: `${sort.direction === "desc" ? "-" : ""}${sort.field}` as any,
       });
     },
     staleTime: 0,
@@ -66,15 +70,15 @@ export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFun
 
 interface AddToWatchListMutationOptionsProps {
   userId: string;
-  payload: WatchlistItemCreate;
+  payload: WatchlistItemsCreate;
 }
 
 export function addToWatchListMutationOptions() {
   return mutationOptions({
     mutationFn: ({ userId, payload }: AddToWatchListMutationOptionsProps) => {
-      console.log("Adding to watchlist:", payload);
-      return pb.from("watchlist").create({
-        user_id: userId,
+      return pb.from("watchlist_items").create({
+        id: String(payload.tmdb_id),
+        added_by: userId,
         media_type: payload.media_type,
         tmdb_id: payload.tmdb_id,
         title: payload.title,
@@ -103,13 +107,13 @@ export function removeFromWatchListMutationOptions() {
 
 interface UpdateWatchListMutationOptionsProps {
   itemId: string;
-  payload: WatchlistUpdate;
+  payload: WatchlistItemsUpdate;
 }
 
 export function updateWatchListItemMutationOptions() {
   return mutationOptions({
     mutationFn: ({ itemId, payload }: UpdateWatchListMutationOptionsProps) => {
-      return pb.from("watchlist").update(itemId, {
+      return pb.from("watchlist_items").update(itemId, {
         ...payload,
       });
     },
@@ -119,9 +123,9 @@ export function updateWatchListItemMutationOptions() {
 export function toggleWatchedListItemMutationOptions() {
   return mutationOptions({
     mutationFn: ({ itemId, watched }: { itemId: string; watched: boolean }) => {
-      return pb.from("watchlist").update(itemId, {
+      return pb.from("watchlist_items").update(itemId, {
         watched_status: watched,
-      } as WatchlistUpdate);
+      } as WatchlistItemsUpdate);
     },
   });
 }
