@@ -27,8 +27,11 @@ export function deleteWatchListMutationOptions() {
   });
 }
 
-export function getUserWatchlistQueryOptions() {
-  const userId = pb.authStore.record?.id;
+interface GetUserWatchlistQueryOptionsProps{
+  keyword?: string;
+  userId?: string;
+}
+export function getUserWatchlistQueryOptions({ keyword, userId }: GetUserWatchlistQueryOptionsProps) {
   return queryOptions({
     queryKey: ["user-watchlist"],
     queryFn: () => {
