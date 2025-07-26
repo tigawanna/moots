@@ -1,13 +1,13 @@
-import { WatchlistResponse } from "@/lib/pb/types/pb-types";
+import { WatchlistItemCard } from "@/components/shared/watchlist/WatchlistItemCard";
+import { WatchlistItemsResponse } from "@/lib/pb/types/pb-types";
 import React, { useCallback } from "react";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { WatchlistItemCard } from "@/components/shared/watchlist/WatchlistItemCard";
 
 
 
 interface UserWatchListFlatListProps {
-  watchList: WatchlistResponse[];
+  watchList: WatchlistItemsResponse[];
   refetch?: () => void;
   isRefreshing?: boolean;
   onEndReached?: () => void;
@@ -28,21 +28,20 @@ export function UserWatchListFlatList({
   const { colors } = useTheme();
 
   const renderItem = useCallback(
-    ({ item }: { item: WatchlistResponse }) => {
+    ({ item }: { item: WatchlistItemsResponse }) => {
       const unifiedItem = {
         ...item,
         media_type: item.media_type, // Already in correct format
-        user_id: item.user_id, // Already in correct format
       };
       return (
         // <WatchlistItemCard item={item} viewMode={viewMode} />
-        <WatchlistItemCard item={unifiedItem} viewMode={viewMode} />
+        <WatchlistItemCard item={unifiedItem} viewMode={viewMode} mediaTypeTab="movie" />
       );
     },
     [viewMode]
   );
 
-  const keyExtractor = useCallback((item: WatchlistResponse) => item.id, []);
+  const keyExtractor = useCallback((item: WatchlistItemsResponse) => item.id, []);
 
   const getItemLayout = useCallback(
     (data: any, index: number) => {

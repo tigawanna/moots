@@ -370,7 +370,7 @@ export interface TvShowResult {
   vote_count: number;
 }
 
-// GET http://127.0.0.1:8090/api/tmdb/details/tv/244808?language=en-US&append_to_response=credits,videos
+// GET http://127.0.0.1:8090/api/tmdb/details/tv/244808?language=en-US&append_to_response=aggregate_credits,recommendations
 
 
 export const mockTvShowDetailsResponse = {
@@ -913,3 +913,333 @@ export interface SpokenLanguage {
 export interface Videos {
   results: any[];
 }
+
+
+// Example tv show season details 
+// GET http://127.0.0.1:8090/api/tmdb/season/244808/1
+
+export const mockTvShowSeasonDetailsResponse = {
+  _id: "65b700e8dbad50018484e901",
+  air_date: "2025-07-19",
+  episodes: [
+    {
+      air_date: "2025-07-19",
+      crew: [
+        {
+          adult: false,
+          credit_id: "687b522c51b22c77781698d0",
+          department: "Writing",
+          gender: 2,
+          id: 2149551,
+          job: "Writer",
+          known_for_department: "Writing",
+          name: "Kenta Ihara",
+          original_name: "猪原健太",
+          popularity: 0.3165,
+          profile_path: "/kqDvgSXCHHRj34mC9nQkzduL61U.jpg",
+        },
+        {
+          adult: false,
+          credit_id: "687b52572c5aa3134538d09c",
+          department: "Art",
+          gender: 2,
+          id: 1481792,
+          job: "Storyboard Artist",
+          known_for_department: "Directing",
+          name: "Nobuyoshi Nagayama",
+          original_name: "長山延好",
+          popularity: 0.237,
+          profile_path: null,
+        },
+        {
+          adult: false,
+          credit_id: "687b5279730882225255c72c",
+          department: "Directing",
+          gender: 2,
+          id: 2817579,
+          job: "Director",
+          known_for_department: "Visual Effects",
+          name: "Daiki Takemoto",
+          original_name: "武本大樹",
+          popularity: 0.1561,
+          profile_path: null,
+        },
+        {
+          adult: false,
+          credit_id: "687b52fc03dfd1f102169857",
+          department: "Visual Effects",
+          gender: 2,
+          id: 3453909,
+          job: "Supervising Animation Director",
+          known_for_department: "Visual Effects",
+          name: "Kumata",
+          original_name: "くまた",
+          popularity: 0.0214,
+          profile_path: null,
+        },
+        {
+          adult: false,
+          credit_id: "687b53c1d098f600d972c1b6",
+          department: "Visual Effects",
+          gender: 2,
+          id: 3453909,
+          job: "Animation Director",
+          known_for_department: "Visual Effects",
+          name: "Kumata",
+          original_name: "くまた",
+          popularity: 0.0214,
+          profile_path: null,
+        },
+        {
+          adult: false,
+          credit_id: "687b54c680aff51a8555c6b2",
+          department: "Visual Effects",
+          gender: 0,
+          id: 5573507,
+          job: "Animation Director",
+          known_for_department: "Visual Effects",
+          name: "Kyosuke Shin",
+          original_name: "愼亨祐",
+          popularity: 0.0402,
+          profile_path: null,
+        },
+        {
+          adult: false,
+          credit_id: "687b5560c2adade24055c6a2",
+          department: "Visual Effects",
+          gender: 0,
+          id: 5573509,
+          job: "Animation Director",
+          known_for_department: "Visual Effects",
+          name: "Tan Tanaka",
+          original_name: "田中TAN",
+          popularity: 0.0193,
+          profile_path: null,
+        },
+      ],
+      episode_number: 1,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 5106039,
+      name: "Pervert Law",
+      overview:
+        "Seiran Island, the land of paradise, aka the land of filthy debauchery, where any sexual acts are permitted and enforced by the Pervert Law. Junnosuke, a transfer, is a virgin with pride who despises sex with no love. However, sex is a duty of the island residents! Virginity is a serious crime!! All those who refuse sex will get guillotined by the Future Seiran Homeland Organization (or FS)!!! Junnosuke decides to protect his virginity with his dear life, evading all perverts along with his young virgin sister, Asane. However, they run into Nanase Katagiri, the school's legendary virgin hunter #$%!*...!",
+      production_code: "",
+      runtime: 24,
+      season_number: 1,
+      show_id: 244808,
+      still_path: "/nNXAgAUstWCRiBcOKe8PDkdlbZz.jpg",
+      vote_average: 10,
+      vote_count: 1,
+    },
+    {
+      air_date: "2025-07-26",
+      crew: [],
+      episode_number: 2,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370302,
+      name: "Savior",
+      overview:
+        "Item creation to outsmart the FS, securing every escape route, and Nanase's home cooking that achieves perfect nutrition. With Nanase as their ally, Junnosuke and Masane begin their plan to destroy the perverted ordinance. And on Seiran Island, there were other girls besides them who were also struggling! Hinami Watarai, a virgin who is never propositioned for sex by anyone due to her youthful appearance! Azumi Misaki, a virgin with a terrifying libido, but who doesn't want to show her plump body to others! One day, a major incident befalls Hinami!?",
+      production_code: "",
+      runtime: 24,
+      season_number: 1,
+      show_id: 244808,
+      still_path: "/gd0nGCaeMoHcPLP3sKQltDxMSMn.jpg",
+      vote_average: 10,
+      vote_count: 1,
+    },
+    {
+      air_date: "2025-08-02",
+      crew: [],
+      episode_number: 3,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370303,
+      name: "Episode 3",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-08-09",
+      crew: [],
+      episode_number: 4,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370304,
+      name: "Episode 4",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-08-16",
+      crew: [],
+      episode_number: 5,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370305,
+      name: "Episode 5",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-08-23",
+      crew: [],
+      episode_number: 6,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370306,
+      name: "Episode 6",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-08-30",
+      crew: [],
+      episode_number: 7,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370307,
+      name: "Episode 7",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-09-06",
+      crew: [],
+      episode_number: 8,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370308,
+      name: "Episode 8",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-09-13",
+      crew: [],
+      episode_number: 9,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370309,
+      name: "Episode 9",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-09-20",
+      crew: [],
+      episode_number: 10,
+      episode_type: "standard",
+      guest_stars: [],
+      id: 6370310,
+      name: "Episode 10",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+    {
+      air_date: "2025-09-27",
+      crew: [],
+      episode_number: 11,
+      episode_type: "finale",
+      guest_stars: [],
+      id: 6370311,
+      name: "Episode 11",
+      overview: "",
+      production_code: "",
+      runtime: null,
+      season_number: 1,
+      show_id: 244808,
+      still_path: null,
+      vote_average: 0,
+      vote_count: 0,
+    },
+  ],
+  id: 376328,
+  name: "Season 1",
+  overview: "",
+  poster_path: "/zlybZJXfu4IpPnWXhnRtobl9BgZ.jpg",
+  season_number: 1,
+  vote_average: 10,
+};
+
+export interface TvShowSeasonDetailsResponse {
+  _id: string;
+  air_date: string;
+  episodes: SeasonDetailsEpisode[];
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string;
+  season_number: number;
+  vote_average: number;
+}
+
+export interface SeasonDetailsEpisode {
+  air_date: string;
+  crew: Crew[];
+  episode_number: number;
+  episode_type: string;
+  guest_stars: any[];
+  id: number;
+  name: string;
+  overview: string;
+  production_code: string;
+  runtime?: number;
+  season_number: number;
+  show_id: number;
+  still_path?: string;
+  vote_average: number;
+  vote_count: number;
+}
+
+

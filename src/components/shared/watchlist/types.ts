@@ -1,3 +1,5 @@
+import { WatchlistItemsResponse } from "@/lib/pb/types/pb-types";
+
 // Base interface for watchlist items that can come from TMDB or PocketBase
 export interface BaseWatchlistItem {
   id: string | number;
@@ -25,16 +27,7 @@ export interface BaseWatchlistItem {
 }
 
 // PocketBase watchlist item (extends base with required user fields)
-export interface PocketBaseWatchlistItem extends BaseWatchlistItem {
-  id: string;
-  media_type: ("movie" | "tv")[];
-  user_id: string[];
-  watched_status: boolean;
-  personal_rating: number;
-  notes: string;
-  created: string;
-  updated: string;
-}
+export type PocketBaseWatchlistItem = WatchlistItemsResponse;
 
 // TMDB item enriched with user data
 export interface EnrichedTMDBItem extends BaseWatchlistItem {

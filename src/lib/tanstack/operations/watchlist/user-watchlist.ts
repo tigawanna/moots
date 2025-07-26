@@ -1,8 +1,6 @@
 import { pb } from "@/lib/pb/client";
-import { WatchlistCreate, WatchlistResponse, WatchlistUpdate } from "@/lib/pb/types/pb-types";
-import { logger } from "@/utils/logger";
+import { WatchlistItemCreate, WatchlistItemResponse, WatchlistUpdate } from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
-import { and, eq, like } from "@tigawanna/typed-pocketbase";
 
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
@@ -12,7 +10,7 @@ interface UseWatchListQueryFunctionProps {
   page?: number;
 }
 
-type WatchTimeKeys = keyof WatchlistResponse;
+type WatchTimeKeys = keyof WatchlistItemResponse;
 
 interface WatchlistFiltersState {
   searchTerm: string;
@@ -68,7 +66,7 @@ export function watchListQueryOptions({ userId, page = 1 }: UseWatchListQueryFun
 
 interface AddToWatchListMutationOptionsProps {
   userId: string;
-  payload: WatchlistCreate;
+  payload: WatchlistItemCreate;
 }
 
 export function addToWatchListMutationOptions() {

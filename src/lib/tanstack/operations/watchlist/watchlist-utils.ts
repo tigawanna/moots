@@ -1,5 +1,4 @@
-import { pb } from "@/lib/pb/client";
-import { WatchlistCreate } from "@/lib/pb/types/pb-types";
+import { WatchlistItemCreate } from "@/lib/pb/types/pb-types";
 
 
 
@@ -16,7 +15,7 @@ export class WatchlistUtils {
     tmdbData: any, 
     userId: string, 
     mediaType: 'movie' | 'tv'
-  ): WatchlistCreate {
+  ): WatchlistItemCreate {
     return {
       user_id: userId,
       tmdb_id: tmdbData.id,
