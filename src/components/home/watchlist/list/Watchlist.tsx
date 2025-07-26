@@ -5,7 +5,7 @@ import { getUserWatchlistQueryOptions } from "@/lib/tanstack/operations/watchlis
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
-import { useWatchlistSearch } from "./use-watchlist-search";
+import { useWatchlistSearch } from "./hooks";
 import { WatchlistGrid } from "./WatchListgrid";
 
 
