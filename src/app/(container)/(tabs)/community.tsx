@@ -1,14 +1,14 @@
-import { UserWatchList } from "@/components/watchlist-items/UserWatchListItems";
+import { Watchlist } from "@/components/watchlist/list/Watchlist";
 import React from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
 export default function CommunityRoute() {
-    const { top } = useSafeAreaInsets();
+  const { top } = useSafeAreaInsets();
   return (
     <View style={{ flex: 1, paddingTop: top + 12 }}>
-      <UserWatchList community />
+        <Watchlist community />
     </View>
   );
 }

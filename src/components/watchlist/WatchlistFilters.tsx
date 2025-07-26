@@ -363,16 +363,6 @@ const styles = StyleSheet.create({
   ratingContainer: {
     paddingVertical: 8,
   },
-  slider: {
-    width: '100%',
-    height: 40,
-  },
-  sliderThumb: {
-    backgroundColor: '#2196F3',
-  },
-  sliderTrack: {
-    backgroundColor: '#E3F2FD',
-  },
   sliderPlaceholder: {
     color: '#999',
     fontStyle: 'italic',

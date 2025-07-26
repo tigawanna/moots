@@ -137,13 +137,7 @@ const styles = StyleSheet.create({
   searchInput: {
     fontSize: 16,
   },
-  container: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
   emptyContainer: {
     flex: 1,
     alignItems: "center",
