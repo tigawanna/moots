@@ -2,7 +2,7 @@ import { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { ListResult } from "pocketbase";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { Card, Chip, IconButton, Text, useTheme } from "react-native-paper";
-import { usewatchlistSettingsStore } from "./hooks";
+
 import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 
@@ -14,7 +14,9 @@ interface WatchlistGridProps {
 
 export function WatchlistGrid({ watchListResult, isRefetching, refetch }: WatchlistGridProps) {
   const { colors } = useTheme();
-  const { columns, orientation, setOrientation } = useResponsiveListView();
+  const { columns, orientation, setOrientation } = useResponsiveListView({
+    key: "user-watchlist"
+  });
   const watchList = watchListResult.items;
 
   const renderWatchlistItem = ({ item }: { item: WatchlistResponse }) => (
@@ -82,7 +84,7 @@ export function WatchlistGrid({ watchListResult, isRefetching, refetch }: Watchl
       <IconButton
         style={[styles.toggleOrientationButton, { backgroundColor: colors.onPrimary }]}
         icon={orientation === "grid" ? "view-list" : "view-grid"}
-        onPress={() => setOrientation((prev) => (prev === "grid" ? "list" : "grid"))}
+        onPress={() => setOrientation(orientation === "grid" ? "list" : "grid")}
       />
       <FlatList
         key={columns}

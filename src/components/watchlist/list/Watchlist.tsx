@@ -8,20 +8,11 @@ import { Searchbar, Text, useTheme } from "react-native-paper";
 import { useWatchlistSearch } from "./hooks";
 import { WatchlistGrid } from "./WatchListgrid";
 
-
-// this type comes from @/lib/pb/types/pb-types.ts do not overwrite or make a copy of it use it for refrence of the inputs required buy the mutation below
-// export interface WatchlistResponse extends BaseCollectionResponse {
-//   id: string;
-//   title: string;
-//   overview: string;
-//   user_id: Array<string>;
-//   iiitems: Array<string>;
-//   visibility: Array<'public' | 'private' | 'followers_only'>;
-//   is_collaborative: boolean;
-// }
-
-export function Watchlist() {
-  const userId = pb.authStore?.record?.id;
+interface WatchlistProps {
+  community?: boolean;
+}
+export function Watchlist({ community }: WatchlistProps) {
+  const userId = community ? undefined : pb.authStore?.record?.id;
   const { searchQuery } = useWatchlistSearch();
   const { data, isLoading, error, isRefetching, refetch } = useQuery(
     getUserWatchlistQueryOptions({ keyword: searchQuery, userId })

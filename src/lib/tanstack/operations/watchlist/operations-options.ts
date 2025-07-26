@@ -27,13 +27,16 @@ export function deleteWatchListMutationOptions() {
   });
 }
 
-interface GetUserWatchlistQueryOptionsProps{
+interface GetUserWatchlistQueryOptionsProps {
   keyword?: string;
   userId?: string;
 }
-export function getUserWatchlistQueryOptions({ keyword, userId }: GetUserWatchlistQueryOptionsProps) {
+export function getUserWatchlistQueryOptions({
+  keyword,
+  userId,
+}: GetUserWatchlistQueryOptionsProps) {
   return queryOptions({
-    queryKey: ["user-watchlist"],
+    queryKey: userId ? ["watchlist", userId, keyword] : ["watchlist", "community", keyword],
     queryFn: () => {
       if (!userId) {
         throw new Error("User not authenticated");

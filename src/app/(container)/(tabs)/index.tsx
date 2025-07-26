@@ -1,4 +1,4 @@
-import { UserWatchList } from "@/components/home/watchlist-items/UserWatchListItems";
+import { Watchlist } from "@/components/watchlist/list/Watchlist";
 import { StyleSheet } from "react-native";
 import { Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,7 +9,7 @@ export default function HomeScreen() {
   const { top } = useSafeAreaInsets();
   return (
     <Surface style={[styles.container, { paddingTop: top + 12 }]}>
-      <UserWatchList />
+      <Watchlist />
     </Surface>
   );
 }

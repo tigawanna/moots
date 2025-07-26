@@ -20,20 +20,27 @@ interface DiscoverListProps {
 export function DiscoverList({ currentCategory, discoverResults }: DiscoverListProps) {
   const mediaTypetab = (currentCategory?.type || "movie") as "movie" | "tv";
   const { colors } = useTheme();
-  const { columns, orientation, setOrientation } = useResponsiveListView();
+  const { columns, orientation, setOrientation } = useResponsiveListView({
+    key: "discover-list"
+  });
   return (
     <View style={styles.discoverContainer}>
       <IconButton
         style={[styles.toggleOrientationButton, { backgroundColor: colors.onPrimary }]}
         icon={orientation === "grid" ? "view-list" : "view-grid"}
-        onPress={() => setOrientation((prev) => (prev === "grid" ? "list" : "grid"))}
+        onPress={() => setOrientation(orientation === "grid" ? "list" : "grid")}
       />
       {/* Category Selection */}
       <FlatList
         data={(discoverResults?.results as any[]) || []}
         key={columns}
         renderItem={({ item }) => (
-          <WatchlistItemCard item={item} viewMode={orientation} showActions={true} mediaTypeTab={mediaTypetab} />
+          <WatchlistItemCard
+            item={item}
+            viewMode={orientation}
+            showActions={true}
+            mediaTypeTab={mediaTypetab}
+          />
         )}
         keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
         numColumns={columns}
