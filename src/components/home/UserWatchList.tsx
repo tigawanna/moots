@@ -4,7 +4,7 @@ import { pb } from "@/lib/pb/client";
 import {
   useUserWatchListFiltersStore,
   watchListQueryOptions,
-} from "@/lib/tanstack/operations/watchlist/user-watchlist";
+} from "@/lib/tanstack/operations/watchlist-items/query-options";
 import { useQuery } from "@tanstack/react-query";
 import { StyleSheet, View } from "react-native";
 import { Searchbar, Surface, Text, useTheme } from "react-native-paper";

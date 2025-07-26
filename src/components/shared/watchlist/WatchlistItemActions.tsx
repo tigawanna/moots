@@ -4,7 +4,7 @@ import {
   addToWatchListMutationOptions,
   removeFromWatchListMutationOptions,
   toggleWatchedListItemMutationOptions,
-} from "@/lib/tanstack/operations/watchlist/user-watchlist";
+} from "@/lib/tanstack/operations/watchlist-items/query-options";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { Alert, StyleSheet, View } from "react-native";

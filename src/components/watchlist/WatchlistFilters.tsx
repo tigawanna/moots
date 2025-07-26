@@ -13,7 +13,7 @@ import {
   Searchbar,
   Text
 } from 'react-native-paper';
-import { WATCHED_STATUSES } from '../../lib/tanstack/operations/watchlist/watchlist-types';
+import { WATCHED_STATUSES } from '../../lib/tanstack/operations/watchlist-items/watchlist-types';
 import { useWatchlistFilters } from '../../store/watchlist-store';
 
 // TMDB genre mapping (simplified - you'd get this from TMDB API)
