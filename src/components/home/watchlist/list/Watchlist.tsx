@@ -1,11 +1,12 @@
-import { StyleSheet, View } from "react-native";
-import { Searchbar, Text, useTheme } from "react-native-paper";
-import { useWatchlistSearch } from "./use-watchlist-search";
-import { useQuery } from "@tanstack/react-query";
-import { getUserWatchlistQueryOptions } from "@/lib/tanstack/operations/watchlist/operations-options";
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
 import { pb } from "@/lib/pb/client";
+import { getUserWatchlistQueryOptions } from "@/lib/tanstack/operations/watchlist/operations-options";
+import { useQuery } from "@tanstack/react-query";
+import { StyleSheet, View } from "react-native";
+import { Searchbar, Text, useTheme } from "react-native-paper";
+import { useWatchlistSearch } from "./use-watchlist-search";
+import { WatchlistGrid } from "./WatchListgrid";
 
 
 // this type comes from @/lib/pb/types/pb-types.ts do not overwrite or make a copy of it use it for refrence of the inputs required buy the mutation below
@@ -22,7 +23,7 @@ import { pb } from "@/lib/pb/client";
 export function Watchlist() {
   const userId = pb.authStore?.record?.id;
   const { searchQuery } = useWatchlistSearch();
-  const { data, isLoading, error } = useQuery(
+  const { data, isLoading, error, isRefetching, refetch } = useQuery(
     getUserWatchlistQueryOptions({ keyword: searchQuery, userId })
   );
     const { colors } = useTheme();
@@ -98,10 +99,7 @@ export function Watchlist() {
     }
   return (
     <WatchlistlistScaffold>
-      <View style={{ ...styles.container }}>
-        <Text variant="titleLarge">Watchlist</Text>
-        {/* display the watchlist here */}
-      </View>
+      <WatchlistGrid watchListResult={data} refetch={refetch} isRefetching={isRefetching} />
     </WatchlistlistScaffold>
   );
 }
