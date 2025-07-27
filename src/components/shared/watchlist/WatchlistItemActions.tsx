@@ -1,10 +1,11 @@
 import { useSnackbar } from "@/components/react-native-paper/snackbar/global-snackbar-store";
 import { pb } from "@/lib/pb/client";
 import {
-  addToWatchListItemsMutationOptions,
+  quickAddToDefaultWatchlistMutationOptions,
   removeFromWatchListItemsMutationOptions,
   toggleWatchedListItemMutationOptions,
 } from "@/lib/tanstack/operations/watchlist-items/query-options";
+import { useIsInWatchlist } from "@/lib/tanstack/operations/watchlist/hooks";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -34,14 +35,18 @@ export function WatchlistItemActions({
   const { showSnackbar } = useSnackbar();
 
   const user = pb.authStore.record;
-  const quickAddMutation = useMutation(addToWatchListItemsMutationOptions());
+  const quickAddMutation = useMutation(quickAddToDefaultWatchlistMutationOptions());
   const removeFromWatchlist = useMutation(removeFromWatchListItemsMutationOptions());
   const toggleWatchedStatus = useMutation(
     toggleWatchedListItemMutationOptions()
   );
 
+  // Use the hook to check if item is in watchlist based on TMDB ID
+  const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id);
+  const isInWatchlistFromHook = useIsInWatchlist({ tmdbId });
+  
   const isWatched = WatchlistItemUtils.getWatchedStatus(item);
-  const isInWatchlist = WatchlistItemUtils.isInWatchlist(item);
+  const isInWatchlist = WatchlistItemUtils.isInWatchlist(item) || isInWatchlistFromHook;
 
   const iconSize = size === "small" ? 18 : 20;
 
@@ -125,7 +130,6 @@ export function WatchlistItemActions({
 
   const handleAdd = async (event: any) => {
     event.stopPropagation();
-    // console.log("Add pressed", item);
     if (onAdd) {
       onAdd(item);
       return;
@@ -135,7 +139,9 @@ export function WatchlistItemActions({
       showSnackbar("Please sign in to add to watchlist");
       return;
     }
-  const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id)
+
+    const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id);
+    
     try { 
       await quickAddMutation.mutateAsync({
         userId: user.id,

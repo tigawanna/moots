@@ -1,8 +1,8 @@
 import { pb } from "@/lib/pb/client";
 import {
-  WatchlistItemsCreate,
-  WatchlistItemsResponse,
-  WatchlistItemsUpdate
+    WatchlistItemsCreate,
+    WatchlistItemsResponse,
+    WatchlistItemsUpdate
 } from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 
@@ -52,7 +52,7 @@ export function watchListItemsQueryOptions({ userId, page = 1 }: UseWatchListQue
   return queryOptions({
     queryKey: userId ? ["watchlist-items", userId, page] : ["watchlist-items", "all", page],
     queryFn: () => {
-      const { filters, searchTerm, sort } = useUserWatchListFiltersStore.getState();
+      // const { filters, searchTerm, sort } = useUserWatchListFiltersStore.getState();
       return pb.from("watchlist_items").getList(page, 25, {
         // filter: and(
         //   userId ? eq("user_id", [userId]) : undefined,
@@ -90,6 +90,12 @@ export function addToWatchListItemsMutationOptions() {
         genre_ids: payload.genre_ids || [],
       });
     },
+    meta: {
+      invalidates: [
+        ["watchlist-items"], // Invalidate watchlist items queries
+        ["watchlist"], // Also invalidate watchlist queries that might include this item
+      ],
+    },
   });
 }
 
@@ -100,7 +106,13 @@ interface removeFromWatchListItemsMutationOptionsProps {
 export function removeFromWatchListItemsMutationOptions() {
   return mutationOptions({
     mutationFn: ({ itemId }: removeFromWatchListItemsMutationOptionsProps) => {
-      return pb.from("watchlist").delete(itemId);
+      return pb.from("watchlist_items").delete(itemId);
+    },
+    meta: {
+      invalidates: [
+        ["watchlist-items"], // Invalidate watchlist items queries
+        ["watchlist"], // Also invalidate watchlist queries that might include this item
+      ],
     },
   });
 }
@@ -117,6 +129,12 @@ export function updateWatchListItemMutationOptions() {
         ...payload,
       });
     },
+    meta: {
+      invalidates: [
+        ["watchlist-items"], // Invalidate watchlist items queries
+        ["watchlist"], // Also invalidate watchlist queries that might include this item
+      ],
+    },
   });
 }
 
@@ -126,6 +144,74 @@ export function toggleWatchedListItemMutationOptions() {
       return pb.from("watchlist_items").update(itemId, {
         watched_status: watched,
       } as WatchlistItemsUpdate);
+    },
+    meta: {
+      invalidates: [
+        ["watchlist-items"], // Invalidate watchlist items queries
+        ["watchlist"], // Also invalidate watchlist queries that might include this item
+      ],
+    },
+  });
+}
+
+interface QuickAddToDefaultWatchlistProps {
+  userId: string;
+  payload: WatchlistItemsCreate;
+}
+
+export function quickAddToDefaultWatchlistMutationOptions() {
+  return mutationOptions({
+    mutationFn: async ({ userId, payload }: QuickAddToDefaultWatchlistProps) => {
+      // First, get or create the user's default "Want to Watch" watchlist
+      let defaultWatchlist;
+      try {
+        defaultWatchlist = await pb
+          .from("watchlist")
+          .getFirstListItem(`user_id ~ "${userId}" && title = "Want to Watch"`);
+      } catch {
+        // Create default watchlist if it doesn't exist
+        defaultWatchlist = await pb.from("watchlist").create({
+          user_id: [userId],
+          title: "Want to Watch",
+          overview: "My default watchlist",
+          visibility: ["private"],
+          is_collaborative: false,
+        });
+      }
+
+      // Check if item already exists in watchlist_items
+      let watchlistItem;
+      try {
+        watchlistItem = await pb
+          .from("watchlist_items")
+          .getFirstListItem(`tmdb_id = ${payload.tmdb_id}`);
+      } catch {
+        // Create the watchlist item if it doesn't exist
+        watchlistItem = await pb.from("watchlist_items").create(payload);
+      }
+
+      // Add the item to the watchlist (use append to avoid duplicates)
+      const updatedWatchlist = await pb.from("watchlist").update(
+        defaultWatchlist.id,
+        {
+          "items+": watchlistItem.id,
+        } as any, // TypeScript casting needed for relation operations
+        {
+          select: {
+            expand: {
+              items: true,
+            },
+          },
+        }
+      );
+
+      return updatedWatchlist;
+    },
+    meta: {
+      invalidates: [
+        ["watchlist"], // Invalidate all watchlist queries
+        ["watchlist-items"], // Invalidate watchlist items queries
+      ],
     },
   });
 }

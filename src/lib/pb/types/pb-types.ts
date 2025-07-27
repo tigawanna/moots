@@ -573,7 +573,6 @@ export interface WatchlistItemsResponse extends BaseCollectionResponse {
 	genre_ids: Record<string, any> | Array<any> | null;
 	media_type: Array<'movie' | 'tv'>;
 	added_by: Array<string>;
-	watched_status: boolean;
 	personal_rating: number;
 	notes: string;
 	created: string;
@@ -592,7 +591,6 @@ export interface WatchlistItemsCreate extends BaseCollectionCreate {
 	genre_ids?: Record<string, any> | Array<any> | null;
 	media_type: MaybeArray<'movie' | 'tv'>;
 	added_by: MaybeArray<string>;
-	watched_status?: boolean;
 	personal_rating?: number;
 	notes?: string;
 	created?: string | Date;
@@ -619,7 +617,6 @@ export interface WatchlistItemsUpdate extends BaseCollectionUpdate {
 	added_by: MaybeArray<string>;
 	'added_by+'?: MaybeArray<string>;
 	'added_by-'?: MaybeArray<string>;
-	watched_status?: boolean;
 	personal_rating?: number;
 	'personal_rating+'?: number;
 	'personal_rating-'?: number;
