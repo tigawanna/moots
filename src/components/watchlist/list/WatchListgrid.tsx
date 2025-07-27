@@ -1,5 +1,4 @@
 import { EmptyRoadSVG } from "@/components/shared/svg/empty";
-import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 import { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { ListResult } from "pocketbase";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
@@ -11,20 +10,21 @@ interface WatchlistGridProps {
   watchListResult: ListResult<WatchlistResponse>;
   refetch: () => Promise<any>;
   isRefetching: boolean;
+  columns: number;
+  orientation: "grid" | "list";
+  setOrientation: (orientation: "grid" | "list") => void;
+
 }
 
 export function WatchlistGrid({
   watchListResult,
   isRefetching,
   refetch,
+  columns,
+  orientation,
+  setOrientation,
 }: WatchlistGridProps) {
   const { colors } = useTheme();
-  const { columns, orientation, setOrientation } = useResponsiveListView({
-    key: "user-watchlist",
-    minItemWidth: 280, // Wider cards for watchlist info
-    maxColumns: 3, // Max 3 columns for readability
-    padding: 32,
-  });
 
   const watchList = watchListResult.items;
 

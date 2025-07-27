@@ -23,8 +23,10 @@ function MovieDiscoverTab() {
   }, [setActiveTab]);
 
   const categoryLabel = getCategoryLabel(movieFilters.sort_by);
-  const { columns, orientation, setOrientation, isLoaded } = useResponsiveListView({
+  const { columns, orientation, setOrientation, isLoadingOrientation } = useResponsiveListView({
     key: "discover-list",
+    minItemWidth: 190, // Default minimum width for movie/show cards
+    maxColumns: 6, // Reasonable max for readability
   });
   const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
     type: "movie",
@@ -41,7 +43,7 @@ function MovieDiscoverTab() {
     sort: movieFilters.sort_by,
   };
 
-  if (discoverLoading || !isLoaded) {
+  if (discoverLoading || isLoadingOrientation) {
     return (
       <View style={styles.loadingContainer}>
         <LoadingIndicatorDots />
@@ -68,7 +70,7 @@ function TVDiscoverTab() {
   }, [setActiveTab]);
 
   const categoryLabel = getCategoryLabel(tvFilters.sort_by);
-  const { columns, orientation, setOrientation, isLoaded } = useResponsiveListView({
+  const { columns, orientation, setOrientation, isLoadingOrientation } = useResponsiveListView({
     key: "discover-list",
   });
   const { data: discoverResults, isLoading: discoverLoading } = useTMDBDiscover({
@@ -86,7 +88,7 @@ function TVDiscoverTab() {
     sort: tvFilters.sort_by,
   };
 
-  if (discoverLoading || !isLoaded) {
+  if (discoverLoading || isLoadingOrientation) {
     return (
       <View style={styles.loadingContainer}>
         <LoadingIndicatorDots />

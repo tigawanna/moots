@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   toggleOrientationButton: {
     position: "absolute",
-    top: -30,
+    top: 10,
     right: 8,
     zIndex: 10,
     padding: 8,

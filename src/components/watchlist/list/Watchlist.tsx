@@ -7,6 +7,7 @@ import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { Searchbar, Text, useTheme } from "react-native-paper";
 import { useWatchlistSearch } from "./hooks";
 import { WatchlistGrid } from "./WatchListgrid";
+import { useResponsiveListView } from "@/hooks/useWebCompatibleListView";
 
 interface WatchlistProps {
   community?: boolean;
@@ -14,12 +15,19 @@ interface WatchlistProps {
 export function Watchlist({ community }: WatchlistProps) {
   const userId = community ? undefined : pb.authStore?.record?.id;
   const { searchQuery } = useWatchlistSearch();
+  const { columns, orientation, setOrientation, isLoadingOrientation } = useResponsiveListView({
+    key: "user-watchlist",
+    minItemWidth: 280, // Wider cards for watchlist info
+    maxColumns: 5, // Max 3 columns for readability
+    padding: 32,
+  });
+  
   const { data, isLoading, error, isRefetching, refetch } = useQuery(
     getUserWatchlistQueryOptions({ keyword: searchQuery, userId })
   );
   const { colors } = useTheme();
   console.log("watchlist data", data);
-  if (isLoading) {
+  if (isLoading || isLoadingOrientation) {
     return (
       <WatchlistlistScaffold>
         <View style={styles.statesContainer}>
@@ -114,6 +122,9 @@ export function Watchlist({ community }: WatchlistProps) {
         watchListResult={data}
         refetch={refetch}
         isRefetching={isRefetching}
+        columns={columns}
+        orientation={orientation}
+        setOrientation={setOrientation}
       />
     </WatchlistlistScaffold>
   );

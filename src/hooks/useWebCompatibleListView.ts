@@ -27,7 +27,7 @@ export function useResponsiveListView(options: UseResponsiveListViewOptions) {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get("window").width
   );
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Use ref to avoid recreating storageKey on every render
   const storageKeyRef = useRef(`listview_${key}`);
@@ -66,7 +66,7 @@ export function useResponsiveListView(options: UseResponsiveListViewOptions) {
       } catch (error) {
         console.warn(`Failed to load list view state for ${key}:`, error);
       } finally {
-        setIsLoaded(true);
+        setIsLoading(false);
       }
     };
 
@@ -81,11 +81,16 @@ export function useResponsiveListView(options: UseResponsiveListViewOptions) {
         setColumns(1);
         persistState(newOrientation, 1);
       } else {
-        // For grid, persist with current columns (will be updated by column calculation effect)
-        persistState(newOrientation, columns);
+        // Calculate optimal columns immediately to prevent flash
+        const availableWidth = screenWidth - padding;
+        const calculatedColumns = Math.floor(availableWidth / minItemWidth);
+        const optimalColumns = Math.max(2, Math.min(calculatedColumns, maxColumns));
+        
+        setColumns(optimalColumns);
+        persistState(newOrientation, optimalColumns);
       }
     },
-    [persistState, columns]
+    [persistState, screenWidth, padding, minItemWidth, maxColumns]
   );
 
   // Screen width listener - no dependencies needed
@@ -97,50 +102,43 @@ export function useResponsiveListView(options: UseResponsiveListViewOptions) {
     return () => subscription?.remove();
   }, []);
 
-  // Column calculation effect - separate from persistence to avoid loops
+  // Column calculation effect - only for screen width changes and initial load
   useEffect(() => {
     // Only calculate columns after initial load to avoid overriding persisted values
-    if (!isLoaded) return;
+    if (isLoading) return;
 
-    if (orientation === "list") {
-      if (columns !== 1) {
-        setColumns(1);
+    // Only recalculate columns for grid mode when screen width changes
+    if (orientation === "grid") {
+      const availableWidth = screenWidth - padding;
+      const calculatedColumns = Math.floor(availableWidth / minItemWidth);
+      const optimalColumns = Math.max(2, Math.min(calculatedColumns, maxColumns));
+
+      // Only update if columns actually changed to prevent unnecessary renders
+      if (columns !== optimalColumns) {
+        setColumns(optimalColumns);
       }
-      return;
-    }
-
-    // Calculate optimal columns based on screen width
-    const availableWidth = screenWidth - padding;
-    const calculatedColumns = Math.floor(availableWidth / minItemWidth);
-
-    // Ensure we have at least 2 columns on mobile, but respect maxColumns
-    const optimalColumns = Math.max(2, Math.min(calculatedColumns, maxColumns));
-
-    // Only update if columns actually changed to prevent unnecessary renders
-    if (columns !== optimalColumns) {
-      setColumns(optimalColumns);
     }
   }, [
     screenWidth,
-    orientation,
     minItemWidth,
     maxColumns,
     padding,
-    isLoaded,
+    isLoading,
     columns,
+    orientation,
   ]);
 
-  // Separate effect for persisting column changes - only when columns actually change
+  // Separate effect for persisting column changes when screen size changes
   useEffect(() => {
-    if (!isLoaded || orientation !== "grid") return;
+    if (isLoading || orientation !== "grid") return;
 
-    // Debounce persistence to avoid excessive writes
+    // Debounce persistence to avoid excessive writes (only for screen size changes)
     const timeoutId = setTimeout(() => {
       persistState(orientation, columns);
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [columns, orientation, isLoaded, persistState]);
+  }, [columns, orientation, isLoading, persistState]);
 
   return {
     orientation,
@@ -149,6 +147,6 @@ export function useResponsiveListView(options: UseResponsiveListViewOptions) {
     screenWidth,
     isTablet: screenWidth >= 768,
     isDesktop: screenWidth >= 1024,
-    isLoaded, // Useful for preventing flash of default state
+    isLoadingOrientation:isLoading, // Useful for preventing flash of default state
   };
 }
