@@ -1,10 +1,61 @@
-
-import { useQuery } from '@tanstack/react-query';
-import { pb } from '@/lib/pb/client';
-import { createTMDBSDK, DiscoverMoviesParams, DiscoverTVParams, SearchParams, TMDBDiscoverMoviesResponse, TMDBDiscoverTVResponse } from '@/lib/tmdb/sdk-via-pb';
+import { pb } from "@/lib/pb/client";
+import {
+  createTMDBSDK,
+  DiscoverMoviesParams,
+  DiscoverTVParams,
+  SearchParams,
+  TMDBDiscoverMoviesResponse,
+  TMDBDiscoverTVResponse,
+  TMDBMovie,
+  TMDBTVShow,
+} from "@/lib/tmdb/sdk-via-pb";
+import { useQuery } from "@tanstack/react-query";
+import { getUserWatchedlistQueryOptions, getUserWatchlistQueryOptions } from "../watchlist/operations-options";
 
 // Create TMDB SDK instance
 const tmdb = createTMDBSDK(pb);
+
+/**
+ * Helper function to find all watchlists that contain a specific TMDB ID
+ * @param watchlists - Array of watchlist records
+ * @param tmdbId - The TMDB ID to search for
+ * @returns Array of watchlist names that contain the TMDB ID
+ */
+function findWatchlistsContainingTmdbId(watchlists: any[], tmdbId: string | number): string[] {
+  if (!watchlists || watchlists.length === 0) {
+    return [];
+  }
+
+  return watchlists
+    .filter((watchlist) => {
+      // Check if the TMDB ID exists in the items array (converted to string for comparison)
+      return watchlist.items?.some((itemId: any) => String(itemId) === String(tmdbId));
+    })
+    .map((watchlist) => watchlist.title || watchlist.name || `Watchlist ${watchlist.id}`);
+}
+
+// Extended types with watched status
+export type TMDBMovieWithWatched = TMDBMovie & { 
+  watched?: boolean;
+  inWatchList?: string[]; // Array of watchlist names this item is in
+};
+export type TMDBTVShowWithWatched = TMDBTVShow & { 
+  watched?: boolean;
+  inWatchList?: string[]; // Array of watchlist names this item is in
+};
+
+export type TMDBDiscoverMoviesResponseWithWatched = Omit<TMDBDiscoverMoviesResponse, 'results'> & {
+  results: TMDBMovieWithWatched[];
+};
+
+export type TMDBDiscoverTVResponseWithWatched = Omit<TMDBDiscoverTVResponse, 'results'> & {
+  results: TMDBTVShowWithWatched[];
+};
+
+export type TMDBDiscoverResponseWithWatched = TMDBDiscoverMoviesResponseWithWatched | TMDBDiscoverTVResponseWithWatched;
+
+
+export type TMDBDiscoverItemResponse = TMDBTVShowWithWatched | TMDBMovieWithWatched;
 
 // ============================================================================
 // TMDB Hooks
@@ -15,12 +66,13 @@ const tmdb = createTMDBSDK(pb);
  */
 export function useTMDBDiscoverMovies(params: DiscoverMoviesParams = {}) {
   return useQuery({
-    queryKey: ['tmdb', 'discover', 'movies', params],
-    queryFn: () => tmdb.discoverMovies({
-      sort_by: 'popularity.desc',
-      page: 1,
-      ...params,
-    }),
+    queryKey: ["tmdb", "discover", "movies", params],
+    queryFn: () =>
+      tmdb.discoverMovies({
+        sort_by: "popularity.desc",
+        page: 1,
+        ...params,
+      }),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -31,12 +83,13 @@ export function useTMDBDiscoverMovies(params: DiscoverMoviesParams = {}) {
  */
 export function useTMDBDiscoverTV(params: DiscoverTVParams = {}) {
   return useQuery({
-    queryKey: ['tmdb', 'discover', 'tv', params],
-    queryFn: () => tmdb.discoverTV({
-      sort_by: 'popularity.desc',
-      page: 1,
-      ...params,
-    }),
+    queryKey: ["tmdb", "discover", "tv", params],
+    queryFn: () =>
+      tmdb.discoverTV({
+        sort_by: "popularity.desc",
+        page: 1,
+        ...params,
+      }),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
@@ -50,22 +103,36 @@ export type TMDBDiscoverResponse = TMDBDiscoverMoviesResponse | TMDBDiscoverTVRe
 /**
  * Unified discover hook for both movies and TV shows
  */
-export function useTMDBDiscover({ type, params }: { 
-  type: 'movie' | 'tv'; 
-  params?: DiscoverMoviesParams | DiscoverTVParams 
+export function useTMDBDiscover({
+  type,
+  params,
+}: {
+  type: "movie" | "tv";
+  params?: DiscoverMoviesParams | DiscoverTVParams;
 }) {
-  return useQuery<TMDBDiscoverResponse>({
-    queryKey: ['tmdb', 'discover', type, params],
+  const userId = pb.authStore.record?.id;
+  const { data: userWatchedList, isLoading: isLoadingUserWatchedList } = useQuery({
+    ...getUserWatchedlistQueryOptions({ userId: userId! }),
+    enabled: !!userId,
+  });
+
+  const { data: userWatchlist, isLoading: isLoadingUserWatchlist } = useQuery({
+    ...getUserWatchlistQueryOptions({ userId: userId! }),
+    enabled: !!userId,
+  });
+  
+  const query = useQuery<TMDBDiscoverResponseWithWatched>({
+    queryKey: ["tmdb", "discover", type, params],
     queryFn: async (): Promise<TMDBDiscoverResponse> => {
-      if (type === 'movie') {
+      if (type === "movie") {
         return await tmdb.discoverMovies({
-          sort_by: 'popularity.desc',
+          sort_by: "popularity.desc",
           page: 1,
           ...params,
         } as DiscoverMoviesParams);
       } else {
         return await tmdb.discoverTV({
-          sort_by: 'popularity.desc',
+          sort_by: "popularity.desc",
           page: 1,
           ...params,
         } as DiscoverTVParams);
@@ -73,7 +140,33 @@ export function useTMDBDiscover({ type, params }: {
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
+    enabled: !isLoadingUserWatchedList && !isLoadingUserWatchlist && !!userId,
+    select: (data): TMDBDiscoverResponseWithWatched => {
+      return {
+        ...data,
+        results: data.results.map((item) => {
+          // Check if item is in watched list by comparing TMDB IDs
+          const isWatched = userWatchedList?.some((watchedItem) => {
+            return watchedItem === String(item.id);
+          }) || false;
+          
+          // Check which watchlists contain this item
+          const inWatchList = findWatchlistsContainingTmdbId(userWatchlist?.items || [], item.id);
+          
+          // console.log("inWatchList === >> ", userWatchlist);
+          return {
+            ...item,
+            watched: isWatched,
+            inWatchList: inWatchList,
+          };
+        }),
+      } as TMDBDiscoverResponseWithWatched;
+    },
   });
+  return {
+    ...query,
+    isLoading: query.isLoading || isLoadingUserWatchedList || isLoadingUserWatchlist,
+  };
 }
 
 /**
@@ -81,7 +174,7 @@ export function useTMDBDiscover({ type, params }: {
  */
 export function useTMDBSearch(params: SearchParams) {
   return useQuery({
-    queryKey: ['tmdb', 'search', params],
+    queryKey: ["tmdb", "search", params],
     queryFn: () => tmdb.search(params),
     enabled: !!params.query && params.query.trim().length > 0,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -94,12 +187,13 @@ export function useTMDBSearch(params: SearchParams) {
  */
 export function useTMDBTrendingMovies() {
   return useQuery({
-    queryKey: ['tmdb', 'trending', 'movies'],
-    queryFn: () => tmdb.discoverMovies({
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 100,
-      page: 1,
-    }),
+    queryKey: ["tmdb", "trending", "movies"],
+    queryFn: () =>
+      tmdb.discoverMovies({
+        sort_by: "popularity.desc",
+        "vote_count.gte": 100,
+        page: 1,
+      }),
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
   });
@@ -110,12 +204,13 @@ export function useTMDBTrendingMovies() {
  */
 export function useTMDBTrendingTV() {
   return useQuery({
-    queryKey: ['tmdb', 'trending', 'tv'],
-    queryFn: () => tmdb.discoverTV({
-      sort_by: 'popularity.desc',
-      'vote_count.gte': 50,
-      page: 1,
-    }),
+    queryKey: ["tmdb", "trending", "tv"],
+    queryFn: () =>
+      tmdb.discoverTV({
+        sort_by: "popularity.desc",
+        "vote_count.gte": 50,
+        page: 1,
+      }),
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
   });
@@ -126,13 +221,14 @@ export function useTMDBTrendingTV() {
  */
 export function useTMDBTopRatedMovies() {
   return useQuery({
-    queryKey: ['tmdb', 'top-rated', 'movies'],
-    queryFn: () => tmdb.discoverMovies({
-      sort_by: 'vote_average.desc',
-      'vote_count.gte': 1000,
-      'vote_average.gte': 7.0,
-      page: 1,
-    }),
+    queryKey: ["tmdb", "top-rated", "movies"],
+    queryFn: () =>
+      tmdb.discoverMovies({
+        sort_by: "vote_average.desc",
+        "vote_count.gte": 1000,
+        "vote_average.gte": 7.0,
+        page: 1,
+      }),
     staleTime: 30 * 60 * 1000, // 30 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
   });
@@ -143,13 +239,14 @@ export function useTMDBTopRatedMovies() {
  */
 export function useTMDBTopRatedTV() {
   return useQuery({
-    queryKey: ['tmdb', 'top-rated', 'tv'],
-    queryFn: () => tmdb.discoverTV({
-      sort_by: 'vote_average.desc',
-      'vote_count.gte': 500,
-      'vote_average.gte': 7.5,
-      page: 1,
-    }),
+    queryKey: ["tmdb", "top-rated", "tv"],
+    queryFn: () =>
+      tmdb.discoverTV({
+        sort_by: "vote_average.desc",
+        "vote_count.gte": 500,
+        "vote_average.gte": 7.5,
+        page: 1,
+      }),
     staleTime: 30 * 60 * 1000, // 30 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
   });

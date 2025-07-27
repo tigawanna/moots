@@ -7,7 +7,7 @@ import { WatchlistItemUtils } from './WatchlistItemUtils';
 
 interface WatchlistItemStatusProps {
   item: UnifiedWatchlistItem;
-  size?: 'small' | 'medium';
+  size?: "small" | "medium";
   showText?: boolean;
 }
 
@@ -17,8 +17,8 @@ export function WatchlistItemStatus({
   showText = true 
 }: WatchlistItemStatusProps) {
   const { colors } = useTheme();
-  const isWatched = WatchlistItemUtils.getWatchedStatus(item);
-  const isInWatchlist = WatchlistItemUtils.isInWatchlist(item);
+  const isWatched = item.watched;
+  const isInWatchlist = item?.inWatchList && item?.inWatchList?.length > 0;
 
   const getStatusColor = () => {
     if (!isInWatchlist) return colors.outline;

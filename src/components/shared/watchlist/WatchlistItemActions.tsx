@@ -3,19 +3,19 @@ import { pb } from "@/lib/pb/client";
 import {
   quickAddToDefaultWatchlistMutationOptions,
   removeFromWatchListItemsMutationOptions,
-  toggleWatchedListItemMutationOptions,
 } from "@/lib/tanstack/operations/watchlist-items/query-options";
-import { useIsInWatchlist } from "@/lib/tanstack/operations/watchlist/hooks";
+// import { useIsInWatchlist } from "@/lib/tanstack/operations/watchlist/hooks";
+// import { WatchlistItemUtils } from "./WatchlistItemUtils";
 import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
 import { UnifiedWatchlistItem } from "./types";
-import { WatchlistItemUtils } from "./WatchlistItemUtils";
+import { markWachedMutationOptions } from "@/lib/tanstack/operations/watchlist/operations-options";
 
 
 interface WatchlistItemActionsProps {
-  item: UnifiedWatchlistItem & { mediaType: string };
+  item: UnifiedWatchlistItem & { mediaType: string; watched?: boolean; inWatchList?: string[] };
   onToggleWatched?: (item: UnifiedWatchlistItem) => void;
   onRemove?: (item: UnifiedWatchlistItem) => void;
   onAdd?: (item: UnifiedWatchlistItem) => void;
@@ -37,16 +37,14 @@ export function WatchlistItemActions({
   const user = pb.authStore.record;
   const quickAddMutation = useMutation(quickAddToDefaultWatchlistMutationOptions());
   const removeFromWatchlist = useMutation(removeFromWatchListItemsMutationOptions());
-  const toggleWatchedStatus = useMutation(
-    toggleWatchedListItemMutationOptions()
-  );
+  const toggleWatchedStatus = useMutation(markWachedMutationOptions());
 
   // Use the hook to check if item is in watchlist based on TMDB ID
-  const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id);
-  const isInWatchlistFromHook = useIsInWatchlist({ tmdbId });
-  
-  const isWatched = WatchlistItemUtils.getWatchedStatus(item);
-  const isInWatchlist = WatchlistItemUtils.isInWatchlist(item) || isInWatchlistFromHook;
+  // const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id);
+  // const isInWatchlistFromHook = useIsInWatchlist({ tmdbId });
+
+  const isWatched = item.watched;
+  const isInWatchlist = item?.inWatchList && item?.inWatchList?.length > 0;
 
   const iconSize = size === "small" ? 18 : 20;
 
@@ -63,14 +61,15 @@ export function WatchlistItemActions({
       return;
     }
 
-    if (!user || !item.id || typeof item.id !== "string") {
+    if (!user || !item.id) {
       showSnackbar("Unable to update watched status");
       return;
     }
 
     try {
+      const itemId = typeof item.id === "string" ? item.id : String(item.id);
       await toggleWatchedStatus.mutateAsync({
-        itemId: item.id,
+        itemId,
         watched: !isWatched,
       });
       showSnackbar(`Marked as ${!isWatched ? "watched" : "unwatched"}`);
@@ -98,7 +97,7 @@ export function WatchlistItemActions({
       return;
     }
 
-    if (!item.id || typeof item.id !== "string") {
+    if (!item.id) {
       showSnackbar("Unable to remove item");
       return;
     }
@@ -113,9 +112,9 @@ export function WatchlistItemActions({
           style: "destructive",
           onPress: async () => {
             try {
-              if(typeof item.id !== "string") return
+             const itemId = typeof item.id === "string" ? item.id : String(item.id);
               await removeFromWatchlist.mutateAsync({
-                itemId: item.id,
+                itemId,
               });
               showSnackbar("Removed from watchlist");
             } catch (error) {

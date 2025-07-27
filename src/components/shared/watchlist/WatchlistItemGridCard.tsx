@@ -37,7 +37,7 @@ export function WatchlistItemGridCard({
 
   const posterUrl = WatchlistItemUtils.getPosterUrl(item);
   const releaseYear = WatchlistItemUtils.getReleaseYear(item);
-  const isWatched = WatchlistItemUtils.getWatchedStatus(item);
+  const isWatched = item.watched;
   const mediaType = WatchlistItemUtils.getMediaType(item,mediaTypeTab);
 
   const getStatusColor = () => {

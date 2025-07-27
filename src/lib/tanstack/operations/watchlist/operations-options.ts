@@ -1,5 +1,10 @@
 import { pb } from "@/lib/pb/client";
-import { WatchlistCreate, WatchlistItemsCreate, WatchlistUpdate } from "@/lib/pb/types/pb-types";
+import {
+  WatchedListUpdate,
+  WatchlistCreate,
+  WatchlistItemsCreate,
+  WatchlistUpdate,
+} from "@/lib/pb/types/pb-types";
 import { mutationOptions, queryOptions } from "@tanstack/react-query";
 import { eq } from "@tigawanna/typed-pocketbase";
 
@@ -82,18 +87,15 @@ export function getUserWatchlistQueryOptions({
 
 export function addTowatchListMutationOptions() {
   return mutationOptions({
-    mutationFn: async (payload: {
-      watchlistId: string;
-      itemPayload: WatchlistItemsCreate;
-    }) => {
+    mutationFn: async (payload: { watchlistId: string; itemPayload: WatchlistItemsCreate }) => {
       const { watchlistId, itemPayload } = payload;
-      
+
       // Check if item already exists in watchlist_items
       try {
         const existingItem = await pb
           .from("watchlist_items")
           .getFirstListItem(eq("tmdb_id", itemPayload.tmdb_id));
-        
+
         // Item exists, just add it to the watchlist
         const updatedWatchlist = await pb.from("watchlist").update(
           watchlistId,
@@ -111,18 +113,21 @@ export function addTowatchListMutationOptions() {
         return updatedWatchlist;
       } catch {
         // Item doesn't exist, create it first then add to watchlist
-        const newItem = await pb.from("watchlist_items").create(itemPayload);
+        const newItem = await pb.from("watchlist_items").create({
+          ...itemPayload,
+          id: String(itemPayload.tmdb_id),
+        });
         const updatedWatchlist = await pb.from("watchlist").update(
-          watchlistId, 
+          watchlistId,
           {
-            "items+": newItem.id
+            "items+": newItem.id,
           } as any, // TypeScript casting needed for relation operations
           {
             select: {
               expand: {
-                items: true
-              }
-            }
+                items: true,
+              },
+            },
           }
         );
         return updatedWatchlist;
@@ -139,10 +144,7 @@ export function addTowatchListMutationOptions() {
 
 export function removeFromWatchListMutationOptions() {
   return mutationOptions({
-    mutationFn: async (payload: {
-      watchlistId: string;
-      itemId: string;
-    }) => {
+    mutationFn: async (payload: { watchlistId: string; itemId: string }) => {
       const { watchlistId, itemId } = payload;
       return pb.from("watchlist").update(
         watchlistId,
@@ -162,6 +164,64 @@ export function removeFromWatchListMutationOptions() {
       invalidates: [
         ["watchlist"], // Invalidate all watchlist queries
         ["watchlist-items"], // Invalidate watchlist items queries
+      ],
+    },
+  });
+}
+
+export function getUserWatchedlistQueryOptions({ userId }: { userId: string }) {
+  return queryOptions({
+    queryKey: ["watched-list", userId],
+    queryFn: () => {
+      return pb.from("watched_list").getList(1, 100, {
+        filter: `user_id ~ "${userId}"`,
+      });
+    },
+    select: (data) => {
+      // Flatten all watched items from all watched lists
+      return data.items.flatMap((watchedList) => {
+        return watchedList?.items || [];
+      });
+    },
+  });
+}
+
+export function markWachedMutationOptions() {
+  const userId = pb.authStore.record?.id;
+  return mutationOptions({
+    mutationFn: async (payload: { itemId: string; watched: boolean }) => {
+      if (!userId) {
+        throw new Error("User not authenticated");
+      }
+      const { itemId, watched } = payload;
+      const updatedWatcedStatus = watched
+        ? ({
+            "items-": itemId,
+          } as WatchedListUpdate)
+        : ({
+            "items+": itemId,
+          } as WatchedListUpdate);
+      const userrWatchedList = await pb
+        .from("watched_list")
+        .getFirstListItem(eq("user_id", userId as any));
+      if (!userrWatchedList) {
+        // Create a new watched list for the user
+        await pb.from("watched_list").create({
+          user_id: userId,
+          items: [itemId],
+        });
+      }
+      return pb.from("watched_list").update(
+        userrWatchedList.id,
+        updatedWatcedStatus, // TypeScript casting needed for relation operations due to a typed pocketbase bug
+        {}
+      );
+    },
+    meta: {
+      invalidates: [
+        ["watchlist"], // Invalidate all watchlist queries
+        ["watchlist-items"], // Invalidate watchlist items queries
+        ["watched-list", userId], // Invalidate watched list queries
       ],
     },
   });

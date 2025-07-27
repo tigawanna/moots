@@ -38,12 +38,12 @@ export class WatchlistItemUtils {
   }
 
   // Get watched status
-  static getWatchedStatus(item: UnifiedWatchlistItem): boolean {
-    if (isPocketBaseItem(item)) {
-      return item.watched_status;
-    }
-    return false; // TMDB items default to unwatched
-  }
+  // static getWatchedStatus(item: UnifiedWatchlistItem): boolean {
+  //   if (isPocketBaseItem(item)) {
+  //     return item.watched_status;
+  //   }
+  //   return false; // TMDB items default to unwatched
+  // }
 
   // Get personal rating
   static getPersonalRating(item: UnifiedWatchlistItem): number {

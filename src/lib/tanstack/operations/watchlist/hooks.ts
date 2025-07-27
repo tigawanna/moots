@@ -1,6 +1,6 @@
 import { pb } from "@/lib/pb/client";
 import { useQuery } from "@tanstack/react-query";
-import { getUserWatchlistQueryOptions } from "./operations-options";
+import { getUserWatchedlistQueryOptions, getUserWatchlistQueryOptions } from "./operations-options";
 
 interface UseIsInWatchlistProps {
   tmdbId: string | number;
@@ -23,4 +23,22 @@ export function useIsInWatchlist({ tmdbId }: UseIsInWatchlistProps): boolean {
 
   return !!isInWatchlist;
 }
-    
+
+// interface UseIsWatchedProps {
+//   tmdbId: string | number;
+// }
+
+// export function useIsWatched({ tmdbId }: UseIsWatchedProps): boolean {
+//   const userId = pb.authStore.record?.id;
+//   const { data: watchedItems } = useQuery({
+//     ...getUserWatchedlistQueryOptions({ userId: userId! }),
+//     enabled: !!userId && !!tmdbId,
+//   });
+
+//   // Check if the item is in the user's watched list
+//   const isWatched = watchedItems?.some((watchedItem) => {
+//     return watchedItem === Number(tmdbId);
+//   });
+
+//   return !!isWatched;
+// }

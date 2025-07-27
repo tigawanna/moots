@@ -138,21 +138,21 @@ export function updateWatchListItemMutationOptions() {
   });
 }
 
-export function toggleWatchedListItemMutationOptions() {
-  return mutationOptions({
-    mutationFn: ({ itemId, watched }: { itemId: string; watched: boolean }) => {
-      return pb.from("watchlist_items").update(itemId, {
-        watched_status: watched,
-      } as WatchlistItemsUpdate);
-    },
-    meta: {
-      invalidates: [
-        ["watchlist-items"], // Invalidate watchlist items queries
-        ["watchlist"], // Also invalidate watchlist queries that might include this item
-      ],
-    },
-  });
-}
+// export function toggleWatchedListItemMutationOptions() {
+//   return mutationOptions({
+//     mutationFn: ({ itemId, watched }: { itemId: string; watched: boolean }) => {
+//       return pb.from("watchlist_items").update(itemId, {
+//         watched_status: watched,
+//       } as WatchlistItemsUpdate);
+//     },
+//     meta: {
+//       invalidates: [
+//         ["watchlist-items"], // Invalidate watchlist items queries
+//         ["watchlist"], // Also invalidate watchlist queries that might include this item
+//       ],
+//     },
+//   });
+// }
 
 interface QuickAddToDefaultWatchlistProps {
   userId: string;
