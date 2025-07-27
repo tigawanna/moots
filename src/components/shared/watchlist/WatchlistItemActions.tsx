@@ -6,13 +6,13 @@ import {
 } from "@/lib/tanstack/operations/watchlist-items/query-options";
 // import { useIsInWatchlist } from "@/lib/tanstack/operations/watchlist/hooks";
 // import { WatchlistItemUtils } from "./WatchlistItemUtils";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { IconButton, useTheme } from "react-native-paper";
 import { UnifiedWatchlistItem } from "./types";
 import { markWachedMutationOptions } from "@/lib/tanstack/operations/watchlist/operations-options";
-
+import { TMDBDiscoverResponseWithWatched } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 
 interface WatchlistItemActionsProps {
   item: UnifiedWatchlistItem & { mediaType: string; watched?: boolean; inWatchList?: string[] };
@@ -33,9 +33,9 @@ export function WatchlistItemActions({
 }: WatchlistItemActionsProps) {
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
-
+  const qc = useQueryClient();
   const user = pb.authStore.record;
-  const quickAddMutation = useMutation(quickAddToDefaultWatchlistMutationOptions());
+  const quickAddMutation = useMutation(quickAddToDefaultWatchlistMutationOptions(qc));
   const removeFromWatchlist = useMutation(removeFromWatchListItemsMutationOptions());
   const toggleWatchedStatus = useMutation(markWachedMutationOptions());
 
@@ -50,9 +50,7 @@ export function WatchlistItemActions({
 
   // Check if any mutation is loading
   const isLoading =
-    quickAddMutation.isPending ||
-    removeFromWatchlist.isPending ||
-    toggleWatchedStatus.isPending;
+    quickAddMutation.isPending || removeFromWatchlist.isPending || toggleWatchedStatus.isPending;
 
   const handleToggleWatched = async (event: any) => {
     event.stopPropagation();
@@ -82,18 +80,14 @@ export function WatchlistItemActions({
   const handleRemove = (event: any) => {
     event.stopPropagation();
     if (onRemove) {
-      Alert.alert(
-        "Remove from Watchlist",
-        `Remove "${item.title}" from your watchlist?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Remove",
-            style: "destructive",
-            onPress: () => onRemove(item),
-          },
-        ]
-      );
+      Alert.alert("Remove from Watchlist", `Remove "${item.title}" from your watchlist?`, [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => onRemove(item),
+        },
+      ]);
       return;
     }
 
@@ -102,33 +96,60 @@ export function WatchlistItemActions({
       return;
     }
 
-    Alert.alert(
-      "Remove from Watchlist",
-      `Remove "${item.title}" from your watchlist?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: async () => {
-            try {
-             const itemId = typeof item.id === "string" ? item.id : String(item.id);
-              await removeFromWatchlist.mutateAsync({
-                itemId,
-              });
-              showSnackbar("Removed from watchlist");
-            } catch (error) {
-              showSnackbar("Failed to remove from watchlist");
-              console.log("Remove error:", error);
-            }
-          },
+    Alert.alert("Remove from Watchlist", `Remove "${item.title}" from your watchlist?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Remove",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            const itemId = typeof item.id === "string" ? item.id : String(item.id);
+            await removeFromWatchlist.mutateAsync({
+              itemId,
+            });
+            showSnackbar("Removed from watchlist");
+          } catch (error) {
+            showSnackbar("Failed to remove from watchlist");
+            console.log("Remove error:", error);
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleAdd = async (event: any) => {
     event.stopPropagation();
+    // console.log("Add to Watchlist === >> ", item);
+
+    // const olditemsKeys = qc.getQueriesData({
+    //   queryKey: ["tmdb", "discover", item.mediaType],
+    //   type: "all",
+    // });
+
+    // const oldItemKey = olditemsKeys?.[0]?.[0]
+    // qc.setQueryData(oldItemKey, (oldData: TMDBDiscoverResponseWithWatched) => {
+    //   // Update the old data with the new item
+    //   console.log("Old data === ", oldData);
+    //   return {
+    //     ...oldData,
+    //     results: [...oldData?.results].map((oldItem) => {
+    //       // console.log("== tmdbid == ",item.tmdb_id)
+    //       // console.log("== Olditem == ", oldItem);
+    //       if (oldItem.id === item.id) {
+    //         console.log("Updating old item in TMDB Discover:", oldItem);
+    //         return {
+    //           ...oldItem,
+    //           inWatchList: [...(oldItem.inWatchList || []), item.id],
+    //           watched: true,
+    //         };
+    //       }
+    //       return oldItem;
+    //     }),
+    //   };
+    // });
+    // const newItems = qc.getQueryData(oldItemKey);
+    // console.log("New items in TMDB Discover:", newItems);
+    // console.log("Old items in TMDB Discover:", oldItemKey);
     if (onAdd) {
       onAdd(item);
       return;
@@ -140,8 +161,8 @@ export function WatchlistItemActions({
     }
 
     const tmdbId = item?.tmdb_id || (typeof item.id === "string" ? parseInt(item.id) : item.id);
-    
-    try { 
+
+    try {
       await quickAddMutation.mutateAsync({
         userId: user.id,
         payload: {
@@ -165,18 +186,14 @@ export function WatchlistItemActions({
   };
 
   const containerStyle =
-    layout === "vertical"
-      ? styles.verticalContainer
-      : styles.horizontalContainer;
+    layout === "vertical" ? styles.verticalContainer : styles.horizontalContainer;
 
   if (!isInWatchlist) {
     // Show add button for TMDB items not in watchlist
     return (
       <View style={containerStyle}>
         <IconButton
-          icon={
-            quickAddMutation.isPending ? "loading" : "bookmark-plus-outline"
-          }
+          icon={quickAddMutation.isPending ? "loading" : "bookmark-plus-outline"}
           size={iconSize}
           iconColor={colors.primary}
           onPress={handleAdd}
@@ -202,10 +219,7 @@ export function WatchlistItemActions({
         iconColor={isWatched ? colors.primary : colors.outline}
         onPress={handleToggleWatched}
         disabled={isLoading}
-        style={[
-          styles.actionButton,
-          toggleWatchedStatus.isPending && styles.loadingButton,
-        ]}
+        style={[styles.actionButton, toggleWatchedStatus.isPending && styles.loadingButton]}
       />
       <IconButton
         icon={removeFromWatchlist.isPending ? "loading" : "delete-outline"}
@@ -213,10 +227,7 @@ export function WatchlistItemActions({
         iconColor={colors.error}
         onPress={handleRemove}
         disabled={isLoading}
-        style={[
-          styles.actionButton,
-          removeFromWatchlist.isPending && styles.loadingButton,
-        ]}
+        style={[styles.actionButton, removeFromWatchlist.isPending && styles.loadingButton]}
       />
     </View>
   );

@@ -95,7 +95,7 @@ export function addTowatchListMutationOptions() {
         const existingItem = await pb
           .from("watchlist_items")
           .getFirstListItem(eq("tmdb_id", itemPayload.tmdb_id));
-
+      console.log("existingItem ===>> ", existingItem);
         // Item exists, just add it to the watchlist
         const updatedWatchlist = await pb.from("watchlist").update(
           watchlistId,
@@ -113,10 +113,13 @@ export function addTowatchListMutationOptions() {
         return updatedWatchlist;
       } catch {
         // Item doesn't exist, create it first then add to watchlist
-        const newItem = await pb.from("watchlist_items").create({
-          ...itemPayload,
+        const createNewItemPayload = {
           id: String(itemPayload.tmdb_id),
-        });
+          ...itemPayload,
+        };
+        console.log("createNewItemPayload ===>> ", createNewItemPayload);
+        const newItem = await pb.from("watchlist_items").create(createNewItemPayload);
+
         const updatedWatchlist = await pb.from("watchlist").update(
           watchlistId,
           {
@@ -174,7 +177,7 @@ export function getUserWatchedlistQueryOptions({ userId }: { userId: string }) {
     queryKey: ["watched-list", userId],
     queryFn: () => {
       return pb.from("watched_list").getList(1, 100, {
-        filter: `user_id ~ "${userId}"`,
+        filter: eq("user_id", userId as any),
       });
     },
     select: (data) => {
@@ -204,6 +207,7 @@ export function markWachedMutationOptions() {
       const userrWatchedList = await pb
         .from("watched_list")
         .getFirstListItem(eq("user_id", userId as any));
+        console.log("userrWatchedList ===>> ", userrWatchedList);
       if (!userrWatchedList) {
         // Create a new watched list for the user
         await pb.from("watched_list").create({

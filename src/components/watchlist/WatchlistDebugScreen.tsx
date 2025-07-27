@@ -3,12 +3,13 @@ import { pb } from "@/lib/pb/client";
 import { useTMDBDiscover } from "@/lib/tanstack/operations/discover/tmdb-hooks";
 import { quickAddToDefaultWatchlistMutationOptions } from "@/lib/tanstack/operations/watchlist-items/query-options";
 import { getUserWatchedlistQueryOptions, getUserWatchlistQueryOptions } from "@/lib/tanstack/operations/watchlist/operations-options";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Text, TextInput, useTheme } from "react-native-paper";
 
 export function WatchlistDebugScreen() {
+  const qc = useQueryClient();  
   const { colors } = useTheme();
   const { showSnackbar } = useSnackbar();
   const [tmdbId, setTmdbId] = useState("550"); // Fight Club as test movie
@@ -35,7 +36,7 @@ export function WatchlistDebugScreen() {
   });
 
   // Quick add mutation
-  const quickAddMutation = useMutation(quickAddToDefaultWatchlistMutationOptions());
+  const quickAddMutation = useMutation(quickAddToDefaultWatchlistMutationOptions(qc));
 
   const handleQuickAdd = async () => {
     if (!user) {

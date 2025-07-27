@@ -4,7 +4,7 @@ import {
     WatchlistItemsResponse,
     WatchlistItemsUpdate
 } from "@/lib/pb/types/pb-types";
-import { mutationOptions, queryOptions } from "@tanstack/react-query";
+import { mutationOptions, QueryClient, queryOptions } from "@tanstack/react-query";
 
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
@@ -159,9 +159,10 @@ interface QuickAddToDefaultWatchlistProps {
   payload: WatchlistItemsCreate;
 }
 
-export function quickAddToDefaultWatchlistMutationOptions() {
+export function quickAddToDefaultWatchlistMutationOptions(qc:QueryClient) {
   return mutationOptions({
     mutationFn: async ({ userId, payload }: QuickAddToDefaultWatchlistProps) => {
+
       // First, get or create the user's default "Want to Watch" watchlist
       let defaultWatchlist;
       try {
@@ -171,6 +172,7 @@ export function quickAddToDefaultWatchlistMutationOptions() {
       } catch {
         // Create default watchlist if it doesn't exist
         defaultWatchlist = await pb.from("watchlist").create({
+          id: String(payload.id || payload.tmdb_id),
           user_id: [userId],
           title: "Want to Watch",
           overview: "My default watchlist",
@@ -187,7 +189,10 @@ export function quickAddToDefaultWatchlistMutationOptions() {
           .getFirstListItem(`tmdb_id = ${payload.tmdb_id}`);
       } catch {
         // Create the watchlist item if it doesn't exist
-        watchlistItem = await pb.from("watchlist_items").create(payload);
+        watchlistItem = await pb.from("watchlist_items").create({
+          id: String(payload.id || payload.tmdb_id),
+          ...payload,
+        });
       }
 
       // Add the item to the watchlist (use append to avoid duplicates)
@@ -207,6 +212,13 @@ export function quickAddToDefaultWatchlistMutationOptions() {
 
       return updatedWatchlist;
     },
+    onMutate: (ctx) => {
+      console.log("Quick add context OnMutate:===>", ctx);
+    },
+    onSuccess: (opts) => {
+      // console.log("Quick add successful:===>", opts);
+    },
+
     meta: {
       invalidates: [
         ["watchlist"], // Invalidate all watchlist queries

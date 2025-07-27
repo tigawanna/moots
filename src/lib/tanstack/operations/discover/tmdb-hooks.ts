@@ -10,7 +10,10 @@ import {
   TMDBTVShow,
 } from "@/lib/tmdb/sdk-via-pb";
 import { useQuery } from "@tanstack/react-query";
-import { getUserWatchedlistQueryOptions, getUserWatchlistQueryOptions } from "../watchlist/operations-options";
+import {
+  getUserWatchedlistQueryOptions,
+  getUserWatchlistQueryOptions,
+} from "../watchlist/operations-options";
 
 // Create TMDB SDK instance
 const tmdb = createTMDBSDK(pb);
@@ -25,35 +28,44 @@ function findWatchlistsContainingTmdbId(watchlists: any[], tmdbId: string | numb
   if (!watchlists || watchlists.length === 0) {
     return [];
   }
-
-  return watchlists
-    .filter((watchlist) => {
-      // Check if the TMDB ID exists in the items array (converted to string for comparison)
-      return watchlist.items?.some((itemId: any) => String(itemId) === String(tmdbId));
-    })
-    .map((watchlist) => watchlist.title || watchlist.name || `Watchlist ${watchlist.id}`);
+  // console.log(" unfiltered ===", watchlists);
+  // console.log("==  ilter tets  ==",filterTest)
+  const watchListsWithTheId = watchlists.filter((watchlist) => {
+    // Check if the TMDB ID exists in the items array (converted to string for comparison)
+    return watchlist.items?.some((itemId: any) => String(itemId) === String(tmdbId));
+  });
+  // console.log("watchListsWithTheId ===>> ", watchListsWithTheId);
+  const watchlistInRecords = watchListsWithTheId.map(
+    (watchlist) =>{
+      // console.log("watchlist ===>> ", watchlist);
+      return watchlist.title || watchlist.name || `Watchlist ${watchlist.id}`
+    }
+  );
+  // console.log("watchlistInRecords ===>> ", watchlistInRecords);
+  return watchlistInRecords;
 }
 
 // Extended types with watched status
-export type TMDBMovieWithWatched = TMDBMovie & { 
+export type TMDBMovieWithWatched = TMDBMovie & {
   watched?: boolean;
   inWatchList?: string[]; // Array of watchlist names this item is in
 };
-export type TMDBTVShowWithWatched = TMDBTVShow & { 
+export type TMDBTVShowWithWatched = TMDBTVShow & {
   watched?: boolean;
   inWatchList?: string[]; // Array of watchlist names this item is in
 };
 
-export type TMDBDiscoverMoviesResponseWithWatched = Omit<TMDBDiscoverMoviesResponse, 'results'> & {
+export type TMDBDiscoverMoviesResponseWithWatched = Omit<TMDBDiscoverMoviesResponse, "results"> & {
   results: TMDBMovieWithWatched[];
 };
 
-export type TMDBDiscoverTVResponseWithWatched = Omit<TMDBDiscoverTVResponse, 'results'> & {
+export type TMDBDiscoverTVResponseWithWatched = Omit<TMDBDiscoverTVResponse, "results"> & {
   results: TMDBTVShowWithWatched[];
 };
 
-export type TMDBDiscoverResponseWithWatched = TMDBDiscoverMoviesResponseWithWatched | TMDBDiscoverTVResponseWithWatched;
-
+export type TMDBDiscoverResponseWithWatched =
+  | TMDBDiscoverMoviesResponseWithWatched
+  | TMDBDiscoverTVResponseWithWatched;
 
 export type TMDBDiscoverItemResponse = TMDBTVShowWithWatched | TMDBMovieWithWatched;
 
@@ -111,16 +123,22 @@ export function useTMDBDiscover({
   params?: DiscoverMoviesParams | DiscoverTVParams;
 }) {
   const userId = pb.authStore.record?.id;
-  const { data: userWatchedList, isLoading: isLoadingUserWatchedList } = useQuery({
+  const {
+    data: userWatchedList,
+    isLoading: isLoadingUserWatchedList,
+  } = useQuery({
     ...getUserWatchedlistQueryOptions({ userId: userId! }),
-    enabled: !!userId,
   });
 
-  const { data: userWatchlist, isLoading: isLoadingUserWatchlist } = useQuery({
+  const {
+    data: userWatchlist,
+    isLoading: isLoadingUserWatchlist,
+  } = useQuery({
     ...getUserWatchlistQueryOptions({ userId: userId! }),
     enabled: !!userId,
   });
-  
+  // console.log({ dataUpdatedAtUserWatchedList, dataUpdatedAtUserWatchlist });
+
   const query = useQuery<TMDBDiscoverResponseWithWatched>({
     queryKey: ["tmdb", "discover", type, params],
     queryFn: async (): Promise<TMDBDiscoverResponse> => {
@@ -146,14 +164,15 @@ export function useTMDBDiscover({
         ...data,
         results: data.results.map((item) => {
           // Check if item is in watched list by comparing TMDB IDs
-          const isWatched = userWatchedList?.some((watchedItem) => {
-            return watchedItem === String(item.id);
-          }) || false;
-          
+          const isWatched =
+            userWatchedList?.some((watchedItem) => {
+              return watchedItem === String(item.id);
+            }) || false;
           // Check which watchlists contain this item
           const inWatchList = findWatchlistsContainingTmdbId(userWatchlist?.items || [], item.id);
-          
-          // console.log("inWatchList === >> ", userWatchlist);
+
+          // console.log(" === userWatchlist ==>> ", userWatchlist);
+          // console.log("inWatchList === >> ", inWatchList);
           return {
             ...item,
             watched: isWatched,

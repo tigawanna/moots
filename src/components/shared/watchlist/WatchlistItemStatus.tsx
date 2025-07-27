@@ -19,7 +19,7 @@ export function WatchlistItemStatus({
   const { colors } = useTheme();
   const isWatched = item.watched;
   const isInWatchlist = item?.inWatchList && item?.inWatchList?.length > 0;
-
+  console.log('WatchlistItemStatus', { item, isWatched, isInWatchlist });
   const getStatusColor = () => {
     if (!isInWatchlist) return colors.outline;
     return isWatched ? colors.primary : colors.secondary;
