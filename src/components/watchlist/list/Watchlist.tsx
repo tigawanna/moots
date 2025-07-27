@@ -17,7 +17,7 @@ export function Watchlist({ community }: WatchlistProps) {
   const { searchQuery } = useWatchlistSearch();
   const { columns, orientation, setOrientation, isLoadingOrientation } = useResponsiveListView({
     key: "user-watchlist",
-    minItemWidth: 280, // Wider cards for watchlist info
+    minItemWidth: 380, // Wider cards for watchlist info
     maxColumns: 5, // Max 3 columns for readability
     padding: 32,
   });
