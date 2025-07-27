@@ -5,6 +5,7 @@ import { ListResult } from "pocketbase";
 import { FlatList, RefreshControl, StyleSheet, View } from "react-native";
 import { IconButton, Text, useTheme } from "react-native-paper";
 import { WatchlistCard } from "./WatchlistCard";
+import { WatchlistMenu } from "./WatchlistMenu";
 
 interface WatchlistGridProps {
   watchListResult: ListResult<WatchlistResponse>;
@@ -28,18 +29,19 @@ export function WatchlistGrid({
   const watchList = watchListResult.items;
 
   const renderWatchlistItem = ({ item }: { item: WatchlistResponse }) => (
-    <WatchlistCard
-      item={item}
-      viewMode={orientation}
-      onPress={(watchlist) => {
-        // TODO: Navigate to watchlist detail
-        console.log("Navigate to watchlist:", watchlist.id);
-      }}
-      onMenuPress={(watchlist) => {
-        // TODO: Show menu actions (edit, delete, share, etc.)
-        console.log("Show menu for watchlist:", watchlist.id);
-      }}
-    />
+    <View style={{ position: 'relative' }}>
+      <WatchlistCard
+        item={item}
+        viewMode={orientation}
+        onPress={(watchlist) => {
+          // TODO: Navigate to watchlist detail
+          console.log("Navigate to watchlist:", watchlist.id);
+        }}
+      />
+      <View style={styles.menuContainer}>
+        <WatchlistMenu watchlist={item} />
+      </View>
+    </View>
   );
 
   return (
@@ -97,6 +99,12 @@ const styles = StyleSheet.create({
     zIndex: 10,
     padding: 8,
     borderRadius: 50,
+  },
+  menuContainer: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    zIndex: 5,
   },
   // Empty state styles
   emptyContainer: {

@@ -1,29 +1,23 @@
 import { WatchlistResponse } from "@/lib/pb/types/pb-types";
 import { DateUtils } from "@/utils/date-utils";
 import { StyleSheet, View } from "react-native";
-import { Card, Icon, IconButton, Text, useTheme } from "react-native-paper";
+import { Card, Icon, Text, useTheme } from "react-native-paper";
 
 interface WatchlistCardProps {
   item: WatchlistResponse;
   viewMode: "grid" | "list";
   onPress?: (item: WatchlistResponse) => void;
-  onMenuPress?: (item: WatchlistResponse) => void;
 }
 
 export function WatchlistCard({ 
   item, 
   viewMode, 
-  onPress, 
-  onMenuPress 
+  onPress
 }: WatchlistCardProps) {
   const { colors } = useTheme();
 
   const handlePress = () => {
     onPress?.(item);
-  };
-
-  const handleMenuPress = () => {
-    onMenuPress?.(item);
   };
 
   const getVisibilityIcon = (visibility: string|string[]) => {
@@ -87,12 +81,6 @@ export function WatchlistCard({
                 )}
               </View>
             </View>
-            <IconButton
-              icon="dots-vertical"
-              size={20}
-              iconColor={colors.onSurfaceVariant}
-              onPress={handleMenuPress}
-            />
           </View>
 
           {item.overview ? (
@@ -167,12 +155,6 @@ export function WatchlistCard({
               )}
             </View>
           </View>
-          <IconButton
-            icon="dots-vertical"
-            size={18}
-            iconColor={colors.onSurfaceVariant}
-            onPress={handleMenuPress}
-          />
         </View>
 
         {item.overview ? (
