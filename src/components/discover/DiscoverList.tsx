@@ -1,8 +1,10 @@
 import { TMDBDiscoverResponse } from "@/lib/tanstack/operations/discover/tmdb-hooks";
+import { movieToUnified, tvToUnified, UnifiedMediaItem } from "@/types/unified-media";
+import React from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { IconButton, Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "../shared/svg/empty";
-import { WatchlistItemCard } from "../shared/watchlist/WatchlistItemCard";
+import { UnifiedWatchlistItemCard } from "../shared/watchlist/UnifiedWatchlistItemCard";
 
 interface DiscoverListProps {
   discoverResults: TMDBDiscoverResponse | undefined;
@@ -23,6 +25,19 @@ export function DiscoverList({ currentCategory, discoverResults, columns, orient
   const mediaTypetab = (currentCategory?.type || "movie") as "movie" | "tv";
   const { colors } = useTheme();
 
+  // Convert TMDB results to unified format
+  const unifiedResults: UnifiedMediaItem[] = React.useMemo(() => {
+    if (!discoverResults?.results) return [];
+    
+    return discoverResults.results.map((item: any) => {
+      if (mediaTypetab === "movie") {
+        return movieToUnified(item);
+      } else {
+        return tvToUnified(item);
+      }
+    });
+  }, [discoverResults?.results, mediaTypetab]);
+
   return (
     <View style={styles.discoverContainer}>
       <IconButton
@@ -30,19 +45,19 @@ export function DiscoverList({ currentCategory, discoverResults, columns, orient
         icon={orientation === "grid" ? "view-list" : "view-grid"}
         onPress={() => setOrientation(orientation === "grid" ? "list" : "grid")}
       />
-      {/* Category Selection */}
       <FlatList
-        data={(discoverResults?.results as any[]) || []}
+        data={unifiedResults}
         key={columns}
         renderItem={({ item }) => (
-          <WatchlistItemCard
+          <UnifiedWatchlistItemCard
             item={item}
             viewMode={orientation}
             showActions={true}
+            showWatchlistDropdown={true}
             mediaTypeTab={mediaTypetab}
           />
         )}
-        keyExtractor={(item) => `${item.id}-${currentCategory?.type}`}
+        keyExtractor={(item) => `${item.id}-${item.media_type}`}
         numColumns={columns}
         contentContainerStyle={styles.resultsGrid}
         showsVerticalScrollIndicator={false}

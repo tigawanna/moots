@@ -1,161 +1,12 @@
 import { LoadingIndicatorDots } from "@/components/state-screens/LoadingIndicatorDots";
-import { TMDBSearchResult, buildTMDBImageUrl, isMovie, isPerson, isTVShow } from "@/lib/tmdb/sdk-via-pb";
-import { FlatList, Image, StyleSheet, View } from "react-native";
-import { Card, Text, useTheme } from "react-native-paper";
+import { isMovie, isPerson, isTVShow, TMDBSearchResult } from "@/lib/tmdb/sdk-via-pb";
+import { movieToUnified, tvToUnified, UnifiedMediaItem } from "@/types/unified-media";
+import React from "react";
+import { FlatList, StyleSheet, View } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { EmptyRoadSVG } from "../shared/svg/empty";
+import { UnifiedWatchlistItemCard } from "../shared/watchlist/UnifiedWatchlistItemCard";
 import { TrendingOnTMDB } from "./TrendingOnTMDB";
-
-interface SearchResultItemProps {
-  item: TMDBSearchResult;
-  onPress?: (result: TMDBSearchResult) => void;
-}
-
-function SearchResultItem({ item, onPress }: SearchResultItemProps) {
-  const { colors } = useTheme();
-
-  const renderContent = () => {
-    if (isMovie(item)) {
-      const posterUrl = buildTMDBImageUrl(item.poster_path, 'w185');
-      return (
-        <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
-          <Card.Content>
-            <View style={styles.contentContainer}>
-              {posterUrl ? (
-                <Image source={{ uri: posterUrl }} style={styles.poster} />
-              ) : null}
-              <View style={styles.textContent}>
-                <View style={styles.header}>
-                  <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
-                    {item.title}
-                  </Text>
-                  <Text  style={styles.typeChip}>
-                    Movie
-                  </Text>
-                </View>
-                
-                <View style={styles.metadata}>
-                  <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-                    {item.release_date ? new Date(item.release_date).getFullYear() : 'N/A'}
-                  </Text>
-                </View>
-                
-                {item.overview ? (
-                  <Text 
-                    variant="bodySmall" 
-                    numberOfLines={3} 
-                    style={[styles.overview, { color: colors.onSurfaceVariant }]}
-                  >
-                    {item.overview}
-                  </Text>
-                ) : null}
-
-                <View style={styles.statsContainer}>
-                  <Text variant="labelSmall" style={{ color: colors.primary }}>
-                    ⭐ {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
-                  </Text>
-                  <Text variant="labelSmall" style={{ color: colors.secondary }}>
-                    🗳️ {item.vote_count} votes
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </Card.Content>
-        </Card>
-      );
-    }
-
-    if (isTVShow(item)) {
-      const posterUrl = buildTMDBImageUrl(item.poster_path, 'w185');
-      return (
-        <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
-          <Card.Content>
-            <View style={styles.contentContainer}>
-              {posterUrl ? (
-                <Image source={{ uri: posterUrl }} style={styles.poster} />
-              ) : null}
-              <View style={styles.textContent}>
-                <View style={styles.header}>
-                  <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
-                    {item.name}
-                  </Text>
-                  <Text  style={styles.typeChip}>
-                    TV Show
-                  </Text>
-                </View>
-                
-                <View style={styles.metadata}>
-                  <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-                    {item.first_air_date ? new Date(item.first_air_date).getFullYear() : 'N/A'}
-                  </Text>
-                </View>
-
-                {item.overview ? (
-                  <Text
-                    variant="bodySmall"
-                    numberOfLines={3}
-                    style={[styles.overview, { color: colors.onSurfaceVariant }]}
-                  >
-                    {item.overview}
-                  </Text>
-                ) : null}
-
-                <View style={styles.statsContainer}>
-                  <Text variant="labelSmall" style={{ color: colors.primary }}>
-                    ⭐ {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
-                  </Text>
-                  <Text variant="labelSmall" style={{ color: colors.secondary }}>
-                    🗳️ {item.vote_count} votes
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </Card.Content>
-        </Card>
-      );
-    }
-
-    if (isPerson(item)) {
-      const profileUrl = buildTMDBImageUrl(item.profile_path, 'w185');
-      return (
-        <Card style={styles.resultCard} onPress={() => onPress?.(item)} mode="contained">
-          <Card.Content>
-            <View style={styles.contentContainer}>
-              {profileUrl ? (
-                <Image source={{ uri: profileUrl }} style={styles.profileImage} />
-              ) : null}
-              <View style={styles.textContent}>
-                <View style={styles.header}>
-                  <Text variant="titleMedium" numberOfLines={2} style={styles.title}>
-                    {item.name}
-                  </Text>
-                  <Text  style={styles.typeChip}>
-                    Person
-                  </Text>
-                </View>
-                
-                <View style={styles.metadata}>
-                  <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant }}>
-                    {item.known_for_department}
-                  </Text>
-                </View>
-                
-                <View style={styles.statsContainer}>
-                  <Text variant="labelSmall" style={{ color: colors.primary }}>
-                    🎭 {item.known_for_department}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </Card.Content>
-        </Card>
-      );
-    }
-
-    return null;
-  };
-
-  return renderContent();
-}
 
 interface TMDBSearchResultsProps {
   query: string;
@@ -174,13 +25,27 @@ export function TMDBSearchResults({
 }: TMDBSearchResultsProps) {
   const { colors } = useTheme();
 
-  const handleItemPress = (result: TMDBSearchResult) => {
-    console.log(`${result.media_type} pressed:`, 
-      isMovie(result) ? result.title : 
-      isTVShow(result) ? result.name : 
-      isPerson(result) ? result.name : 'Unknown'
-    );
-    onItemPress?.(result);
+  // Convert search results to unified format
+  const unifiedResults: UnifiedMediaItem[] = React.useMemo(() => {
+    if (!results) return [];
+    
+    return results
+      .filter((item) => isMovie(item) || isTVShow(item)) // Only include movies and TV shows, exclude persons
+      .map((item) => {
+        if (isMovie(item)) {
+          return movieToUnified(item);
+        } else if (isTVShow(item)) {
+          return tvToUnified(item);
+        }
+        // This should never happen due to filter above, but TypeScript needs it
+        throw new Error("Invalid item type");
+      });
+  }, [results]);
+
+  const handleItemPress = (item: UnifiedMediaItem) => {
+    console.log(`${item.media_type} pressed:`, item.title || item.name);
+    // We can't directly call onItemPress with UnifiedMediaItem since it expects TMDBSearchResult
+    // For now, we'll handle navigation internally in the card component
   };
 
   if (isLoading) {
@@ -233,23 +98,35 @@ export function TMDBSearchResults({
     );
   }
 
+  // Count movies and TV shows separately for header
+  const movieCount = results.filter(isMovie).length;
+  const tvCount = results.filter(isTVShow).length;
+  const personCount = results.filter(isPerson).length;
+  
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text variant="titleSmall" style={{ color: colors.onSurface }}>
-          Found {results.length} results for &quot;{query}&quot;
+          Found {unifiedResults.length} results for &quot;{query}&quot;
+        </Text>
+        <Text variant="bodySmall" style={{ color: colors.onSurfaceVariant, marginTop: 4 }}>
+          {movieCount} movies, {tvCount} TV shows
+          {personCount > 0 ? ` (${personCount} people not shown)` : ""}
         </Text>
       </View>
 
       <FlatList
-        data={results}
-        renderItem={({ item }) => <SearchResultItem item={item} onPress={handleItemPress} />}
-        keyExtractor={(item, index) => {
-          if (isMovie(item)) return `movie-${item.id}`;
-          if (isTVShow(item)) return `tv-${item.id}`;
-          if (isPerson(item)) return `person-${item.id}`;
-          return `unknown-${index}`;
-        }}
+        data={unifiedResults}
+        renderItem={({ item }) => (
+          <UnifiedWatchlistItemCard
+            item={item}
+            viewMode="list"
+            showActions={true}
+            showWatchlistDropdown={true}
+            onPress={() => handleItemPress(item)}
+          />
+        )}
+        keyExtractor={(item) => `${item.media_type}-${item.id}`}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
@@ -278,55 +155,5 @@ const styles = StyleSheet.create({
   listContent: {
     paddingTop: 6,
     gap: 12,
-  },
-  resultCard: {
-    flex: 1,
-    marginHorizontal: 4,
-    minHeight: 120,
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  poster: {
-    width: 60,
-    height: 90,
-    borderRadius: 4,
-    backgroundColor: '#f0f0f0',
-  },
-  profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#f0f0f0',
-  },
-  textContent: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 8,
-  },
-  title: {
-    flex: 1,
-    marginRight: 8,
-  },
-  typeChip: {
-    // height: 24,
-  },
-  metadata: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  overview: {
-    marginBottom: 8,
-    lineHeight: 18,
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
   },
 });

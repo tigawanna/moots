@@ -66,7 +66,7 @@ export function WatchlistItemCard({
     },
     { backgroundColor: colors.surface },
   ];
-  console.log(" == mediatype tab === ", mediaTypeTab, "item >>> ", item);
+
   if (viewMode === "list") {
     return (
       <Card style={cardStyle} mode="outlined">

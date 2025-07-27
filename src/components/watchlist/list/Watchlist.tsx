@@ -26,7 +26,7 @@ export function Watchlist({ community }: WatchlistProps) {
     getUserWatchlistQueryOptions({ keyword: searchQuery, userId })
   );
   const { colors } = useTheme();
-  console.log("watchlist data", data);
+  // console.log("watchlist data", data);
   if (isLoading || isLoadingOrientation) {
     return (
       <WatchlistlistScaffold>

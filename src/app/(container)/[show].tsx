@@ -1,21 +1,21 @@
+import { MovieDetailScreen } from "@/components/tmdb/MovieDetailScreen";
+import { TVDetailScreen } from "@/components/tmdb/TVDetailScreen";
 import { useLocalSearchParams } from "expo-router";
-import { StyleSheet } from "react-native";
-import { Text, Surface } from "react-native-paper";
 
-export default function ShowDetails() {
-  const { show } = useLocalSearchParams() as { show: string };
-  return (
-    <Surface style={{ ...styles.container }}>
-      <Text variant="titleLarge">Show {show}</Text>
-    </Surface>
-  );
+export default function MediaDetails() {
+  const { show, type } = useLocalSearchParams() as { show: string; type?: string };
+  const mediaId = parseInt(show, 10);
+  
+  if (isNaN(mediaId)) {
+    return null;
+  }
+  
+  // Default to tv if no type specified
+  const mediaType = type === "movie" ? "movie" : "tv";
+  
+  if (mediaType === "movie") {
+    return <MovieDetailScreen movieId={mediaId} />;
+  }
+  
+  return <TVDetailScreen tvId={mediaId} />;
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

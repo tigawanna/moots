@@ -899,7 +899,7 @@
   },
   {
     "id": "pbc_1344826955",
-    "listRule": "",
+    "listRule": "user_id = @request.auth.id || (visibility = \"public\" && @request.auth.id != \"\")",
     "viewRule": "user_id = @request.auth.id || (visibility = \"public\" && @request.auth.id != \"\")",
     "createRule": "",
     "updateRule": "user_id = @request.auth.id",
@@ -998,13 +998,33 @@
         "required": false,
         "system": false,
         "type": "bool"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
       }
     ],
     "indexes": [
       "CREATE UNIQUE INDEX `idx_KhVX0w7YBd` ON `watchlist` (`title`)"
     ],
     "created": "2025-07-23 20:56:24.091Z",
-    "updated": "2025-07-26 21:52:03.786Z",
+    "updated": "2025-07-26 23:20:25.575Z",
     "system": false
   },
   {
